@@ -220,69 +220,118 @@ flex:1;
             alert("خطأ: " + error.message);
         }
     };
-</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-/* LOGIN */
-document.getElementById("sendBtn").onclick = function(){
-const phone = document.getElementById("phoneNumber").value;
-
-const appVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container");
-
-auth.signInWithPhoneNumber(phone, appVerifier)
-.then((result)=>{
-confirmationResult = result;
-document.getElementById("verification-section").style.display="block";
-});
+/* Firebase Config */
+const firebaseConfig = {
+  apiKey: "ضع_مفتاحك",
+  authDomain: "ضع_الدومين",
+  projectId: "ضع_المشروع",
+  appId: "ضع_التطبيق"
 };
 
-document.getElementById("verifyBtn").onclick = function(){
-const code = document.getElementById("verificationCode").value;
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-confirmationResult.confirm(code)
-.then(()=>{
-document.getElementById("login-section").style.display="none";
-document.getElementById("chat-section").style.display="flex";
-loadMessages();
-});
+window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+  size: 'invisible'
+}, auth);
+
+let confirmationResult;
+
+/* SEND CODE */
+document.getElementById("sendBtn").onclick = async () => {
+
+  const code = document.getElementById("countryCode").value;
+  const phone = document.getElementById("phoneNumber").value;
+  const fullNumber = code + phone;
+
+  try {
+    confirmationResult = await signInWithPhoneNumber(
+      auth,
+      fullNumber,
+      window.recaptchaVerifier
+    );
+
+    document.getElementById("verification-section").style.display = "block";
+    alert("تم إرسال الكود");
+
+  } catch (e) {
+    alert(e.message);
+  }
+};
+
+/* VERIFY CODE */
+document.getElementById("verifyBtn").onclick = async () => {
+
+  const otp = document.getElementById("verificationCode").value;
+
+  try {
+    const result = await confirmationResult.confirm(otp);
+
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("chat-section").style.display = "flex";
+
+    loadMessages();
+
+  } catch (e) {
+    alert("كود خاطئ");
+  }
 };
 
 /* SEND MESSAGE */
-function sendMsg(){
-let msg = document.getElementById("msgInput").value;
+window.sendMsg = async function () {
 
-db.collection("messages").add({
-text: msg,
-time: Date.now(),
-user: auth.currentUser.phoneNumber
-});
+  const msg = document.getElementById("msgInput").value;
 
-document.getElementById("msgInput").value="";
-}
+  await addDoc(collection(db, "messages"), {
+    text: msg,
+    time: Date.now(),
+    user: auth.currentUser.phoneNumber
+  });
+
+  document.getElementById("msgInput").value = "";
+};
 
 /* LOAD MESSAGES */
-function loadMessages(){
-db.collection("messages")
-.orderBy("time")
-.onSnapshot(snapshot=>{
-let chatList = document.getElementById("chatList");
-chatList.innerHTML="";
+function loadMessages() {
 
-snapshot.forEach(doc=>{
-let m = doc.data();
+  const q = query(collection(db, "messages"), orderBy("time"));
 
-chatList.innerHTML += `
-<div class="chat">
-<div class="avatar"></div>
-<div class="chat-content">
-<div class="name">${m.user}</div>
-<div class="message">${m.text}</div>
-</div>
-</div>`;
-});
-});
+  onSnapshot(q, (snapshot) => {
+
+    const chatList = document.getElementById("chatList");
+    chatList.innerHTML = "";
+
+    snapshot.forEach((doc) => {
+      const m = doc.data();
+
+      chatList.innerHTML += `
+        <div class="chat">
+          <div class="avatar"></div>
+          <div class="chat-content">
+            <div class="name">${m.user}</div>
+            <div class="message">${m.text}</div>
+          </div>
+        </div>`;
+    });
+  });
 }
 </script>
-
-</body>
-</html>
