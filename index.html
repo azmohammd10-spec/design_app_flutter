@@ -135,17 +135,27 @@ flex:1;
 
 <!-- LOGIN -->
 <div id="login-section">
-<h2>تسجيل الدخول</h2>
+    <h2>تسجيل الدخول</h2>
 
-<input type="tel" id="phoneNumber" placeholder="رقم الهاتف">
-<button id="sendBtn">إرسال كود</button>
+    <!-- كود الدولة -->
+    <select id="countryCode">
+        <option value="+967">اليمن +967</option>
+        <option value="+966">السعودية +966</option>
+        <option value="+20">مصر +20</option>
+        <option value="+971">الإمارات +971</option>
+    </select>
 
-<div id="verification-section" style="display:none;width:100%;max-width:320px;">
-<input type="text" id="verificationCode" placeholder="كود التحقق">
-<button id="verifyBtn">تأكيد</button>
-</div>
+    <!-- رقم الهاتف -->
+    <input type="tel" id="phoneNumber" placeholder="رقم الهاتف">
 
-<div id="recaptcha-container"></div>
+    <button id="sendBtn">إرسال كود</button>
+
+    <div id="verification-section" style="display:none;">
+        <input type="text" id="verificationCode" placeholder="كود التحقق">
+        <button id="verifyBtn">تأكيد</button>
+    </div>
+
+    <div id="recaptcha-container"></div>
 </div>
 
 <!-- CHAT -->
