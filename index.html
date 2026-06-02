@@ -1,158 +1,66 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>توفير</title>
+<!-- HEADER -->
+<div class="header">
+    <div class="profile-area">
+        <div class="profile-avatar"></div>
+        <span class="app-name">توفير</span>
+    </div>
 
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui,sans-serif;
-}
-
-body{
-background:#f5f7fb;
-height:100vh;
-}
-
-/* Login */
-#login-section{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-padding:20px;
-gap:12px;
-}
-
-#login-section h2{
-color:#111827;
-}
-
-input{
-width:100%;
-max-width:320px;
-height:48px;
-border:none;
-border-radius:12px;
-padding:0 15px;
-background:#fff;
-box-shadow:0 1px 3px rgba(0,0,0,.08);
-}
-
-button{
-width:100%;
-max-width:320px;
-height:48px;
-border:none;
-border-radius:12px;
-background:#111827;
-color:white;
-font-size:15px;
-cursor:pointer;
-}
-
-/* Chat */
-#chat-section{
-display:none;
-height:100vh;
-flex-direction:column;
-background:white;
-}
-
-.header{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:bold;
-border-bottom:1px solid #eee;
-}
-
-.chat-list{
-flex:1;
-padding:10px;
-overflow-y:auto;
-}
-
-.message-box{
-display:flex;
-gap:8px;
-padding:10px;
-border-top:1px solid #eee;
-}
-
-.message-box input{
-flex:1;
-}
-
-.msg{
-background:#f1f5f9;
-padding:10px;
-border-radius:10px;
-margin-bottom:8px;
-}
-</style>
-</head>
-
-<body>
-
-<!-- LOGIN -->
-<div id="login-section">
-<h2>تسجيل الدخول</h2>
-
-<input type="tel" id="phone" placeholder="رقم الهاتف">
-<button onclick="login()">دخول</button>
+    <div class="header-actions">
+        🔍
+    </div>
 </div>
 
-<!-- CHAT -->
-<div id="chat-section">
-<div class="header">توفير</div>
+<!-- CHAT LIST -->
+<div class="chat-list">
 
-<div class="chat-list" id="chatList">
-<div class="msg">مرحباً بك في تطبيق توفير 👋</div>
+    <div class="chat-item">
+        <div class="avatar"></div>
+
+        <div class="chat-content">
+            <div class="chat-top">
+                <span class="chat-name">أحمد</span>
+                <span class="chat-time">10:25</span>
+            </div>
+
+            <div class="chat-message">
+                مرحباً بك في تطبيق توفير
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-item">
+        <div class="avatar"></div>
+
+        <div class="chat-content">
+            <div class="chat-top">
+                <span class="chat-name">خالد</span>
+                <span class="chat-time">أمس</span>
+            </div>
+
+            <div class="chat-message">
+                شكراً لك
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<div class="message-box">
-<input id="msgInput" placeholder="اكتب رسالة">
-<button onclick="sendMsg()">إرسال</button>
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+
+    <div class="nav-item active">
+        💬
+        <span>الدردشات</span>
+    </div>
+
+    <div class="nav-item">
+        ➕
+        <span>جديد</span>
+    </div>
+
+    <div class="nav-item">
+        📸
+        <span>القصص</span>
+    </div>
+
 </div>
-</div>
-
-<script>
-function login(){
-const phone = document.getElementById("phone").value.trim();
-
-if(phone === ""){
-alert("أدخل رقم الهاتف");
-return;
-}
-
-document.getElementById("login-section").style.display = "none";
-document.getElementById("chat-section").style.display = "flex";
-}
-
-function sendMsg(){
-
-const input = document.getElementById("msgInput");
-const text = input.value.trim();
-
-if(!text) return;
-
-const chatList = document.getElementById("chatList");
-
-chatList.innerHTML += `
-<div class="msg">${text}</div>
-`;
-
-input.value = "";
-chatList.scrollTop = chatList.scrollHeight;
-}
-</script>
-
-</body>
-</html>
