@@ -1,1 +1,19 @@
 
+// firebase/firebase.js
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+const firebaseConfig = {
+  apiKey: "AIzaSy039...", // استخدم الكود الذي ظهر لك في الصورة
+  authDomain: "tofeer-e9c5a.firebaseapp.com",
+  projectId: "tofeer-e9c5a",
+  storageBucket: "tofeer-e9c5a.appspot.com",
+  messagingSenderId: "927174968674",
+  appId: "1:927174968674:web:5bafb6e43161c50cda983b",
+  measurementId: "G-LZ2MNRW4ND"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+export { app };
