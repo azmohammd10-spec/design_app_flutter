@@ -1,71 +1,204 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>تطبيق توفير</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>توفير - دردشة</title>
+
+<style>
+body{margin:0;font-family:system-ui;background:#f5f7fb}
+
+#login-section{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+gap:10px;
+padding:20px;
+}
+
+input,select,button{
+width:100%;
+max-width:320px;
+height:45px;
+border-radius:10px;
+border:none;
+padding:10px;
+}
+
+button{
+background:#111827;
+color:#fff;
+cursor:pointer;
+}
+
+#chat-section{
+display:none;
+height:100vh;
+flex-direction:column;
+background:#fff;
+}
+
+.header{
+height:60px;
+display:flex;
+justify-content:center;
+align-items:center;
+border-bottom:1px solid #eee;
+font-weight:bold;
+}
+
+.chat-list{
+flex:1;
+overflow:auto;
+padding:10px;
+}
+
+.chat{
+padding:10px;
+border-bottom:1px solid #eee;
+}
+
+.message-box{
+display:flex;
+gap:5px;
+padding:10px;
+border-top:1px solid #eee;
+}
+
+.message-box input{flex:1}
+</style>
 </head>
+
 <body>
 
-    <div id="login-section">
-        <select id="countryCode"><option value="+967">+967</option></select>
-        <input type="tel" id="phoneNumber" placeholder="7XXXXXXXX">
-        <button id="sendBtn">إرسال كود</button>
-    </div>
+<!-- LOGIN -->
+<div id="login-section">
+<h3>تسجيل الدخول</h3>
 
-    <div id="verification-section" style="display:none;">
-        <input type="text" id="verificationCode" placeholder="أدخل الكود">
-        <button id="verifyBtn">تأكيد الدخول</button>
-    </div>
+<select id="countryCode">
+<option value="+967">اليمن</option>
+<option value="+966">السعودية</option>
+<option value="+20">مصر</option>
+<option value="+971">الإمارات</option>
+</select>
 
-    <div id="recaptcha-container"></div>
+<input id="phoneNumber" type="tel" placeholder="رقم الهاتف">
+<button onclick="sendCode()">إرسال كود</button>
 
-    <div id="chat-section" style="display:none;">
-        <div id="chatList"></div>
-        <input type="text" id="msgInput" placeholder="اكتب رسالة...">
-        <button id="sendMsgBtn">إرسال</button>
-    </div>
+<div id="verifyBox" style="display:none;">
+<input id="code" placeholder="كود التحقق">
+<button onclick="verifyCode()">تأكيد</button>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+<div id="recaptcha-container"></div>
+</div>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSy039_c_pQmI33APYKfw_Z_af4iEPlcV-ts",
-            authDomain: "tofeer-e9c5a.firebaseapp.com",
-            projectId: "tofeer-e9c5a",
-            storageBucket: "tofeer-e9c5a.firebasestorage.app",
-            messagingSenderId: "927174968674",
-            appId: "1:927174968674:web:5bafb6e43161c5cda983b"
-        };
+<!-- CHAT -->
+<div id="chat-section">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+<div class="header">توفير</div>
 
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { 'size': 'invisible' });
+<div class="chat-list" id="chatList"></div>
 
-        let confirmationResult;
+<div class="message-box">
+<input id="msgInput" placeholder="اكتب رسالة">
+<button onclick="sendMsg()">إرسال</button>
+</div>
 
-        // ربط زر الإرسال
-        document.getElementById('sendBtn').onclick = async () => {
-            const phone = document.getElementById('countryCode').value + document.getElementById('phoneNumber').value;
-            try {
-                confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-                document.getElementById('verification-section').style.display = 'block';
-                alert("تم إرسال الكود!");
-            } catch (e) { alert(e.message); }
-        };
+</div>
 
-        // ربط زر التأكيد
-        document.getElementById('verifyBtn').onclick = async () => {
-            try {
-                await confirmationResult.confirm(document.getElementById('verificationCode').value);
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('verification-section').style.display = 'none';
-                document.getElementById('chat-section').style.display = 'block';
-            } catch (e) { alert("الكود غير صحيح"); }
-        };
-    </script>
+<!-- FIREBASE v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+/* 🔥 Firebase Config (مفاتيحك) */
+const firebaseConfig = {
+  apiKey: "AIzaSy039_c_pQmI33APYKfw_Z_af4iEPlcV-ts",
+  authDomain: "tofeer-e9c5a.firebaseapp.com",
+  projectId: "tofeer-e9c5a",
+  storageBucket: "tofeer-e9c5a.firebasestorage.app",
+  messagingSenderId: "927174968674",
+  appId: "1:927174968674:web:5bafb6e43161c5cda983b",
+  measurementId: "G-LZ2MWRW4ND"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let confirmationResult;
+
+/* 📱 إرسال الكود */
+function sendCode(){
+
+const code = document.getElementById("countryCode").value;
+const phone = document.getElementById("phoneNumber").value;
+const fullPhone = code + phone;
+
+window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+'recaptcha-container'
+);
+
+auth.signInWithPhoneNumber(fullPhone, window.recaptchaVerifier)
+.then(result=>{
+confirmationResult = result;
+document.getElementById("verifyBox").style.display="block";
+alert("تم إرسال الكود");
+})
+.catch(e=>alert(e.message));
+
+}
+
+/* 🔑 التحقق */
+function verifyCode(){
+
+const code = document.getElementById("code").value;
+
+confirmationResult.confirm(code)
+.then(()=>{
+document.getElementById("login-section").style.display="none";
+document.getElementById("chat-section").style.display="flex";
+loadMessages();
+})
+.catch(()=>alert("كود خاطئ"));
+
+}
+
+/* 💬 إرسال رسالة */
+function sendMsg(){
+
+db.collection("messages").add({
+text: msgInput.value,
+time: Date.now()
+});
+
+msgInput.value="";
+}
+
+/* 📥 تحميل الرسائل */
+function loadMessages(){
+
+db.collection("messages")
+.orderBy("time")
+.onSnapshot(snap=>{
+
+chatList.innerHTML="";
+
+snap.forEach(doc=>{
+chatList.innerHTML+=`
+<div class="chat">${doc.data().text}</div>
+`;
+});
+
+});
+
+}
+</script>
+
 </body>
 </html>
