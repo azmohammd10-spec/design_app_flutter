@@ -201,7 +201,12 @@ alert(e.message);
 };
 
 /* ✅ تأكيد الكود */
-window.verifyCode = async function(){
+window.verifyCode = function () {
+  alert("تم الضغط على زر الدخول");
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
+};
 
 const code = document.getElementById("code").value;
 
