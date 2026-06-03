@@ -108,6 +108,7 @@ padding:0 15px;border-bottom:1px solid #eee;
 </div>
 
 <script>
+<script>
 
 function openChat(name){
 document.querySelector(".app").style.display="none";
@@ -120,6 +121,22 @@ document.querySelector(".app").style.display="block";
 document.getElementById("chat-screen").style.display="none";
 }
 
+function sendMsg(){
+let msg = document.getElementById("msg").value;
+if(msg === "") return;
+
+let box = document.getElementById("chat-box");
+
+box.innerHTML += `
+<div style="background:#fff;margin:8px;padding:10px;border-radius:10px;text-align:right;">
+${msg}
+</div>
+`;
+
+document.getElementById("msg").value="";
+}
+
+</script>
 </script>
 
 </body>
