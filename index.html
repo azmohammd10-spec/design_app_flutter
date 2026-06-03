@@ -1,23 +1,13 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>توفير - دردشة</title>
+<title>توفير</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui;
-}
-
-body{
-background:#f6fbff;
-color:#111;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
+body{background:#f6fbff;}
 
 /* LOGIN */
 #login{
@@ -33,14 +23,13 @@ background:#fff;
 padding:20px;
 border-radius:16px;
 box-shadow:0 8px 25px rgba(0,0,0,0.08);
-text-align:center;
 }
 
 input{
 width:100%;
 padding:12px;
 margin-top:10px;
-border:1px solid #e6e6e6;
+border:1px solid #e5e5e5;
 border-radius:10px;
 outline:none;
 }
@@ -54,34 +43,29 @@ border-radius:10px;
 background:#4da3ff;
 color:#fff;
 font-weight:600;
-cursor:pointer;
 }
 
 /* APP */
-#app{
-display:none;
-height:100vh;
-flex-direction:column;
-}
+#app{display:none; height:100vh; flex-direction:column;}
 
 .header{
-padding:15px;
 background:#fff;
+padding:15px;
 font-weight:700;
 border-bottom:1px solid #eee;
 }
 
-/* CHAT LIST */
-.chat{
-padding:15px;
+/* USERS */
+.user{
 background:#fff;
 margin:10px;
+padding:12px;
 border-radius:12px;
 cursor:pointer;
 box-shadow:0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* CHAT BOX */
+/* CHAT */
 #chatBox{
 display:none;
 flex-direction:column;
@@ -91,30 +75,30 @@ height:calc(100vh - 120px);
 .messages{
 flex:1;
 padding:10px;
-overflow-y:auto;
+overflow:auto;
 }
 
 .msg{
-background:#e9f4ff;
+background:#e8f4ff;
 padding:10px;
 margin:5px 0;
 border-radius:10px;
 max-width:70%;
 }
 
-.inputBox{
+.input{
 display:flex;
 padding:10px;
 background:#fff;
 border-top:1px solid #eee;
 }
 
-.inputBox input{
+.input input{
 flex:1;
 margin:0;
 }
 
-.inputBox button{
+.input button{
 width:80px;
 margin-left:5px;
 }
@@ -127,7 +111,7 @@ margin-left:5px;
 <div id="login">
 <div class="card">
 <h3>تسجيل الدخول</h3>
-<input id="phone" placeholder="اكتب اسمك">
+<input id="name" placeholder="اسمك">
 <button onclick="login()">دخول</button>
 </div>
 </div>
@@ -137,55 +121,97 @@ margin-left:5px;
 
 <div class="header">توفير 💬</div>
 
-<div class="chat" onclick="openChat('أحمد')">أحمد</div>
-<div class="chat" onclick="openChat('خالد')">خالد</div>
+<div class="user" onclick="openChat('ahmed')">أحمد</div>
+<div class="user" onclick="openChat('khaled')">خالد</div>
 
 <!-- CHAT -->
 <div id="chatBox">
+
 <div class="messages" id="messages"></div>
 
-<div class="inputBox">
+<div class="input">
 <input id="msg" placeholder="اكتب رسالة">
 <button onclick="sendMsg()">إرسال</button>
 </div>
-</div>
 
 </div>
 
-<script>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+getFirestore,
+collection,
+addDoc,
+query,
+orderBy,
+onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* 🔥 Firebase */
+const firebaseConfig = {
+apiKey: "PUT_YOUR_KEY",
+authDomain: "tofeer-e9c5a.firebaseapp.com",
+projectId: "tofeer-e9c5a",
+appId: "1:927174968674:web:5bafb6e43161c50cda983b"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 let user = "";
 let currentChat = "";
 
-/* login */
-function login(){
-user = document.getElementById("phone").value;
-
-if(user.trim()==""){
-alert("اكتب اسمك");
-return;
-}
+/* LOGIN */
+window.login = function(){
+user = document.getElementById("name").value;
+if(!user) return;
 
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
 }
 
-/* open chat */
-function openChat(name){
-currentChat = name;
+/* OPEN CHAT */
+window.openChat = function(chatId){
+currentChat = chatId;
 document.getElementById("chatBox").style.display="flex";
-document.getElementById("messages").innerHTML="";
+
+loadMessages();
 }
 
-/* send msg */
-function sendMsg(){
-let msg = document.getElementById("msg").value;
-if(msg.trim()=="") return;
+/* SEND */
+window.sendMsg = async function(){
 
-document.getElementById("messages").innerHTML +=
-`<div class="msg"><b>${user}:</b> ${msg}</div>`;
+let msg = document.getElementById("msg").value;
+if(!msg) return;
+
+await addDoc(collection(db,"chats",currentChat,"messages"),{
+text:msg,
+user:user,
+time:Date.now()
+});
 
 document.getElementById("msg").value="";
 }
+
+/* REAL TIME */
+function loadMessages(){
+
+const q = query(collection(db,"chats",currentChat,"messages"),orderBy("time"));
+
+onSnapshot(q,(snap)=>{
+let box = document.getElementById("messages");
+box.innerHTML="";
+
+snap.forEach(d=>{
+let m = d.data();
+box.innerHTML += `<div class="msg"><b>${m.user}:</b> ${m.text}</div>`;
+});
+});
+}
+
 </script>
 
 </body>
