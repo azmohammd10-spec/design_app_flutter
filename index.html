@@ -7,172 +7,116 @@
 <title>توفير</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui;}
 
-body{
-background:#f5f7fb;
-}
+body{background:#f5f7fb;}
 
-/* HEADER */
+.app{display:block;}
+
 .header{
-height:60px;
-background:#fff;
-display:flex;
-align-items:center;
-padding:0 16px;
-font-weight:700;
+height:60px;background:#fff;
+display:flex;align-items:center;
+padding:0 15px;font-weight:700;
 border-bottom:1px solid #eee;
 }
 
-/* CONTENT */
-.content{
-height:calc(100vh - 120px);
-overflow-y:auto;
-padding:10px;
-}
+.content{padding:10px;height:calc(100vh - 120px);overflow-y:auto;}
 
-/* CHAT */
 .chat-item{
-display:flex;
-gap:10px;
-background:#fff;
-margin-bottom:10px;
-padding:12px;
-border-radius:12px;
-align-items:center;
+display:flex;gap:10px;
+background:#fff;margin-bottom:10px;
+padding:12px;border-radius:12px;
 }
 
-.avatar{
-width:45px;
-height:45px;
-border-radius:50%;
-background:#ddd;
-}
+.avatar{width:45px;height:45px;border-radius:50%;background:#ddd;}
 
-.chat-info{
-flex:1;
-}
-
-.chat-top{
-display:flex;
-justify-content:space-between;
-font-size:14px;
-font-weight:600;
-}
-
-.msg{
-font-size:13px;
-color:#666;
-margin-top:4px;
-}
-
-.time{
-font-size:12px;
-color:#999;
-}
-
-/* BOTTOM NAV */
 .bottom-nav{
+position:fixed;bottom:0;left:0;right:0;
+height:60px;background:#fff;
+display:flex;justify-content:space-around;
+align-items:center;border-top:1px solid #eee;
+}
+
+.nav-item{font-size:12px;color:#777;display:flex;flex-direction:column;align-items:center;}
+.nav-item.active{color:#111;font-weight:600;}
+
+#chat-screen{
+display:none;
 position:fixed;
-bottom:0;
-left:0;
-right:0;
-height:60px;
-background:#fff;
-display:flex;
-justify-content:space-around;
-align-items:center;
-border-top:1px solid #eee;
+top:0;left:0;right:0;bottom:0;
+background:#f5f7fb;
 }
 
-.nav-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-font-size:12px;
-color:#777;
+.chat-header{
+height:60px;background:#fff;
+display:flex;align-items:center;
+justify-content:space-between;
+padding:0 15px;border-bottom:1px solid #eee;
 }
 
-.nav-item.active{
-color:#111827;
-font-weight:600;
-}
+.back-btn{cursor:pointer;color:#007bff;}
 </style>
 
 </head>
 
 <body>
-<div id="chat-screen" style="display:none;">
 
-    <div class="header">
-        <span id="chat-name">المحادثة</span>
-        <button onclick="closeChat()">رجوع</button>
-    </div>
+<!-- APP -->
+<div class="app">
 
-    <div class="content">
-        <p>هنا ستظهر الرسائل</p>
-    </div>
-
-</div>
 <div class="header">توفير</div>
 
 <div class="content">
 
-    <div class="chat-item" onclick="openChat('أحمد')">
-        <div class="avatar"></div>
-        <div class="chat-info">
-            <div class="chat-top">
-                <span>أحمد</span>
-                <span class="time">10:25</span>
-            </div>
-            <div class="msg">مرحبا بك 👋</div>
-        </div>
-    </div>
+<div class="chat-item" onclick="openChat('أحمد')">
+<div class="avatar"></div>
+<div>أحمد - مرحبا 👋</div>
+</div>
 
-    <div class="chat-item" onclick="openChat('خالد')">
-        <div class="avatar"></div>
-        <div class="chat-info">
-            <div class="chat-top">
-                <span>خالد</span>
-                <span class="time">أمس</span>
-            </div>
-            <div class="msg">شكراً لك</div>
-        </div>
-    </div>
+<div class="chat-item" onclick="openChat('خالد')">
+<div class="avatar"></div>
+<div>خالد - شكراً لك</div>
+</div>
 
 </div>
 
 <div class="bottom-nav">
-
-    <div class="nav-item active">
-        💬
-        <span>الدردشات</span>
-    </div>
-
-    <div class="nav-item">
-        📸
-        <span>القصص</span>
-    </div>
+<div class="nav-item active">💬 دردشات</div>
+<div class="nav-item">📸 قصص</div>
+</div>
 
 </div>
+
+<!-- CHAT SCREEN -->
+<div id="chat-screen">
+
+<div class="chat-header">
+<span id="chat-name">المحادثة</span>
+<span class="back-btn" onclick="closeChat()">رجوع</span>
+</div>
+
+<div class="content">
+<p style="text-align:center;color:#777;margin-top:20px;">
+ابدأ المحادثة الآن 💬
+</p>
+</div>
+
+</div>
+
 <script>
 
 function openChat(name){
-    document.querySelector(".app").style.display = "none";
-    document.getElementById("chat-screen").style.display = "block";
-    document.getElementById("chat-name").innerText = name;
+document.querySelector(".app").style.display="none";
+document.getElementById("chat-screen").style.display="block";
+document.getElementById("chat-name").innerText=name;
 }
 
 function closeChat(){
-    document.querySelector(".app").style.display = "block";
-    document.getElementById("chat-screen").style.display = "none";
+document.querySelector(".app").style.display="block";
+document.getElementById("chat-screen").style.display="none";
 }
 
 </script>
+
 </body>
 </html>
