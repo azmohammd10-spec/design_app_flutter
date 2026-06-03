@@ -69,10 +69,22 @@ margin-bottom:10px;
 border-radius:12px;
 }
 
-.chat, .story, .profile{
+.chat{
 background:#f8fafc;
 padding:10px;
 margin-top:8px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.msg-box{
+margin-top:15px;
+}
+
+.msg{
+background:#fff;
+padding:8px;
+margin:5px 0;
 border-radius:10px;
 }
 </style>
@@ -88,15 +100,8 @@ border-radius:10px;
 
 <h2>تسجيل الدخول</h2>
 
-<input id="phone" placeholder="رقم الهاتف +967...">
-
-<button onclick="sendCode()">إرسال كود</button>
-
-<input id="code" placeholder="كود التحقق">
-
-<button onclick="verifyCode()">تأكيد</button>
-
-<div id="recaptcha"></div>
+<input id="phone" placeholder="اكتب اسمك فقط">
+<button onclick="login()">دخول</button>
 
 </div>
 
@@ -107,86 +112,78 @@ border-radius:10px;
 
   <div class="section">
     <h3>📸 القصص</h3>
-    <div class="story">قصة مستخدم 1 👁 1200</div>
-    <div class="story">قصة مستخدم 2 👁 800</div>
+    <div class="chat">قصة 1 👁 1200</div>
+    <div class="chat">قصة 2 👁 800</div>
   </div>
 
   <div class="section">
     <h3>💬 الدردشات</h3>
-    <div class="chat">أحمد - مرحبا 👋</div>
-    <div class="chat">خالد - شكراً لك</div>
+
+    <div class="chat" onclick="openChat('أحمد')">أحمد</div>
+    <div class="chat" onclick="openChat('خالد')">خالد</div>
   </div>
 
   <div class="section">
     <h3>👤 الحساب</h3>
-    <div class="profile">اسم المستخدم: محمد</div>
+    <div id="user">اسمك: </div>
+  </div>
+
+  <!-- 💬 chat box -->
+  <div class="section" id="chatBox" style="display:none;">
+    <h3 id="chatName"></h3>
+
+    <div id="messages"></div>
+
+    <input id="msgInput" placeholder="اكتب رسالة">
+    <button onclick="sendMsg()">إرسال</button>
   </div>
 
 </div>
 
-<!-- ⚙️ FIREBASE -->
-<script type="module">
+<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-getAuth,
-RecaptchaVerifier,
-signInWithPhoneNumber
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+let currentChat = "";
+let userName = "";
 
-/* 🔥 Firebase Config */
-const firebaseConfig = {
-apiKey: "YOUR_KEY",
-authDomain: "tofeer-e9c5a.firebaseapp.com",
-projectId: "tofeer-e9c5a",
-appId: "1:927174968674:web:5bafb6e43161c50cda983b"
-};
+/* تسجيل دخول بسيط */
+function login(){
+  userName = document.getElementById("phone").value;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+  if(userName.trim() === ""){
+    alert("اكتب اسمك");
+    return;
+  }
 
-/* reCAPTCHA */
-window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha", {
-size: "invisible"
-});
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "block";
 
-window.recaptchaVerifier.render();
-
-/* 📩 إرسال كود */
-window.sendCode = async function(){
-try{
-const phone = document.getElementById("phone").value;
-
-window.confirmationResult = await signInWithPhoneNumber(
-auth,
-phone,
-window.recaptchaVerifier
-);
-
-alert("تم إرسال الكود");
-
-}catch(e){
-alert(e.message);
+  document.getElementById("user").innerText = "اسمك: " + userName;
 }
-};
 
-/* ✅ تأكيد الكود */
-window.verifyCode = async function(){
-try{
+/* فتح دردشة */
+function openChat(name){
+  currentChat = name;
 
-const code = document.getElementById("code").value;
+  document.getElementById("chatBox").style.display = "block";
+  document.getElementById("chatName").innerText = "دردشة مع " + name;
 
-await window.confirmationResult.confirm(code);
-
-alert("تم تسجيل الدخول");
-
-document.getElementById("login-screen").style.display = "none";
-document.getElementById("app").style.display = "block";
-
-}catch(e){
-alert(e.message);
+  document.getElementById("messages").innerHTML = "";
 }
-};
+
+/* إرسال رسالة */
+function sendMsg(){
+  let msg = document.getElementById("msgInput").value;
+
+  if(msg.trim() === "") return;
+
+  let box = document.getElementById("messages");
+
+  box.innerHTML += `
+    <div class="msg"><b>${userName}:</b> ${msg}</div>
+  `;
+
+  document.getElementById("msgInput").value = "";
+}
 
 </script>
 
