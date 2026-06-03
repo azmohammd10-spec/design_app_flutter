@@ -160,6 +160,19 @@ font-weight:600;
     </div>
 
 </div>
+<script>
 
+function openChat(name){
+    document.querySelector(".app").style.display = "none";
+    document.getElementById("chat-screen").style.display = "block";
+    document.getElementById("chat-name").innerText = name;
+}
+
+function closeChat(){
+    document.querySelector(".app").style.display = "block";
+    document.getElementById("chat-screen").style.display = "none";
+}
+
+</script>
 </body>
 </html>
