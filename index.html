@@ -7,36 +7,60 @@
 <title>توفير</title>
 
 <style>
-body{
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
 font-family:system-ui;
+}
+
+body{
 background:#eef2f7;
 }
 
-/* LOGIN */
-#login-screen{
+/* SCREEN WRAPPER */
+.screen{
+height:100vh;
 display:flex;
-flex-direction:column;
 justify-content:center;
 align-items:center;
-height:100vh;
-gap:10px;
+flex-direction:column;
+gap:12px;
+}
+
+/* LOGIN CARD */
+.card{
+width:85%;
+background:#fff;
+padding:20px;
+border-radius:14px;
+box-shadow:0 5px 20px rgba(0,0,0,0.08);
+text-align:center;
 }
 
 input{
-width:80%;
+width:100%;
 padding:12px;
+margin-top:10px;
 border:1px solid #ddd;
 border-radius:10px;
+outline:none;
 }
 
 button{
-width:80%;
+width:100%;
 padding:12px;
+margin-top:10px;
 border:none;
 border-radius:10px;
 background:#111827;
 color:#fff;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+background:#1f2937;
 }
 
 /* APP */
@@ -51,10 +75,7 @@ font-weight:700;
 margin-bottom:20px;
 }
 
-/* CHAT BOX */
-#chat-box{
-margin-top:20px;
-}
+/* MESSAGE */
 .msg{
 background:#fff;
 padding:10px;
@@ -62,26 +83,33 @@ margin:5px 0;
 border-radius:10px;
 }
 </style>
+
 </head>
 
 <body>
 
-<!-- 🔐 LOGIN -->
-<div id="login-screen">
+<!-- 🔐 LOGIN UI -->
+<div id="login-screen" class="screen">
+
+<div class="card">
 
 <h2>تسجيل الدخول</h2>
 
 <input id="phone" placeholder="رقم الهاتف +967...">
+
 <button onclick="sendCode()">إرسال كود</button>
 
 <input id="code" placeholder="كود التحقق">
+
 <button onclick="verifyCode()">تأكيد</button>
 
 <div id="recaptcha"></div>
 
 </div>
 
-<!-- 💬 APP -->
+</div>
+
+<!-- 📱 APP UI -->
 <div id="app">
 
 <div class="header">توفير 💬</div>
@@ -97,7 +125,6 @@ border-radius:10px;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
 import {
 getAuth,
 RecaptchaVerifier,
@@ -115,7 +142,7 @@ orderBy
 
 /* 🔥 Firebase Config */
 const firebaseConfig = {
-apiKey: "AIzaSyD39_c_pQmI33APYKfw_Z_af4iEPlcV-ts",
+apiKey: "ضع_مفتاحك هنا",
 authDomain: "tofeer-e9c5a.firebaseapp.com",
 projectId: "tofeer-e9c5a",
 storageBucket: "tofeer-e9c5a.appspot.com",
@@ -127,13 +154,16 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* 🔐 reCAPTCHA */
+/* 🔐 reCAPTCHA (مهم جدًا) */
 window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha", {
 size: "invisible"
-});
+}, auth);
+
+window.recaptchaVerifier.render();
 
 /* 📩 إرسال كود */
 window.sendCode = async function(){
+try{
 
 const phone = document.getElementById("phone").value;
 
@@ -144,9 +174,13 @@ window.recaptchaVerifier
 );
 
 alert("تم إرسال الكود");
+
+}catch(e){
+alert(e.message);
+}
 };
 
-/* ✅ تأكيد */
+/* ✅ تأكيد الكود */
 window.verifyCode = async function(){
 
 const code = document.getElementById("code").value;
@@ -155,6 +189,7 @@ await window.confirmationResult.confirm(code);
 
 alert("تم تسجيل الدخول");
 
+/* UI SWITCH */
 document.getElementById("login-screen").style.display = "none";
 document.getElementById("app").style.display = "block";
 
@@ -165,32 +200,33 @@ loadMessages();
 window.sendMsg = async function(){
 
 let msg = document.getElementById("msg").value;
-if(msg.trim() === "") return;
+if(msg.trim()==="") return;
 
 await addDoc(collection(db,"messages"),{
-text: msg,
-time: Date.now()
+text:msg,
+time:Date.now()
 });
 
 document.getElementById("msg").value="";
 };
 
-/* 🔥 تحميل الرسائل لحظياً */
+/* 🔥 عرض الرسائل لحظياً */
 function loadMessages(){
 
-const q = query(collection(db,"messages"), orderBy("time"));
+const q = query(collection(db,"messages"),orderBy("time"));
 
-onSnapshot(q,(snapshot)=>{
+onSnapshot(q,(snap)=>{
 
 let box = document.getElementById("chat-box");
 box.innerHTML="";
 
-snapshot.forEach(doc=>{
+snap.forEach(doc=>{
 let m = doc.data();
 box.innerHTML += `<div class="msg">${m.text}</div>`;
 });
 
 });
+
 }
 
 </script>
