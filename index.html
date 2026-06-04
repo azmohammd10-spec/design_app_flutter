@@ -27,21 +27,54 @@ font-weight:700;
 border-bottom:1px solid #eee;
 }
 
-/* SECTIONS */
+/* SECTIONS WRAPPER */
 .section{
 padding:12px;
 }
 
-/* CHAT ITEM */
+/* =======================
+   STORIES (COMPONENT)
+======================= */
+.stories{
+display:flex;
+gap:12px;
+overflow-x:auto;
+padding:8px 0;
+}
+
+.story{
+min-width:70px;
+text-align:center;
+cursor:pointer;
+}
+
+.story-avatar{
+width:60px;
+height:60px;
+border-radius:50%;
+border:3px solid #7cf0b8;
+background:#e8f7ff;
+margin:auto;
+}
+
+/* =======================
+   CHATS (COMPONENT)
+======================= */
+#chatList{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
 .chat{
 display:flex;
 align-items:center;
 gap:12px;
 background:#fff;
 padding:14px;
-margin-bottom:10px;
 border-radius:16px;
 box-shadow:0 2px 10px rgba(0,0,0,0.05);
+cursor:pointer;
 }
 
 .avatar{
@@ -49,6 +82,7 @@ width:50px;
 height:50px;
 border-radius:50%;
 background:#dbeeff;
+flex-shrink:0;
 }
 
 .chat-info{
@@ -70,29 +104,20 @@ font-size:12px;
 color:#aaa;
 }
 
-/* STORIES */
-.stories{
-display:flex;
-gap:12px;
-overflow-x:auto;
-padding-bottom:10px;
+/* =======================
+   UPDATES
+======================= */
+.update{
+background:#fff;
+padding:14px;
+border-radius:16px;
+margin-top:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
-.story{
-min-width:70px;
-text-align:center;
-}
-
-.story-avatar{
-width:60px;
-height:60px;
-border-radius:50%;
-border:3px solid #7cf0b8;
-background:#e8f7ff;
-margin:auto;
-}
-
-/* BOTTOM NAV */
+/* =======================
+   BOTTOM NAV
+======================= */
 .nav{
 position:fixed;
 bottom:0;
@@ -113,6 +138,7 @@ flex-direction:column;
 align-items:center;
 font-size:12px;
 color:#555;
+cursor:pointer;
 }
 
 .nav-item span{
@@ -120,7 +146,7 @@ font-size:11px;
 margin-top:2px;
 }
 
-/* CAMERA BUTTON */
+/* CAMERA BUTTON (CENTER ACTION) */
 .camera-btn{
 position:relative;
 bottom:15px;
@@ -128,6 +154,7 @@ width:70px;
 height:45px;
 border:none;
 background:transparent;
+cursor:pointer;
 }
 
 .camera-btn::before,
@@ -163,15 +190,6 @@ font-weight:bold;
 box-shadow:0 4px 12px rgba(0,0,0,0.15);
 z-index:2;
 }
-
-/* UPDATES */
-.update{
-background:#fff;
-padding:14px;
-border-radius:16px;
-margin-top:10px;
-box-shadow:0 2px 10px rgba(0,0,0,0.05);
-}
 </style>
 
 </head>
@@ -183,21 +201,21 @@ box-shadow:0 2px 10px rgba(0,0,0,0.05);
 تطبيق توفير - الدردشة
 </div>
 
-<!-- STORIES -->
+<!-- STORIES (READY FOR JS LOOP) -->
 <div class="section">
-<div class="stories">
+<div class="stories" id="storiesList">
 
-<div class="story">
+<div class="story" data-user="me">
 <div class="story-avatar"></div>
 <div>أنت</div>
 </div>
 
-<div class="story">
+<div class="story" data-user="ahmed">
 <div class="story-avatar"></div>
 <div>أحمد</div>
 </div>
 
-<div class="story">
+<div class="story" data-user="khaled">
 <div class="story-avatar"></div>
 <div>خالد</div>
 </div>
@@ -205,32 +223,40 @@ box-shadow:0 2px 10px rgba(0,0,0,0.05);
 </div>
 </div>
 
-<!-- CHATS -->
+<!-- CHATS (THIS IS YOUR MAIN DATABASE AREA) -->
 <div class="section">
+<div id="chatList">
 
-<div class="chat">
+<!-- CHAT ITEM -->
+<div class="chat" data-chat-id="1">
 <div class="avatar"></div>
+
 <div class="chat-info">
 <div class="name">أحمد</div>
 <div class="msg">آخر رسالة هنا...</div>
 </div>
+
 <div class="time">10:30</div>
 </div>
 
-<div class="chat">
+<!-- CHAT ITEM -->
+<div class="chat" data-chat-id="2">
 <div class="avatar"></div>
+
 <div class="chat-info">
 <div class="name">خالد</div>
 <div class="msg">مرحباً 👋</div>
 </div>
+
 <div class="time">أمس</div>
 </div>
 
 </div>
+</div>
 
 <!-- UPDATES -->
 <div class="section">
-<div class="update">
+<div class="update" id="updatesBox">
 <b>التحديثات</b>
 <p style="font-size:13px;color:#666;margin-top:6px;">
 هنا ستظهر القصص والمنشورات القادمة
@@ -241,16 +267,16 @@ box-shadow:0 2px 10px rgba(0,0,0,0.05);
 <!-- BOTTOM NAV -->
 <div class="nav">
 
-<div class="nav-item">
+<div class="nav-item" id="navChats">
 💬
 <span>الدردشات</span>
 </div>
 
-<button class="camera-btn">
+<button class="camera-btn" id="cameraBtn">
 <div class="camera-inner">+</div>
 </button>
 
-<div class="nav-item">
+<div class="nav-item" id="navUpdates">
 👁
 <span>التحديثات</span>
 </div>
