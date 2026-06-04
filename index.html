@@ -4,19 +4,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>توفير - الدردشة</title>
+<title>توفير</title>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:system-ui;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui}
 
-body{
-background:#f6f9ff;
-}
+body{background:#f6f9ff}
+
+/* PAGES SYSTEM */
+.page{display:none}
+#chatsPage{display:block}
 
 /* HEADER */
 .header{
@@ -33,7 +30,7 @@ display:flex;
 gap:12px;
 overflow-x:auto;
 padding:14px 12px;
-background: linear-gradient(135deg, #e9f5ff, #ffffff, #eafff3);
+background:linear-gradient(135deg,#e9f5ff,#fff,#eafff3);
 border-radius:18px;
 margin:10px;
 box-shadow:0 4px 12px rgba(0,0,0,0.06);
@@ -53,7 +50,7 @@ background:#e8f7ff;
 margin:auto;
 }
 
-/* CHATS */
+/* CHAT LIST */
 #chatList{
 display:flex;
 flex-direction:column;
@@ -72,29 +69,24 @@ box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
 .avatar{
-width:50px;
-height:50px;
-border-radius:50%;
-background:#dbeeff;
+width:50px;height:50px;border-radius:50%;background:#dbeeff
 }
 
-.chat-info{
-flex:1;
-}
+.chat-info{flex:1}
 
-.name{
-font-weight:700;
-}
+.name{font-weight:700}
 
-.msg{
-font-size:13px;
-color:#777;
-margin-top:4px;
-}
+.msg{font-size:13px;color:#777;margin-top:4px}
 
-.time{
-font-size:12px;
-color:#aaa;
+.time{font-size:12px;color:#aaa}
+
+/* UPDATES */
+.update{
+background:#fff;
+padding:14px;
+border-radius:16px;
+margin:10px;
+box-shadow:0 2px 10px rgba(0,0,0,0.05);
 }
 
 /* NAV */
@@ -117,6 +109,7 @@ flex-direction:column;
 align-items:center;
 font-size:12px;
 color:#555;
+cursor:pointer;
 }
 
 .camera-btn{
@@ -126,6 +119,7 @@ width:70px;
 height:45px;
 border:none;
 background:transparent;
+cursor:pointer;
 }
 
 .camera-btn::before,
@@ -138,8 +132,8 @@ border-radius:16px;
 top:0;
 }
 
-.camera-btn::before{left:-6px;background:#7fd6ff;}
-.camera-btn::after{right:-6px;background:#7dffb5;}
+.camera-btn::before{left:-6px;background:#7fd6ff}
+.camera-btn::after{right:-6px;background:#7dffb5}
 
 .camera-inner{
 position:absolute;
@@ -155,41 +149,27 @@ box-shadow:0 4px 12px rgba(0,0,0,0.15);
 z-index:2;
 }
 </style>
-
 </head>
 
 <body>
 
-<div class="header">تطبيق توفير - الدردشة</div>
+<!-- CHATS PAGE -->
+<div id="chatsPage" class="page">
 
-<!-- STORIES -->
+<div class="header">الدردشات</div>
+
 <div class="stories">
-
-<div class="story">
-<div class="story-avatar"></div>
-<div>أنت</div>
+<div class="story"><div class="story-avatar"></div><div>أنت</div></div>
+<div class="story"><div class="story-avatar"></div><div>أحمد</div></div>
+<div class="story"><div class="story-avatar"></div><div>خالد</div></div>
 </div>
 
-<div class="story">
-<div class="story-avatar"></div>
-<div>أحمد</div>
-</div>
-
-<div class="story">
-<div class="story-avatar"></div>
-<div>خالد</div>
-</div>
-
-</div>
-
-<!-- CHATS -->
 <div id="chatList">
-
 <div class="chat">
 <div class="avatar"></div>
 <div class="chat-info">
 <div class="name">أحمد</div>
-<div class="msg">آخر رسالة هنا...</div>
+<div class="msg">آخر رسالة...</div>
 </div>
 <div class="time">10:30</div>
 </div>
@@ -202,41 +182,47 @@ z-index:2;
 </div>
 <div class="time">أمس</div>
 </div>
+</div>
+
+</div>
+
+<!-- UPDATES PAGE -->
+<div id="updatesPage" class="page">
+
+<div class="header">التحديثات</div>
+
+<div class="update">
+<b>التحديثات</b>
+<p style="font-size:13px;color:#666;margin-top:6px;">
+هنا سيتم عرض القصص والمنشورات
+</p>
+</div>
 
 </div>
 
 <!-- NAV -->
-class="nav-item" onclick="showPage('chatsPage')">
+<div class="nav">
+
+<div class="nav-item" onclick="showPage('chatsPage')">
 💬<span>الدردشات</span>
 </div>
-
-<div class="nav-item" onclick="showPage('storiesPage')">
-👁<span>التحديثات</span>
-</div>
-
-<div class="nav-item">💬<span>الدردشات</span></div>
 
 <button class="camera-btn">
 <div class="camera-inner">+</div>
 </button>
 
-<div class="nav-item">👁<span>التحديثات</span></div>
+<div class="nav-item" onclick="showPage('updatesPage')">
+👁<span>التحديثات</span>
+</div>
 
 </div>
-<!-- كل محتوى الصفحة هنا -->
-...
 
 <script>
 function showPage(pageId){
-  document.querySelectorAll('.page').forEach(page=>{
-    page.style.display = "none";
-  });
-
-  document.getElementById(pageId).style.display = "block";
+document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+document.getElementById(pageId).style.display='block';
 }
 </script>
 
-</body>
-</html>
 </body>
 </html>
