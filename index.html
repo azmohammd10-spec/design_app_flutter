@@ -6,7 +6,43 @@
 <title>توفير</title>
 
 <style>
+.tiktok-square{
+width:48px;
+height:48px;
 
+background:#000;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+color:#fff;
+font-size:26px;
+font-weight:700;
+
+position:relative;
+top:-16px;
+
+cursor:pointer;
+
+/* مربع (بدون دائرة) */
+border-radius:12px;
+
+/* إطار أبيض خفيف */
+border:2px solid #fff;
+
+/* ✨ ألوان جانبية زاهية مثل TikTok */
+box-shadow:
+-3px 0 0 #25f4ee,
+3px 0 0 #fe2c55,
+0 6px 12px rgba(0,0,0,0.25);
+
+transition:0.15s ease;
+}
+
+.tiktok-square:active{
+transform:scale(0.92);
+}
 /* ===== BASE ===== */
 body{
 margin:0;
