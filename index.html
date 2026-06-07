@@ -6,6 +6,34 @@
 <title>توفير - دردشة</title>
 
 <style>
+  .tiktok-plus{
+width:52px;
+height:52px;
+border-radius:50%;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-size:30px;
+font-weight:bold;
+cursor:pointer;
+position:relative;
+top:-18px;
+
+/* glow خفيف مثل تيك توك */
+box-shadow:
+0 0 6px #25f4ee,
+0 0 10px #fe2c55;
+
+border:2px solid rgba(255,255,255,0.9);
+transition:0.2s;
+}
+
+/* تأثير عند الضغط */
+.tiktok-plus:active{
+transform:scale(0.92);
+}
 body{
 margin:0;
 font-family:system-ui;
@@ -219,7 +247,7 @@ cursor:pointer;
 <div class="nav">
 <div onclick="showChats()">💬</div>
 
-<div class="plus-btn" onclick="alert('كاميرا / رفع فيديو')">+</div>
+<div class="tiktok-plus" onclick="alert('فتح')">+</div>
 
 <div onclick="showStories()">👁</div>
 </div>
