@@ -351,6 +351,14 @@ z-index:2;
             document.getElementById('chatDetail').style.display = 'none';
             document.getElementById('chatPage').style.display = 'block';
         }
+      function sendMessage() {
+    var input = document.getElementById('msgInput');
+    if (input.value.trim() !== "") {
+        alert("تم إرسال: " + input.value);
+        input.value = ""; // مسح مربع النص بعد الإرسال
+    }
+}
+
       function showCamera() { alert("تفعيل الكاميرا قريباً!"); }
       function sendMessage() {
     var input = document.getElementById('msgInput');
