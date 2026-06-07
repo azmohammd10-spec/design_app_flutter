@@ -6,40 +6,36 @@
 <title>توفير</title>
 
 <style>
-.tiktok-btn{
-position:relative;
-top:-18px;
 
-width:56px;
-height:42px;
+.tiktok-btn{
+width:58px;
+height:58px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-background:#2563eb;
-color:#fff;
+background:#ffffff;
 
-border-radius:14px;
+border-radius:18px;
 
 font-size:26px;
-font-weight:700;
+
+position:relative;
+top:-20px;
 
 cursor:pointer;
 
-box-shadow:0 8px 20px rgba(37,99,235,.25);
+box-shadow:
+0 8px 25px rgba(0,0,0,.08),
+0 2px 8px rgba(0,0,0,.05);
+
+transition:.2s;
 }
 
 .tiktok-btn:active{
-transform:scale(.95);
+transform:scale(.92);
 }
-/* ===== BASE ===== */
-body{
-margin:0;
-font-family:system-ui;
-background:#f7fbff;
-}
-
 /* ===== CHAT LIST ===== */
 .chat{
 display:flex;
@@ -249,7 +245,7 @@ font-size:18px;
 <div class="nav">
 <div onclick="showChats()">💬</div>
 
-<div class="tiktok-btn">📷</div>
+<div class="tiktok-btn">+</div>
 
 <div onclick="showStories()">👁</div>
 </div>
