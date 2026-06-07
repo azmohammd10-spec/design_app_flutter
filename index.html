@@ -246,7 +246,7 @@ color:#666;
 
 /* CAMERA BUTTON */
 
-.camera-tab{
+camera-tab{
 position:absolute;
 left:50%;
 transform:translateX(-50%);
@@ -255,9 +255,8 @@ height:46px;
 border:none;
 background:transparent;
 cursor:pointer;
-}
-
-.camera-tab::before{
+} 
+  camera-tab::before{
 content:"";
 position:absolute;
 left:-5px;
@@ -302,7 +301,6 @@ z-index:2;
     <div class="chat-list">
         </div>
 
-<div id="chatDetail" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:1000;">
     
     <div class="header" style="padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center;">
         <button onclick="closeChat()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️ رجوع</button>
@@ -349,13 +347,7 @@ z-index:2;
             <button onclick="showChats()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:30px; cursor:pointer; z-index:9999;">✕</button>
             <div class="story-overlay">
                 <div class="story-user">
- <div id="chatPage">
-        <div class="header">
-            <div class="logo">توفير</div>
-        </div>
-        <div class="search-box">
-            <input type="text" placeholder="🔍 بحث عن محادثة">
-        </div>
+ 
         <div class="chat-list">
             <div class="chat" onclick="openChat('أحمد')">
                 <div class="avatar"></div>
