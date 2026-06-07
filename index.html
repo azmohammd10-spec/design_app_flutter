@@ -267,17 +267,14 @@ background:#8ee7ff;
 border-radius:14px;
 }
 
-.camera-tab::after{
+camera-tab::after{
 content:"";
 position:absolute;
 right:-5px;
 width:78px;
 height:46px;
 background:#8dffb8;
-border-radius:14px;
-}
-
-.camera-inner{
+border-radius:14px;.camera-inner{
 position:absolute;
 inset:0;
 background:#fff;
@@ -304,7 +301,6 @@ z-index:2;
     </div>
     <div class="chat-list">
         </div>
-</div>
 
 <div id="chatDetail" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:1000;">
     
@@ -316,7 +312,6 @@ z-index:2;
     <div style="position:absolute; bottom:0; left:0; width:100%; padding:15px; background:#f9f9f9; display:flex; gap:10px; border-top:1px solid #ddd;">
         <input type="text" id="msgInput" placeholder="اكتب رسالة..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc; outline:none;">
         <button onclick="sendMessage()" style="padding:10px 20px; border-radius:20px; border:none; background:#8dffb8; cursor:pointer;">إرسال</button>
-    </div>
 </div>
 
 
@@ -324,7 +319,6 @@ z-index:2;
         <div class="other-message">أهلاً! كيف حالك؟</div>
         <div class="my-message">أنا بخير، شكراً لك!</div>
     </div>
-</div>
 
             <div class="chat" onclick="openChat('أحمد')" style="cursor:pointer;">
                 <div class="avatar"></div>
@@ -335,8 +329,7 @@ z-index:2;
                 <div class="avatar"></div>
                 <div class="info"><div class="name">خالد</div><div class="msg">مرحباً 👋</div></div>
                 <div class="call-btn">📞</div>
-            </div>
-        </div>
+    
     </div> 
 
             <div class="avatar" style="width:40px; height:40px;"></div>
@@ -359,10 +352,8 @@ z-index:2;
                 <div class="story-user">
                     <div class="story-avatar"></div>
                     <div><div class="story-name">أحمد</div><div class="story-time">منذ 5 دقائق</div></div>
-                </div>
+        
             </div>
-        </div>
-    </div>
 
     <div class="nav">
         <div class="nav-item">💬 <span>الدردشات</span></div>
