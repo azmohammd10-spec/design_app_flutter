@@ -273,12 +273,30 @@ z-index:2;
 
 <body>
 
-  <div id="chatPage"></div>
+<div id="chatPage">
+
+    <div class="header">
+        <div class="profile"></div>
+        <div class="logo">توفير</div>
+    </div>
+
+    <div class="search-box">
+        <input type="text" placeholder="🔍 بحث عن محادثة">
+    </div>
+
+    <div class="chat-list">
+        <div class="chat">...</div>
+        <div class="chat">...</div>
+    </div>
     
-<div class="header">
-<div class="profile"></div>
-<div class="logo">توفير</div>
+</div> <div id="storiesPage" class="stories-page">
+    <div class="story-video">
+        <button onclick="showChats()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+        ...
+    </div>
 </div>
+
+  
 
 <div class="search-box">
 <input type="text" placeholder="🔍 بحث عن محادثة">
