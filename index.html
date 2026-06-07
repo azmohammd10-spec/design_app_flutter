@@ -1,12 +1,24 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>توفير - دردشة</title>
+<title>توفير</title>
 
 <style>
-  .tiktok-plus{
+
+body{
+margin:0;
+font-family:system-ui;
+background:#f5f6fa;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.tiktok-plus{
 width:52px;
 height:52px;
 border-radius:50%;
@@ -18,10 +30,7 @@ color:#fff;
 font-size:30px;
 font-weight:bold;
 cursor:pointer;
-position:relative;
-top:-18px;
 
-/* glow خفيف مثل تيك توك */
 box-shadow:
 0 0 6px #25f4ee,
 0 0 10px #fe2c55;
@@ -30,16 +39,15 @@ border:2px solid rgba(255,255,255,0.9);
 transition:0.2s;
 }
 
-/* تأثير عند الضغط */
 .tiktok-plus:active{
-transform:scale(0.92);
-}
-body{
-margin:0;
-font-family:system-ui;
-background:#f5f6fa;
-}
+transform:scale(0.92)
 
+<body>
+
+<div class="tiktok-plus">+</div>
+
+</body>
+</html>
 /* PAGES */
 .page{
 display:none;
