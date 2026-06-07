@@ -1,402 +1,268 @@
-هل تراه في الكود
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>توفير - دردشة</title>
 
-<!DOCTYPE html>  <html lang="ar" dir="rtl">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>توفير</title>  <style>  
-/* رسالتك (المرسل) - أزرق هادئ */  
-.my-message {  
-    background: #0084ff;   
-    color: white;  
-    align-self: flex-end; /* لجهة اليمين */  
-    border-radius: 18px 18px 0 18px;  
-    padding: 12px 16px;  
-    max-width: 80%;  
-    margin-bottom: 10px;  
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);  
-}  
-  
-/* رسالة الطرف الآخر (المستلم) - رمادي فاتح */  
-.other-message {  
-    background: #f1f0f0;  
-    color: #333;  
-    align-self: flex-start; /* لجهة اليسار */  
-    border-radius: 18px 18px 15px 0;  
-    padding: 12px 16px;  
-    max-width: 80%;  
-    margin-bottom: 10px;  
-    border: 1px solid #e0e0e0;  
-}  
-  
-.stories-page{  
-display:none;  
-position:fixed;  
-top:0;  
-left:0;  
-width:100%;  
-height:100vh;  
-background:#000;  
-z-index:2000;  
-}  
-  
-.story-video{  
-width:100%;  
-height:100vh;  
-background:linear-gradient(  
-180deg,  
-#222,  
-#000  
-);  
-position:relative;  
-}  
-  
-.story-overlay{  
-position:absolute;  
-bottom:100px;  
-left:0;  
-right:0;  
-padding:20px;  
-display:flex;  
-justify-content:space-between;  
-align-items:flex-end;  
-}  
-  
-.story-user{  
-display:flex;  
-align-items:center;  
-gap:12px;  
-color:#fff;  
-}  
-  
-.story-avatar{  
-width:60px;  
-height:60px;  
-border-radius:50%;  
-background:linear-gradient(  
-135deg,  
-#8ee7ff,  
-#8dffb8  
-);  
-border:3px solid #fff;  
-}  
-  
-.story-name{  
-font-size:16px;  
-font-weight:700;  
-}  
-  
-.story-time{  
-font-size:12px;  
-opacity:.8;  
-}  
-  
-.story-actions{  
-display:flex;  
-flex-direction:column;  
-gap:20px;  
-color:#fff;  
-text-align:center;  
-}  
-  
-.action{  
-font-size:28px;  
-display:flex;  
-flex-direction:column;  
-}  
-  
-.action span{  
-font-size:13px;  
-margin-top:4px;  
-}  
-*{  
-margin:0;  
-padding:0;  
-box-sizing:border-box;  
-font-family:system-ui;  
-}  
-  
-body{  
-background:linear-gradient(180deg,#eefaff,#f8fffc);  
-padding-bottom:90px;  
-}  
-  
-/* HEADER */  
-  
-.header{  
-padding:15px;  
-display:flex;  
-justify-content:space-between;  
-align-items:center;  
-backdrop-filter:blur(10px);  
-background:rgba(255,255,255,.7);  
-position:sticky;  
-top:0;  
-z-index:100;  
-}  
-  
-.profile{  
-width:45px;  
-height:45px;  
-border-radius:50%;  
-background:linear-gradient(135deg,#8ee7ff,#8dffb8);  
-}  
-  
-.logo{  
-font-size:24px;  
-font-weight:800;  
-}  
-  
-/* SEARCH */  
-  
-.search-box{  
-padding:12px;  
-}  
-  
-.search-box input{  
-width:100%;  
-padding:14px;  
-border:none;  
-border-radius:18px;  
-background:#fff;  
-box-shadow:0 4px 15px rgba(0,0,0,.05);  
-outline:none;  
-}  
-  
-/* CHATS */  
-  
-.chat-list{  
-padding:12px;  
-}  
-  
-.chat{  
-background:rgba(255,255,255,.75);  
-backdrop-filter:blur(12px);  
-padding:14px;  
-border-radius:22px;  
-margin-bottom:12px;  
-display:flex;  
-align-items:center;  
-gap:12px;  
-box-shadow:0 5px 20px rgba(0,0,0,.05);  
-}  
-  
-.avatar{  
-width:58px;  
-height:58px;  
-border-radius:50%;  
-background:linear-gradient(135deg,#dff4ff,#e8fff1);  
-}  
-  
-.info{  
-flex:1;  
-}  
-  
-.name{  
-font-weight:700;  
-font-size:15px;  
-}  
-  
-.msg{  
-font-size:13px;  
-color:#777;  
-margin-top:4px;  
-}  
-  
-.call-btn{  
-width:42px;  
-height:42px;  
-border-radius:50%;  
-background:#8dffb8;  
-display:flex;  
-align-items:center;  
-justify-content:center;  
-font-size:18px;  
-}  
-  
-/* NAVIGATION */  
-  
-.nav{  
-position:fixed;  
-bottom:0;  
-left:0;  
-right:0;  
-height:74px;  
-background:rgba(255,255,255,.85);  
-backdrop-filter:blur(15px);  
-display:flex;  
-justify-content:space-around;  
-align-items:center;  
-border-top:1px solid rgba(255,255,255,.4);  
-}  
-  
-.nav-item{  
-display:flex;  
-flex-direction:column;  
-align-items:center;  
-font-size:20px;  
-gap:3px;  
-}  
-  
-.nav-item span{  
-font-size:11px;  
-color:#666;  
-}  
-  
-/* CAMERA BUTTON */  
-  
-.camera-tab{  
-position:absolute;  
-left:50%;  
-transform:translateX(-50%);  
-width:78px;  
-height:46px;  
-border:none;  
-background:transparent;  
-cursor:pointer;  
-}  
-  
-.camera-tab::before{  
-content:"";  
-position:absolute;  
-left:-5px;  
-width:78px;  
-height:46px;  
-background:#8ee7ff;  
-border-radius:14px;  
-}  
-  
-camera-tab::after{  
-content:"";  
-position:absolute;  
-right:-5px;  
-width:78px;  
-height:46px;  
-background:#8dffb8;  
-border-radius:14px;.camera-inner{  
-position:absolute;  
-inset:0;  
-background:#fff;  
-border-radius:14px;  
-display:flex;  
-align-items:center;  
-justify-content:center;  
-font-size:22px;  
-font-weight:700;  
-color:#111;  
-z-index:2;  
-}  
-  
-</style>  </head>  <div id="chatPage">  
-    <div class="header">  
-        <div class="profile"></div>  
-        <div class="logo">توفير</div>  
-    </div>  
-    <div class="search-box">  
-        <input type="text" placeholder="🔍 بحث عن محادثة">  
-    </div>  
-    <div class="chat-list">  
-        </div>  <div id="chatDetail" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:1000;">  <div class="header" style="padding:15px; border-bottom:1px solid #eee; display:flex; align-items:center;">  
-    <button onclick="closeChat()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️ رجوع</button>  
-    <span style="margin-right:15px; font-weight:bold;">محادثة خاصة</span>  
-</div>  
+<style>
+body{
+margin:0;
+font-family:system-ui;
+background:#f5f6fa;
+}
 
-<div style="position:absolute; bottom:0; left:0; width:100%; padding:15px; background:#f9f9f9; display:flex; gap:10px; border-top:1px solid #ddd;">  
-    <input type="text" id="msgInput" placeholder="اكتب رسالة..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc; outline:none;">  
-    <button onclick="sendMessage()" style="padding:10px 20px; border-radius:20px; border:none; background:#8dffb8; cursor:pointer;">إرسال</button>
+/* PAGES */
+.page{
+display:none;
+height:100vh;
+}
 
-</div>  <div id="messagesContainer" style="display:flex; flex-direction:column; padding:20px; overflow-y:auto; height: calc(100% - 140px);">  
-    <div class="other-message">أهلاً! كيف حالك؟</div>  
-    <div class="my-message">أنا بخير، شكراً لك!</div>  
-</div>  
+/* ACTIVE PAGE */
+.active{
+display:block;
+}
 
-        <div class="chat" onclick="openChat('أحمد')" style="cursor:pointer;">  
-            <div class="avatar"></div>  
-            <div class="info"><div class="name">أحمد</div><div class="msg">آخر رسالة هنا...</div></div>  
-            <div class="call-btn">📞</div>  
-        </div>  
-        <div class="chat" onclick="openChat('خالد')" style="cursor:pointer;">  
-            <div class="avatar"></div>  
-            <div class="info"><div class="name">خالد</div><div class="msg">مرحباً 👋</div></div>  
-            <div class="call-btn">📞</div>  
-  
-</div>   
+/* ===== CHAT LIST ===== */
+.chat{
+display:flex;
+align-items:center;
+gap:10px;
+padding:15px;
+background:#fff;
+border-bottom:1px solid #eee;
+cursor:pointer;
+}
 
-        <div class="avatar" style="width:40px; height:40px;"></div>  
-        <div id="chatUserName" class="name" style="font-weight:700;">اسم المستخدم</div>  
-    </div>  
+.avatar{
+width:45px;
+height:45px;
+border-radius:50%;
+background:#ddd;
+}
 
-      <div style="position:fixed; bottom:0; left:0; width:100%; padding:15px; background:#f9f9f9; display:flex; gap:10px; border-top:1px solid #ddd;">  
-<input type="text" id="msgInput" placeholder="اكتب رسالة..." style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc; outline:none;">  
-<button onclick="sendMessage()" style="padding:10px 20px; border-radius:20px; border:none; background:#8dffb8; cursor:pointer;">إرسال</button>
+.name{
+font-weight:700;
+}
 
-</div>  </div>  
-</div>  
+.msg{
+font-size:12px;
+color:#777;
+}
 
-<div id="storiesPage" class="stories-page">  
-    <div class="story-video">  
-        <button onclick="showChats()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:30px; cursor:pointer; z-index:9999;">✕</button>  
-        <div class="story-overlay">  
-            <div class="story-user">
+/* ===== CHAT DETAIL ===== */
+#chatDetail{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#fff;
+display:none;
+flex-direction:column;
+z-index:1000;
+}
 
- <div id="chatPage">  
-        <div class="header">  
-            <div class="logo">توفير</div>  
-        </div>  
-        <div class="search-box">  
-            <input type="text" placeholder="🔍 بحث عن محادثة">  
-        </div>  
-        <div class="chat-list">  
-            <div class="chat" onclick="openChat('أحمد')">  
-                <div class="avatar"></div>  
-                <div style="flex:1;"><div style="font-weight:700;">أحمد</div><div style="color:#777; font-size:13px;">مرحباً!</div></div>  
-            </div>  
-            <div class="chat" onclick="openChat('خالد')">  
-                <div class="avatar"></div>  
-                <div style="flex:1;"><div style="font-weight:700;">خالد</div><div style="color:#777; font-size:13px;">كيف حالك؟</div></div>  
-            </div>  
-        </div>  
-    </div>  <div id="chatDetail" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:white; z-index:1000;">  
-    <div class="header" style="border-bottom:1px solid #eee;">  
-        <button onclick="closeChat()" style="border:none; background:none;">⬅️ رجوع</button>  
-        <span id="chatUserName" style="font-weight:bold;">اسم المستخدم</span>  
-    </div>  
-    <div id="messagesContainer" style="display:flex; flex-direction:column; padding:20px; overflow-y:auto; height:75vh;">  
-        <div class="other-message">أهلاً! كيف حالك؟</div>  
-        <div class="my-message">أنا بخير، شكراً لك!</div>  
-    </div>  
-    <div style="position:fixed; bottom:0; width:100%; padding:15px; background:#f9f9f9; display:flex; gap:10px;">  
-        <input type="text" id="msgInput" placeholder="اكتب..." style="flex:1; padding:10px; border-radius:20px;">  
-        <button onclick="sendMessage()">إرسال</button>  
-    </div>  
-</div>  
+.header{
+display:flex;
+align-items:center;
+gap:10px;
+padding:15px;
+border-bottom:1px solid #eee;
+}
 
-<div id="storiesPage" class="stories-page">  
-    <button onclick="showChats()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:30px;">✕</button>  
-    <div style="color:white; text-align:center; margin-top:50%;">قصص المستخدمين ستظهر هنا</div>  
-</div>  
+#messages{
+flex:1;
+padding:15px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
 
-<div class="nav">  
-    <div onclick="showChats()">💬 الدردشات</div>  
-    <button class="camera-tab" onclick="alert('الكاميرا')"><div class="camera-inner">+</div></button>  
-    <div onclick="showStories()">👁 التحديثات</div>  
-</div>  
+.my-msg{
+align-self:flex-end;
+background:#0084ff;
+color:#fff;
+padding:10px 15px;
+border-radius:20px;
+max-width:70%;
+}
 
-<script>  
-    function openChat(name) { document.getElementById('chatPage').style.display='none'; document.getElementById('chatDetail').style.display='block'; document.getElementById('chatUserName').innerText=name; }  
-    function closeChat() { document.getElementById('chatDetail').style.display='none'; document.getElementById('chatPage').style.display='block'; }  
-    function showStories() { document.getElementById('chatPage').style.display='none'; document.getElementById('storiesPage').style.display='block'; }  
-    function showChats() { document.getElementById('chatPage').style.display='block'; document.getElementById('storiesPage').style.display='none'; document.getElementById('chatDetail').style.display='none'; }  
-    function sendMessage() {  
-        var input = document.getElementById('msgInput');  
-        if (input.value.trim() !== "") {  
-            var msg = document.createElement('div');  
-            msg.className = "my-message";  
-            msg.innerText = input.value;  
-            document.getElementById('messagesContainer').appendChild(msg);  
-            input.value = "";  
-        }  
-    }  
+.other-msg{
+align-self:flex-start;
+background:#eee;
+padding:10px 15px;
+border-radius:20px;
+max-width:70%;
+}
+
+/* INPUT */
+.input-box{
+display:flex;
+gap:10px;
+padding:10px;
+border-top:1px solid #ddd;
+background:#f9f9f9;
+}
+
+.input-box input{
+flex:1;
+padding:10px;
+border-radius:20px;
+border:1px solid #ccc;
+}
+
+.input-box button{
+padding:10px 15px;
+border:none;
+border-radius:20px;
+background:#8dffb8;
+}
+
+/* ===== STORIES ===== */
+#stories{
+background:#000;
+color:#fff;
+text-align:center;
+padding-top:60%;
+}
+
+/* ===== BOTTOM NAV ===== */
+.nav{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+height:70px;
+background:#fff;
+display:flex;
+justify-content:space-around;
+align-items:center;
+border-top:1px solid #ddd;
+}
+
+.nav div{
+cursor:pointer;
+font-size:18px;
+}
+
+/* BIG + BUTTON */
+.plus-btn{
+width:65px;
+height:65px;
+border-radius:50%;
+background:linear-gradient(135deg,#25f4ee,#fe2c55);
+display:flex;
+align-items:center;
+justify-content:center;
+color:#fff;
+font-size:34px;
+font-weight:bold;
+border:4px solid #fff;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+position:relative;
+top:-20px;
+cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- CHAT LIST -->
+<div id="chatPage" class="page active">
+
+<div class="chat" onclick="openChat('أحمد')">
+<div class="avatar"></div>
+<div>
+<div class="name">أحمد</div>
+<div class="msg">مرحباً 👋</div>
+</div>
+</div>
+
+<div class="chat" onclick="openChat('خالد')">
+<div class="avatar"></div>
+<div>
+<div class="name">خالد</div>
+<div class="msg">كيف حالك؟</div>
+</div>
+</div>
+
+</div>
+
+<!-- CHAT DETAIL -->
+<div id="chatDetail">
+<div class="header">
+<button onclick="closeChat()">⬅️</button>
+<div id="chatName">محادثة</div>
+</div>
+
+<div id="messages">
+<div class="other-msg">أهلاً 👋</div>
+<div class="my-msg">مرحبا!</div>
+</div>
+
+<div class="input-box">
+<input id="msgInput" placeholder="اكتب رسالة...">
+<button onclick="sendMessage()">إرسال</button>
+</div>
+</div>
+
+<!-- STORIES -->
+<div id="stories" class="page">
+<h2>👁 القصص</h2>
+<p>هنا ستظهر قصص المستخدمين</p>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<div onclick="showChats()">💬</div>
+
+<div class="plus-btn" onclick="alert('كاميرا / رفع فيديو')">+</div>
+
+<div onclick="showStories()">👁</div>
+</div>
+
+<script>
+
+function openChat(name){
+document.getElementById("chatDetail").style.display="flex";
+document.getElementById("chatPage").classList.remove("active");
+document.getElementById("chatName").innerText=name;
+}
+
+function closeChat(){
+document.getElementById("chatDetail").style.display="none";
+document.getElementById("chatPage").classList.add("active");
+}
+
+function showChats(){
+document.getElementById("chatPage").classList.add("active");
+document.getElementById("stories").classList.remove("active");
+}
+
+function showStories(){
+document.getElementById("stories").classList.add("active");
+document.getElementById("chatPage").classList.remove("active");
+document.getElementById("chatDetail").style.display="none";
+}
+
+function sendMessage(){
+let input=document.getElementById("msgInput");
+
+if(input.value.trim()!==""){
+let msg=document.createElement("div");
+msg.className="my-msg";
+msg.innerText=input.value;
+
+document.getElementById("messages").appendChild(msg);
+
+input.value="";
+}
+}
+
 </script>
 
-</body>  
+</body>
+</html>
