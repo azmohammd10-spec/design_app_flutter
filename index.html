@@ -277,60 +277,75 @@ z-index:2;
             <div class="profile"></div>
             <div class="logo">توفير</div>
         </div>
-
         <div class="search-box">
             <input type="text" placeholder="🔍 بحث عن محادثة">
         </div>
-
         <div class="chat-list">
-            <div class="chat"><div class="avatar"></div><div class="info"><div class="name">أحمد</div><div class="msg">آخر رسالة هنا...</div></div><div class="call-btn">📞</div></div>
-            <div class="chat"><div class="avatar"></div><div class="info"><div class="name">خالد</div><div class="msg">مرحباً 👋</div></div><div class="call-btn">📞</div></div>
-            <div class="chat"><div class="avatar"></div><div class="info"><div class="name">محمد</div><div class="msg">كيف حالك؟</div></div><div class="call-btn">📞</div></div>
+            <div class="chat" onclick="openChat('أحمد')" style="cursor:pointer;">
+                <div class="avatar"></div>
+                <div class="info"><div class="name">أحمد</div><div class="msg">آخر رسالة هنا...</div></div>
+                <div class="call-btn">📞</div>
+            </div>
+            <div class="chat" onclick="openChat('خالد')" style="cursor:pointer;">
+                <div class="avatar"></div>
+                <div class="info"><div class="name">خالد</div><div class="msg">مرحباً 👋</div></div>
+                <div class="call-btn">📞</div>
+            </div>
         </div>
     </div> 
+
+    <div id="chatDetail" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#fff; z-index:3000;">
+        <div class="header" style="padding:15px; display:flex; align-items:center; gap:10px;">
+            <button onclick="closeChat()" style="border:none; background:none; font-size:20px; cursor:pointer;">⬅️</button>
+            <div class="avatar" style="width:40px; height:40px;"></div>
+            <div id="chatUserName" class="name" style="font-weight:700;">اسم المستخدم</div>
+        </div>
+        <div style="padding:20px;">
+            <p>مرحباً! هذه هي المحادثة الخاصة.</p>
+        </div>
+    </div>
 
     <div id="storiesPage" class="stories-page">
         <div class="story-video">
             <button onclick="showChats()" style="position:absolute; top:20px; right:20px; color:white; background:none; border:none; font-size:30px; cursor:pointer; z-index:9999;">✕</button>
-            
             <div class="story-overlay">
                 <div class="story-user">
                     <div class="story-avatar"></div>
                     <div><div class="story-name">أحمد</div><div class="story-time">منذ 5 دقائق</div></div>
-                </div>
-                <div class="story-actions">
-                    <div class="action">♡<span>350</span></div>
-                    <div class="action">👁<span>1200</span></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="nav">
-    <div class="nav-item">💬 <span>الدردشات</span></div>
-    
-    <button class="camera-tab" onclick="showCamera()">
-        <div class="camera-inner">+</div>
-    </button>
-
-    <div class="nav-item" onclick="showStories()" style="cursor:pointer;">
-        👁 <span>التحديثات</span>
+        <div class="nav-item">💬 <span>الدردشات</span></div>
+        <button class="camera-tab" onclick="showCamera()">
+            <div class="camera-inner">+</div>
+        </button>
+        <div class="nav-item" onclick="showStories()" style="cursor:pointer;">👁 <span>التحديثات</span></div>
     </div>
-</div>
 
-<script>
-    function showStories() {
-        document.getElementById('chatPage').style.display = 'none';
-        document.getElementById('storiesPage').style.display = 'block';
-    }
-
-    function showChats() {
-        document.getElementById('chatPage').style.display = 'block';
-        document.getElementById('storiesPage').style.display = 'none';
-    }
-
-    function showCamera() {
-        alert("سيتم فتح الكاميرا هنا قريباً!"); 
-        // يمكنك لاحقاً استبدال هذا بفتح واجهة الكاميرا
-    }
-</script>
+    <script>
+        // دوال التنقل بين الصفحات
+        function showStories() {
+            document.getElementById('chatPage').style.display = 'none';
+            document.getElementById('storiesPage').style.display = 'block';
+        }
+        function showChats() {
+            document.getElementById('chatPage').style.display = 'block';
+            document.getElementById('storiesPage').style.display = 'none';
+            document.getElementById('chatDetail').style.display = 'none';
+        }
+        // دوال الدردشة الخاصة
+        function openChat(name) {
+            document.getElementById('chatPage').style.display = 'none';
+            document.getElementById('chatDetail').style.display = 'block';
+            document.getElementById('chatUserName').innerText = name;
+        }
+        function closeChat() {
+            document.getElementById('chatDetail').style.display = 'none';
+            document.getElementById('chatPage').style.display = 'block';
+        }
+        function showCamera() { alert("تفعيل الكاميرا قريباً!"); }
+    </script>
+</body>
