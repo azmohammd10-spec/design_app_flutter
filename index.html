@@ -14,7 +14,7 @@ font-family:system-ui;
 }
 
 body{
-background:#f4f4f4;
+background:#ffffff;
 color:#111;
 }
 
@@ -26,7 +26,7 @@ left:0;
 width:100%;
 padding:10px;
 background:#fff;
-border-bottom:1px solid #e5e5e5;
+border-bottom:1px solid #e6f3ff;
 z-index:1000;
 }
 
@@ -35,8 +35,8 @@ width:100%;
 padding:10px;
 border:none;
 outline:none;
-background:#f0f0f0;
-border-radius:10px;
+background:#f2f9ff;
+border-radius:12px;
 }
 
 /* ===== CHAT LIST ===== */
@@ -52,7 +52,7 @@ background:#fff;
 padding:14px;
 margin-bottom:10px;
 border-radius:14px;
-border:1px solid #eaeaea;
+border:1px solid #e6f3ff;
 cursor:pointer;
 }
 
@@ -60,30 +60,29 @@ cursor:pointer;
 width:48px;
 height:48px;
 border-radius:50%;
-background:#ddd;
+background:#d9efff;
 }
 
 .name{font-weight:700;}
-.msg{font-size:13px;color:#777;margin-top:3px;}
+.msg{font-size:13px;color:#666;margin-top:3px;}
 
-/* ===== CHAT SCREEN ===== */
+/* ===== CHAT ===== */
 #chatDetail{
 display:none;
 position:fixed;
 inset:0;
-background:#f4f4f4;
+background:#fff;
 flex-direction:column;
 z-index:999;
 }
 
 .header{
 height:55px;
-background:#fff;
 display:flex;
 align-items:center;
 gap:10px;
 padding:0 12px;
-border-bottom:1px solid #e5e5e5;
+border-bottom:1px solid #e6f3ff;
 }
 
 .back{
@@ -91,7 +90,7 @@ width:36px;
 height:36px;
 border:none;
 border-radius:10px;
-background:#eee;
+background:#e8f4ff;
 cursor:pointer;
 }
 
@@ -106,7 +105,7 @@ gap:10px;
 
 .my-msg{
 align-self:flex-end;
-background:#e8e8e8;
+background:#d9efff;
 padding:10px 14px;
 border-radius:14px 14px 4px 14px;
 max-width:75%;
@@ -114,50 +113,48 @@ max-width:75%;
 
 .other-msg{
 align-self:flex-start;
-background:#fff;
+background:#f6fbff;
 padding:10px 14px;
 border-radius:14px 14px 14px 4px;
+border:1px solid #e6f3ff;
 max-width:75%;
-border:1px solid #eaeaea;
 }
 
-/* ===== INPUT ===== */
-.input-box{
-display:flex;
-gap:8px;
-padding:10px;
-background:#fff;
-border-top:1px solid #e5e5e5;
-}
-
-.input-box input{
-flex:1;
-padding:10px;
-border:none;
-outline:none;
-background:#f0f0f0;
-border-radius:10px;
-}
-
-.input-box button{
-padding:10px 14px;
-border:none;
-background:#ddd;
-border-radius:10px;
-font-weight:700;
-cursor:pointer;
-}
-
-/* ===== STORIES (GRAY SIMPLE) ===== */
+/* ===== STORIES (BLACK LIKE TIKTOK) ===== */
 #stories{
 display:none;
 position:fixed;
 inset:0;
-background:#f4f4f4;
-z-index:1000;
+background:#000;
+z-index:2000;
 }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== PLUS BUTTON (TIKTOK STYLE) ===== */
+.plus-btn{
+position:fixed;
+bottom:18px;
+left:50%;
+transform:translateX(-50%);
+width:70px;
+height:50px;
+border-radius:18px;
+background:linear-gradient(135deg,#ffffff,#cfe9ff);
+border:2px solid #bfe3ff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
+font-weight:900;
+box-shadow:0 12px 25px rgba(0,0,0,.18);
+cursor:pointer;
+transition:.2s;
+}
+
+.plus-btn:active{
+transform:translateX(-50%) scale(0.92);
+}
+
+/* ===== NAV ===== */
 .nav{
 position:fixed;
 bottom:0;
@@ -168,7 +165,7 @@ background:#fff;
 display:flex;
 justify-content:space-around;
 align-items:center;
-border-top:1px solid #e5e5e5;
+border-top:1px solid #e6f3ff;
 }
 
 .nav div{
@@ -176,30 +173,6 @@ font-size:22px;
 cursor:pointer;
 }
 
-/* ===== MODERN + BUTTON (IMPORTANT) ===== */
-.plus-btn{
-position:fixed;
-bottom:18px;
-left:50%;
-transform:translateX(-50%);
-width:62px;
-height:62px;
-background:linear-gradient(135deg,#ffffff,#dddddd);
-border:1px solid #dcdcdc;
-border-radius:18px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:34px;
-font-weight:900;
-box-shadow:0 10px 25px rgba(0,0,0,.12);
-cursor:pointer;
-transition:.2s;
-}
-
-.plus-btn:active{
-transform:translateX(-50%) scale(0.95);
-}
 </style>
 </head>
 
@@ -217,7 +190,7 @@ transform:translateX(-50%) scale(0.95);
 <div class="avatar"></div>
 <div>
 <div class="name">أحمد</div>
-<div class="msg">مرحباً</div>
+<div class="msg">مرحباً 👋</div>
 </div>
 </div>
 
@@ -241,9 +214,9 @@ transform:translateX(-50%) scale(0.95);
 
 <div id="messages"></div>
 
-<div class="input-box">
-<input id="msgInput" placeholder="اكتب رسالة...">
-<button onclick="send()">إرسال</button>
+<div class="input-box" style="display:flex;gap:8px;padding:10px;border-top:1px solid #e6f3ff;">
+<input id="msgInput" style="flex:1;padding:10px;border:none;outline:none;background:#f2f9ff;border-radius:10px;" placeholder="اكتب رسالة...">
+<button onclick="send()" style="padding:10px 14px;border:none;background:#d9efff;border-radius:10px;">إرسال</button>
 </div>
 
 </div>
@@ -251,7 +224,7 @@ transform:translateX(-50%) scale(0.95);
 <!-- STORIES -->
 <div id="stories"></div>
 
-<!-- PLUS BUTTON (MAIN FOCUS) -->
+<!-- PLUS BUTTON (TIKTOK STYLE MAIN FOCUS) -->
 <div class="plus-btn">+</div>
 
 <!-- NAV -->
@@ -276,12 +249,13 @@ document.getElementById("chatPage").style.display="block";
 function showChats(){
 document.getElementById("chatPage").style.display="block";
 document.getElementById("chatDetail").style.display="none";
+document.getElementById("stories").style.display="none";
 }
 
 function showStories(){
-document.getElementById("stories").style.display="block";
 document.getElementById("chatPage").style.display="none";
 document.getElementById("chatDetail").style.display="none";
+document.getElementById("stories").style.display="block";
 }
 
 function send(){
@@ -297,9 +271,7 @@ input.value="";
 
 function searchChats(){
 let val=document.getElementById("searchInput").value.toLowerCase();
-let chats=document.querySelectorAll(".chat");
-
-chats.forEach(c=>{
+document.querySelectorAll(".chat").forEach(c=>{
 let name=c.querySelector(".name").innerText.toLowerCase();
 c.style.display=name.includes(val)?"flex":"none";
 });
