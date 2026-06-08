@@ -14,63 +14,63 @@ font-family:system-ui;
 }
 
 body{
-background:#eefcff;
+background:#ffffff;
 color:#000;
 }
 
 /* ===== CHAT LIST ===== */
 #chatPage{
-padding:10px;
-padding-bottom:90px;
+padding:12px;
+padding-bottom:80px;
 }
 
 .chat{
 display:flex;
 align-items:center;
 gap:12px;
-background:#fff;
+background:#ffffff;
 padding:14px;
 margin-bottom:10px;
 border-radius:16px;
-box-shadow:0 2px 10px rgba(0,0,0,.05);
+border:1px solid #e6f7ff;
 cursor:pointer;
 }
 
 .avatar{
-width:52px;
-height:52px;
+width:50px;
+height:50px;
 border-radius:50%;
-background:#74e7ff;
-flex-shrink:0;
+background:#d9f5ff;
 }
 
 .name{font-weight:700;}
-.msg{font-size:13px;color:#666;margin-top:3px;}
+.msg{font-size:13px;color:#777;margin-top:3px;}
 
 /* ===== CHAT ===== */
 #chatDetail{
 display:none;
 position:fixed;
 inset:0;
-background:#eefcff;
+background:#fff;
 flex-direction:column;
 z-index:999;
 }
 
 .header{
 height:60px;
-background:#fff;
 display:flex;
 align-items:center;
 gap:10px;
-padding:0 15px;
-border-bottom:1px solid #d8f8ff;
+padding:0 12px;
+border-bottom:1px solid #e6f7ff;
 }
 
 .back{
-width:38px;height:38px;
-border:none;border-radius:10px;
-background:#74e7ff;
+width:36px;
+height:36px;
+border:none;
+border-radius:10px;
+background:#d9f5ff;
 cursor:pointer;
 }
 
@@ -85,26 +85,27 @@ gap:10px;
 
 .my-msg{
 align-self:flex-end;
-background:#74e7ff;
+background:#d9f5ff;
 padding:10px 14px;
-border-radius:18px 18px 4px 18px;
+border-radius:16px 16px 4px 16px;
 max-width:75%;
 }
 
 .other-msg{
 align-self:flex-start;
-background:#fff;
+background:#f5fbff;
 padding:10px 14px;
-border-radius:18px 18px 18px 4px;
+border-radius:16px 16px 16px 4px;
 max-width:75%;
 }
 
+/* ===== INPUT ===== */
 .input-box{
 display:flex;
 gap:10px;
 padding:10px;
+border-top:1px solid #e6f7ff;
 background:#fff;
-border-top:1px solid #d8f8ff;
 }
 
 .input-box input{
@@ -112,28 +113,52 @@ flex:1;
 padding:12px;
 border:none;
 outline:none;
-background:#eefcff;
+background:#f5fbff;
 border-radius:12px;
 }
 
 .input-box button{
-padding:12px 18px;
+padding:12px 16px;
 border:none;
-background:#74e7ff;
+background:#d9f5ff;
 border-radius:12px;
 font-weight:700;
 cursor:pointer;
 }
 
-/* ===== STORIES ===== */
+/* ===== STORIES (SWIPE STYLE) ===== */
 #stories{
 display:none;
 position:fixed;
 inset:0;
-background:#000;
+background:#fff;
 z-index:1000;
+overflow:hidden;
 }
 
+.story{
+width:100%;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+background:#ffffff;
+border-bottom:1px solid #e6f7ff;
+}
+
+/* swipe container */
+#storyContainer{
+height:100vh;
+overflow-y:scroll;
+scroll-snap-type:y mandatory;
+}
+
+.story{
+scroll-snap-align:start;
+}
+
+/* right action buttons */
 .story-actions{
 position:absolute;
 left:15px;
@@ -141,21 +166,22 @@ top:50%;
 transform:translateY(-50%);
 display:flex;
 flex-direction:column;
-gap:30px;
+gap:20px;
 }
 
-.story-icon{
-width:54px;
-height:54px;
+.story-actions div{
+width:50px;
+height:50px;
+background:#f5fbff;
+border-radius:14px;
 display:flex;
 align-items:center;
 justify-content:center;
-background:#fff;
-border:2px solid #74e7ff;
-border-radius:16px;
-font-size:24px;
+font-size:20px;
+border:1px solid #e6f7ff;
 }
 
+/* bottom user */
 .story-user{
 position:absolute;
 right:15px;
@@ -163,21 +189,14 @@ bottom:80px;
 display:flex;
 align-items:center;
 gap:10px;
-color:#fff;
 }
 
 .story-avatar{
-width:50px;height:50px;
+width:45px;
+height:45px;
 border-radius:50%;
-background:#74e7ff;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
-color:#000;
+background:#d9f5ff;
 }
-
-.story-name{font-weight:700}
 
 /* ===== NAV ===== */
 .nav{
@@ -185,35 +204,37 @@ position:fixed;
 bottom:0;
 left:0;
 width:100%;
-height:70px;
+height:65px;
 background:#fff;
 display:flex;
 justify-content:space-around;
 align-items:center;
-border-top:1px solid #d8f8ff;
+border-top:1px solid #e6f7ff;
 }
 
-.nav div{font-size:24px;cursor:pointer;}
+.nav div{
+font-size:24px;
+cursor:pointer;
+}
 
 .plus{
-width:56px;
-height:44px;
-background:#74e7ff;
+width:50px;
+height:50px;
+background:#d9f5ff;
 border-radius:14px;
 display:flex;
 align-items:center;
 justify-content:center;
 font-size:28px;
-font-weight:900;
-position:relative;
-top:-12px;
-box-shadow:0 8px 20px rgba(0,0,0,.15);
+transform:translateY(-10px);
 }
+
 </style>
 </head>
 
 <body>
 
+<!-- CHAT LIST -->
 <div id="chatPage">
 
 <div class="chat" onclick="openChat('أحمد')">
@@ -234,6 +255,7 @@ box-shadow:0 8px 20px rgba(0,0,0,.15);
 
 </div>
 
+<!-- CHAT -->
 <div id="chatDetail">
 
 <div class="header">
@@ -241,10 +263,7 @@ box-shadow:0 8px 20px rgba(0,0,0,.15);
 <div id="chatName">محادثة</div>
 </div>
 
-<div id="messages">
-<div class="other-msg">أهلاً 👋</div>
-<div class="my-msg">مرحبا</div>
-</div>
+<div id="messages"></div>
 
 <div class="input-box">
 <input id="msgInput" placeholder="اكتب رسالة...">
@@ -253,20 +272,31 @@ box-shadow:0 8px 20px rgba(0,0,0,.15);
 
 </div>
 
+<!-- STORIES -->
 <div id="stories">
+
+<div id="storyContainer">
+
+<div class="story">قصة 1</div>
+<div class="story">قصة 2</div>
+<div class="story">قصة 3</div>
+
+</div>
 
 <div class="story-actions">
 <div>❤️</div>
 <div>👁</div>
+<div>💬</div>
 </div>
 
 <div class="story-user">
-<div class="story-avatar">🤵🏽</div>
-<div class="story-name">الحساب</div>
+<div class="story-avatar"></div>
+<div>الحساب</div>
 </div>
 
 </div>
 
+<!-- NAV -->
 <div class="nav">
 <div onclick="showChats()">💬</div>
 <div class="plus">+</div>
@@ -287,9 +317,9 @@ document.getElementById("chatPage").style.display="block";
 }
 
 function showChats(){
-document.getElementById("chatPage").style.display="block";
-document.getElementById("chatDetail").style.display="none";
 document.getElementById("stories").style.display="none";
+document.getElementById("chatDetail").style.display="none";
+document.getElementById("chatPage").style.display="block";
 }
 
 function showStories(){
@@ -298,6 +328,7 @@ document.getElementById("chatDetail").style.display="none";
 document.getElementById("stories").style.display="block";
 }
 
+/* messages */
 function send(){
 let input=document.getElementById("msgInput");
 if(input.value.trim()!==""){
