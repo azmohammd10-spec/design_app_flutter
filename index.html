@@ -145,18 +145,15 @@ position:fixed;
 inset:0;
 background:#fff;
 z-index:2000;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
 }
 
-.close-stories{
-position:absolute;
-top:15px;
-left:15px;
-width:40px;
-height:40px;
-border:none;
-border-radius:10px;
-background:#f2f2f2;
-cursor:pointer;
+.story-content{
+font-size:22px;
+color:#111;
 }
 
 /* ===== NAV ===== */
@@ -250,7 +247,44 @@ cursor:pointer;
 <!-- STORIES -->
 <div id="stories">
 
-<button class="close-stories" onclick="closeStories()">←</button>
+<style>
+#stories{
+position:fixed;
+inset:0;
+background:#000;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.story-actions{
+position:absolute;
+right:15px;
+top:50%;
+transform:translateY(-50%);
+display:flex;
+flex-direction:column;
+gap:20px;
+}
+
+.story-actions div{
+width:55px;
+height:55px;
+border-radius:14px;
+background:rgba(255,255,255,0.08);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+color:#fff;
+}
+</style>
+
+<!-- الأزرار -->
+<div class="story-actions">
+<div>❤</div>
+<div>👁</div>
+</div>
 
 </div>
 
