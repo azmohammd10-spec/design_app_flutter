@@ -27,7 +27,6 @@ padding:70px 12px 90px;
 display:flex;
 align-items:center;
 justify-content:space-between;
-background:#fff;
 padding:14px;
 border-bottom:1px solid #eee;
 }
@@ -48,14 +47,13 @@ background:#ddd;
 .name{font-weight:700;}
 .msg{font-size:13px;color:#777;margin-top:3px;}
 
-/* CALL BUTTON */
+/* CALL */
 .call-btn{
 width:38px;
 height:38px;
 border:none;
 border-radius:10px;
 background:#f2f2f2;
-font-size:18px;
 cursor:pointer;
 }
 
@@ -85,9 +83,9 @@ border:none;
 border-radius:10px;
 background:#f2f2f2;
 cursor:pointer;
-font-size:18px;
 }
 
+/* messages */
 #messages{
 flex:1;
 padding:12px;
@@ -114,7 +112,7 @@ border-radius:14px;
 max-width:75%;
 }
 
-/* INPUT */
+/* input */
 .input-box{
 display:flex;
 gap:8px;
@@ -143,17 +141,39 @@ border-radius:10px;
 display:none;
 position:fixed;
 inset:0;
-background:#fff;
+background:#000;
 z-index:2000;
-display:flex;
-align-items:center;
-justify-content:center;
-flex-direction:column;
 }
 
-.story-content{
-font-size:22px;
-color:#111;
+/* زر رجوع */
+.story-back{
+position:absolute;
+top:15px;
+left:15px;
+width:40px;
+height:40px;
+border:none;
+border-radius:10px;
+background:rgba(255,255,255,0.15);
+color:#fff;
+font-size:20px;
+cursor:pointer;
+}
+
+/* أزرار القصص */
+.story-actions{
+position:absolute;
+right:20px;
+top:50%;
+transform:translateY(-50%);
+display:flex;
+flex-direction:column;
+gap:25px;
+}
+
+.story-actions div{
+font-size:26px;
+color:#fff;
 }
 
 /* ===== NAV ===== */
@@ -175,7 +195,7 @@ font-size:22px;
 cursor:pointer;
 }
 
-/* PLUS BUTTON */
+/* PLUS */
 .plus-btn{
 position:fixed;
 bottom:18px;
@@ -190,7 +210,6 @@ align-items:center;
 justify-content:center;
 font-size:30px;
 font-weight:900;
-box-shadow:0 10px 20px rgba(0,0,0,0.08);
 cursor:pointer;
 }
 </style>
@@ -201,7 +220,7 @@ cursor:pointer;
 <!-- CHAT LIST -->
 <div id="chatPage">
 
-<div class="chat">
+<div class="chat" onclick="openChat('أحمد')">
 <div class="left">
 <div class="avatar"></div>
 <div>
@@ -209,11 +228,10 @@ cursor:pointer;
 <div class="msg">مرحباً 👋</div>
 </div>
 </div>
-
 <button class="call-btn">📞</button>
 </div>
 
-<div class="chat">
+<div class="chat" onclick="openChat('خالد')">
 <div class="left">
 <div class="avatar"></div>
 <div>
@@ -221,7 +239,6 @@ cursor:pointer;
 <div class="msg">كيف حالك؟</div>
 </div>
 </div>
-
 <button class="call-btn">📞</button>
 </div>
 
@@ -247,51 +264,8 @@ cursor:pointer;
 <!-- STORIES -->
 <div id="stories">
 
-<style>
-#stories{
-position:fixed;
-inset:0;
-background:#000;
-}
+<button class="story-back" onclick="closeStories()">←</button>
 
-/* زر الرجوع */
-.back-btn{
-position:absolute;
-top:15px;
-left:15px;
-width:40px;
-height:40px;
-border:none;
-border-radius:10px;
-background:rgba(255,255,255,0.1);
-color:#fff;
-font-size:20px;
-cursor:pointer;
-}
-
-/* الأزرار يمين وسط */
-.story-actions{
-position:absolute;
-right:20px;
-top:50%;
-transform:translateY(-50%);
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:25px;
-}
-
-.story-actions div{
-font-size:26px;
-color:#fff;
-opacity:0.9;
-}
-</style>
-
-<!-- زر رجوع -->
-<button class="back-btn" onclick="closeStories()">←</button>
-
-<!-- الأزرار -->
 <div class="story-actions">
 <div>❤</div>
 <div>👁</div>
@@ -302,10 +276,11 @@ opacity:0.9;
 <!-- NAV -->
 <div class="nav">
 <div onclick="showChats()">💬</div>
-  <div class="plus-btn">+</div>
 <div onclick="showStories()">👁</div>
 </div>
 
+<!-- PLUS -->
+<div class="plus-btn">+</div>
 
 <script>
 
