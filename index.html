@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -6,8 +6,6 @@
 <title>توفير</title>
 
 <style>
-
-/* ===== RESET ===== */
 *{
 margin:0;
 padding:0;
@@ -16,14 +14,14 @@ font-family:system-ui;
 }
 
 body{
-background:#eafcff;
+background:#eefcff;
 color:#000;
 }
 
 /* ===== CHAT LIST ===== */
 #chatPage{
 padding:10px;
-padding-bottom:85px;
+padding-bottom:90px;
 }
 
 .chat{
@@ -42,27 +40,19 @@ cursor:pointer;
 width:52px;
 height:52px;
 border-radius:50%;
-background:#6fe7ff;
+background:#74e7ff;
 flex-shrink:0;
 }
 
-.name{
-font-weight:700;
-font-size:15px;
-}
+.name{font-weight:700;}
+.msg{font-size:13px;color:#666;margin-top:3px;}
 
-.msg{
-font-size:13px;
-color:#666;
-margin-top:3px;
-}
-
-/* ===== CHAT SCREEN ===== */
+/* ===== CHAT ===== */
 #chatDetail{
 display:none;
 position:fixed;
 inset:0;
-background:#eafcff;
+background:#eefcff;
 flex-direction:column;
 z-index:999;
 }
@@ -74,21 +64,14 @@ display:flex;
 align-items:center;
 gap:10px;
 padding:0 15px;
-border-bottom:1px solid #d9f7ff;
+border-bottom:1px solid #d8f8ff;
 }
 
 .back{
-width:38px;
-height:38px;
-border:none;
-border-radius:10px;
-background:#6fe7ff;
-font-size:18px;
+width:38px;height:38px;
+border:none;border-radius:10px;
+background:#74e7ff;
 cursor:pointer;
-}
-
-#chatName{
-font-weight:700;
 }
 
 #messages{
@@ -102,7 +85,7 @@ gap:10px;
 
 .my-msg{
 align-self:flex-end;
-background:#6fe7ff;
+background:#74e7ff;
 padding:10px 14px;
 border-radius:18px 18px 4px 18px;
 max-width:75%;
@@ -116,28 +99,27 @@ border-radius:18px 18px 18px 4px;
 max-width:75%;
 }
 
-/* ===== INPUT ===== */
 .input-box{
 display:flex;
 gap:10px;
 padding:10px;
 background:#fff;
-border-top:1px solid #d9f7ff;
+border-top:1px solid #d8f8ff;
 }
 
 .input-box input{
 flex:1;
 padding:12px;
 border:none;
-border-radius:12px;
-background:#eafcff;
 outline:none;
+background:#eefcff;
+border-radius:12px;
 }
 
 .input-box button{
 padding:12px 18px;
 border:none;
-background:#6fe7ff;
+background:#74e7ff;
 border-radius:12px;
 font-weight:700;
 cursor:pointer;
@@ -148,37 +130,54 @@ cursor:pointer;
 display:none;
 position:fixed;
 inset:0;
-background:linear-gradient(180deg,#6fe7ff,#bff6ff);
-z-index:998;
+background:#000;
+z-index:1000;
 }
 
-.story-right{
+.story-actions{
 position:absolute;
 left:15px;
 top:50%;
 transform:translateY(-50%);
-
 display:flex;
 flex-direction:column;
-gap:28px;
+gap:30px;
 }
 
-.story-bottom{
+.story-icon{
+width:54px;
+height:54px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#fff;
+border:2px solid #74e7ff;
+border-radius:16px;
+font-size:24px;
+}
+
+.story-user{
 position:absolute;
-left:15px;
+right:15px;
 bottom:80px;
 display:flex;
 align-items:center;
 gap:10px;
+color:#fff;
 }
 
 .story-avatar{
-font-size:40px;
+width:50px;height:50px;
+border-radius:50%;
+background:#74e7ff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:24px;
+color:#000;
 }
 
-.story-name{
-font-weight:700;
-}
+.story-name{font-weight:700}
 
 /* ===== NAV ===== */
 .nav{
@@ -191,20 +190,16 @@ background:#fff;
 display:flex;
 justify-content:space-around;
 align-items:center;
-border-top:1px solid #d9f7ff;
+border-top:1px solid #d8f8ff;
 }
 
-.nav div{
-font-size:24px;
-cursor:pointer;
-}
+.nav div{font-size:24px;cursor:pointer;}
 
-/* ===== + BUTTON (TIKTOK STYLE) ===== */
 .plus{
-width:52px;
-height:42px;
-background:#6fe7ff;
-border-radius:12px;
+width:56px;
+height:44px;
+background:#74e7ff;
+border-radius:14px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -212,20 +207,13 @@ font-size:28px;
 font-weight:900;
 position:relative;
 top:-12px;
-box-shadow:0 6px 15px rgba(0,0,0,.15);
-cursor:pointer;
+box-shadow:0 8px 20px rgba(0,0,0,.15);
 }
-
-.plus:active{
-transform:scale(.92);
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- CHAT LIST -->
 <div id="chatPage">
 
 <div class="chat" onclick="openChat('أحمد')">
@@ -246,7 +234,6 @@ transform:scale(.92);
 
 </div>
 
-<!-- CHAT -->
 <div id="chatDetail">
 
 <div class="header">
@@ -266,30 +253,24 @@ transform:scale(.92);
 
 </div>
 
-<!-- STORIES -->
 <div id="stories">
 
-<div class="story-right">
-<div class="story-action">❤️</div>
-<div class="story-action">👁</div>
+<div class="story-actions">
+<div>❤️</div>
+<div>👁</div>
 </div>
 
 <div class="story-user">
 <div class="story-avatar">🤵🏽</div>
-<div>الحساب</div>
+<div class="story-name">الحساب</div>
 </div>
 
 </div>
 
-<!-- NAV -->
 <div class="nav">
-
 <div onclick="showChats()">💬</div>
-
 <div class="plus">+</div>
-
 <div onclick="showStories()">👁</div>
-
 </div>
 
 <script>
@@ -318,24 +299,14 @@ document.getElementById("stories").style.display="block";
 }
 
 function send(){
-
 let input=document.getElementById("msgInput");
-
 if(input.value.trim()!==""){
-
 let msg=document.createElement("div");
 msg.className="my-msg";
 msg.innerText=input.value;
-
 document.getElementById("messages").appendChild(msg);
-
 input.value="";
-
-document.getElementById("messages").scrollTop=
-document.getElementById("messages").scrollHeight;
-
 }
-
 }
 
 </script>
