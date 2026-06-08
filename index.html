@@ -161,50 +161,82 @@ cursor:pointer;
 }
 
 /* ===== STORIES ===== */
+
 #stories{
 display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
 height:100vh;
-background:#000;
-overflow:hidden;
+background:#8eefff;
+z-index:999;
 }
 
-.story-bg{
-position:relative;
+.story-screen{
 width:100%;
 height:100%;
+position:relative;
 background:linear-gradient(
 180deg,
-#8ee8ff 0%,
-#6edfff 50%,
-#4cd8ff 100%
+#a9f4ff,
+#74e7ff
 );
 }
 
-.story-actions{
+.story-right{
 position:absolute;
 right:15px;
 top:50%;
 transform:translateY(-50%);
+
 display:flex;
 flex-direction:column;
 gap:25px;
-font-size:30px;
-color:#fff;
 }
 
-.story-user{
+.story-icon{
+width:50px;
+height:50px;
+background:rgba(255,255,255,.9);
+border-radius:15px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:24px;
+
+box-shadow:0 4px 12px rgba(0,0,0,.1);
+}
+
+.story-bottom{
 position:absolute;
 bottom:90px;
 left:15px;
-font-size:45px;
-color:#fff;
+
+display:flex;
+align-items:center;
+gap:10px;
 }
 
-.story-user::after{
-content:"  المستخدم";
+.story-avatar{
+width:55px;
+height:55px;
+border-radius:50%;
+background:#fff;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:28px;
+}
+
+.story-name{
 font-size:15px;
 font-weight:700;
-vertical-align:middle;
+color:#000;
 }
 
 /* ===== BOTTOM NAV ===== */
@@ -306,7 +338,35 @@ transform:scale(.9);
 
 <!-- STORIES -->
 <div id="stories">
-📸 القصص
+
+<div class="story-screen">
+
+<div class="story-right">
+
+<div class="story-icon">
+❤️
+</div>
+
+<div class="story-icon">
+👁
+</div>
+
+</div>
+
+<div class="story-bottom">
+
+<div class="story-avatar">
+🤵🏽
+</div>
+
+<div class="story-name">
+اسم المستخدم
+</div>
+
+</div>
+
+</div>
+
 </div>
 
 <!-- NAVIGATION -->
