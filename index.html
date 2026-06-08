@@ -252,33 +252,44 @@ cursor:pointer;
 position:fixed;
 inset:0;
 background:#000;
-display:flex;
-align-items:center;
-justify-content:center;
 }
 
+/* زر الرجوع */
+.back-btn{
+position:absolute;
+top:15px;
+left:15px;
+width:40px;
+height:40px;
+border:none;
+border-radius:10px;
+background:rgba(255,255,255,0.1);
+color:#fff;
+font-size:20px;
+cursor:pointer;
+}
+
+/* الأزرار يمين وسط */
 .story-actions{
 position:absolute;
-right:15px;
+right:20px;
 top:50%;
 transform:translateY(-50%);
 display:flex;
 flex-direction:column;
-gap:20px;
+align-items:center;
+gap:25px;
 }
 
 .story-actions div{
-width:55px;
-height:55px;
-border-radius:14px;
-background:rgba(255,255,255,0.08);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:24px;
+font-size:26px;
 color:#fff;
+opacity:0.9;
 }
 </style>
+
+<!-- زر رجوع -->
+<button class="back-btn" onclick="closeStories()">←</button>
 
 <!-- الأزرار -->
 <div class="story-actions">
