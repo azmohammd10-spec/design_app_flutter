@@ -14,29 +14,8 @@ font-family:system-ui;
 }
 
 body{
-background:#fff;
+background:#ffffff; /* أبيض ناصع */
 color:#111;
-}
-
-/* ===== TOP SEARCH ===== */
-.top-bar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-padding:10px;
-background:#fff;
-border-bottom:1px solid #e6f3ff;
-z-index:1000;
-}
-
-.top-bar input{
-width:100%;
-padding:10px;
-border:none;
-outline:none;
-background:#f2f9ff;
-border-radius:12px;
 }
 
 /* ===== CHAT LIST ===== */
@@ -51,8 +30,7 @@ gap:12px;
 background:#fff;
 padding:14px;
 margin-bottom:10px;
-border-radius:14px;
-border:1px solid #e6f3ff;
+border-bottom:1px solid #eee;
 cursor:pointer;
 }
 
@@ -60,11 +38,11 @@ cursor:pointer;
 width:48px;
 height:48px;
 border-radius:50%;
-background:#d9efff;
+background:#ddd;
 }
 
 .name{font-weight:700;}
-.msg{font-size:13px;color:#666;margin-top:3px;}
+.msg{font-size:13px;color:#777;margin-top:3px;}
 
 /* ===== CHAT ===== */
 #chatDetail{
@@ -82,18 +60,22 @@ display:flex;
 align-items:center;
 gap:10px;
 padding:0 12px;
-border-bottom:1px solid #e6f3ff;
+border-bottom:1px solid #eee;
+background:#fff;
 }
 
-.back{
-width:36px;
-height:36px;
+/* زر الرجوع للدردشة */
+.back-btn{
+width:38px;
+height:38px;
 border:none;
 border-radius:10px;
-background:#e8f4ff;
+background:#f2f2f2;
 cursor:pointer;
+font-size:18px;
 }
 
+/* ===== MESSAGES ===== */
 #messages{
 flex:1;
 padding:12px;
@@ -105,18 +87,18 @@ gap:10px;
 
 .my-msg{
 align-self:flex-end;
-background:#d9efff;
+background:#f2f2f2;
 padding:10px 14px;
-border-radius:14px 14px 4px 14px;
+border-radius:14px;
 max-width:75%;
 }
 
 .other-msg{
 align-self:flex-start;
-background:#f6fbff;
+background:#fff;
 padding:10px 14px;
-border-radius:14px 14px 14px 4px;
-border:1px solid #e6f3ff;
+border-radius:14px;
+border:1px solid #eee;
 max-width:75%;
 }
 
@@ -125,8 +107,7 @@ max-width:75%;
 display:flex;
 gap:8px;
 padding:10px;
-border-top:1px solid #e6f3ff;
-background:#fff;
+border-top:1px solid #eee;
 }
 
 .input-box input{
@@ -134,14 +115,14 @@ flex:1;
 padding:10px;
 border:none;
 outline:none;
-background:#f2f9ff;
+background:#f7f7f7;
 border-radius:10px;
 }
 
 .input-box button{
 padding:10px 14px;
 border:none;
-background:#d9efff;
+background:#eee;
 border-radius:10px;
 }
 
@@ -150,12 +131,12 @@ border-radius:10px;
 display:none;
 position:fixed;
 inset:0;
-background:#000;
+background:#fff;
 z-index:2000;
 }
 
-/* CLOSE BUTTON */
-.close-btn{
+/* زر رجوع للقصص */
+.close-stories{
 position:absolute;
 top:15px;
 left:15px;
@@ -163,9 +144,8 @@ width:40px;
 height:40px;
 border:none;
 border-radius:10px;
-background:rgba(255,255,255,0.15);
-color:#fff;
-font-size:20px;
+background:#f2f2f2;
+font-size:18px;
 cursor:pointer;
 }
 
@@ -174,14 +154,13 @@ cursor:pointer;
 position:absolute;
 inset:0;
 display:flex;
-flex-direction:column;
 align-items:center;
 justify-content:center;
-color:#666;
-opacity:0.6;
+flex-direction:column;
+color:#999;
 }
 
-/* RIGHT ACTIONS */
+/* ACTIONS */
 .story-actions{
 position:absolute;
 right:15px;
@@ -189,18 +168,18 @@ top:50%;
 transform:translateY(-50%);
 display:flex;
 flex-direction:column;
-gap:20px;
+gap:15px;
 }
 
 .story-actions div{
-width:54px;
-height:54px;
-background:rgba(255,255,255,0.08);
-border-radius:14px;
+width:50px;
+height:50px;
+background:#f7f7f7;
+border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
-color:#fff;
+font-size:20px;
 }
 
 /* USER */
@@ -208,7 +187,6 @@ color:#fff;
 position:absolute;
 right:15px;
 bottom:80px;
-color:#fff;
 display:flex;
 align-items:center;
 gap:10px;
@@ -218,29 +196,10 @@ gap:10px;
 width:45px;
 height:45px;
 border-radius:50%;
-background:#222;
+background:#ddd;
 }
 
-/* ===== PLUS BUTTON ===== */
-.plus-btn{
-position:fixed;
-bottom:18px;
-left:50%;
-transform:translateX(-50%);
-width:70px;
-height:50px;
-border-radius:18px;
-background:linear-gradient(135deg,#ffffff,#cfe9ff);
-border:2px solid #bfe3ff;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:32px;
-font-weight:900;
-box-shadow:0 12px 25px rgba(0,0,0,.18);
-cursor:pointer;
-}
-
+/* ===== NAV ===== */
 .nav{
 position:fixed;
 bottom:0;
@@ -251,7 +210,7 @@ background:#fff;
 display:flex;
 justify-content:space-around;
 align-items:center;
-border-top:1px solid #e6f3ff;
+border-top:1px solid #eee;
 }
 
 .nav div{
@@ -259,15 +218,28 @@ font-size:22px;
 cursor:pointer;
 }
 
+/* ===== PLUS ===== */
+.plus-btn{
+position:fixed;
+bottom:18px;
+left:50%;
+transform:translateX(-50%);
+width:65px;
+height:50px;
+border-radius:16px;
+background:#f2f2f2;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:30px;
+font-weight:900;
+box-shadow:0 10px 20px rgba(0,0,0,0.08);
+cursor:pointer;
+}
 </style>
 </head>
 
 <body>
-
-<!-- SEARCH -->
-<div class="top-bar">
-<input id="searchInput" oninput="searchChats()" placeholder="ابحث...">
-</div>
 
 <!-- CHAT LIST -->
 <div id="chatPage">
@@ -294,7 +266,7 @@ cursor:pointer;
 <div id="chatDetail">
 
 <div class="header">
-<button class="back" onclick="closeChat()">←</button>
+<button class="back-btn" onclick="closeChat()">←</button>
 <div id="chatName">محادثة</div>
 </div>
 
@@ -310,7 +282,7 @@ cursor:pointer;
 <!-- STORIES -->
 <div id="stories">
 
-<button class="close-btn" onclick="closeStories()">✕</button>
+<button class="close-stories" onclick="closeStories()">←</button>
 
 <div class="story-center">
 .
@@ -332,14 +304,14 @@ cursor:pointer;
 
 </div>
 
-<!-- PLUS -->
-<div class="plus-btn">+</div>
-
 <!-- NAV -->
 <div class="nav">
 <div onclick="showChats()">💬</div>
 <div onclick="showStories()">👁</div>
 </div>
+
+<!-- PLUS -->
+<div class="plus-btn">+</div>
 
 <script>
 
@@ -380,14 +352,6 @@ msg.innerText=input.value;
 document.getElementById("messages").appendChild(msg);
 input.value="";
 }
-}
-
-function searchChats(){
-let val=document.getElementById("searchInput").value.toLowerCase();
-document.querySelectorAll(".chat").forEach(c=>{
-let name=c.querySelector(".name").innerText.toLowerCase();
-c.style.display=name.includes(val)?"flex":"none";
-});
 }
 
 </script>
