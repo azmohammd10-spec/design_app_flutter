@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 
 <style>
 
-/* ===== BASE ===== */
+/* ===== RESET ===== */
 *{
 margin:0;
 padding:0;
@@ -16,14 +16,14 @@ font-family:system-ui;
 }
 
 body{
-background:#eefcff;
+background:#eafcff;
 color:#000;
 }
 
-/* ===== CHAT PAGE ===== */
+/* ===== CHAT LIST ===== */
 #chatPage{
 padding:10px;
-padding-bottom:90px;
+padding-bottom:85px;
 }
 
 .chat{
@@ -33,78 +33,68 @@ gap:12px;
 background:#fff;
 padding:14px;
 margin-bottom:10px;
-border-radius:18px;
+border-radius:16px;
+box-shadow:0 2px 10px rgba(0,0,0,.05);
 cursor:pointer;
-box-shadow:0 2px 12px rgba(0,0,0,0.05);
-transition:.2s;
-}
-
-.chat:active{
-transform:scale(.98);
 }
 
 .avatar{
 width:52px;
 height:52px;
 border-radius:50%;
-background:#74e7ff;
+background:#6fe7ff;
 flex-shrink:0;
 }
 
 .name{
-font-size:15px;
 font-weight:700;
-color:#000;
-margin-bottom:4px;
+font-size:15px;
 }
 
 .msg{
 font-size:13px;
 color:#666;
+margin-top:3px;
 }
 
-/* ===== CHAT DETAIL ===== */
+/* ===== CHAT SCREEN ===== */
 #chatDetail{
 display:none;
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:#eefcff;
+inset:0;
+background:#eafcff;
 flex-direction:column;
-z-index:1000;
+z-index:999;
 }
 
 .header{
-height:65px;
+height:60px;
 background:#fff;
 display:flex;
 align-items:center;
 gap:10px;
 padding:0 15px;
-border-bottom:1px solid #d8f8ff;
+border-bottom:1px solid #d9f7ff;
 }
 
-.back-btn{
-width:40px;
-height:40px;
+.back{
+width:38px;
+height:38px;
 border:none;
-border-radius:12px;
-background:#74e7ff;
-cursor:pointer;
+border-radius:10px;
+background:#6fe7ff;
 font-size:18px;
+cursor:pointer;
 }
 
 #chatName{
 font-weight:700;
-font-size:16px;
 }
 
 #messages{
 flex:1;
-overflow-y:auto;
 padding:15px;
+overflow-y:auto;
 display:flex;
 flex-direction:column;
 gap:10px;
@@ -112,50 +102,43 @@ gap:10px;
 
 .my-msg{
 align-self:flex-end;
-background:#74e7ff;
-color:#000;
-padding:12px 16px;
+background:#6fe7ff;
+padding:10px 14px;
 border-radius:18px 18px 4px 18px;
 max-width:75%;
-word-wrap:break-word;
 }
 
 .other-msg{
 align-self:flex-start;
 background:#fff;
-color:#000;
-padding:12px 16px;
+padding:10px 14px;
 border-radius:18px 18px 18px 4px;
 max-width:75%;
-word-wrap:break-word;
 }
 
 /* ===== INPUT ===== */
 .input-box{
 display:flex;
 gap:10px;
-padding:12px;
+padding:10px;
 background:#fff;
-border-top:1px solid #d8f8ff;
+border-top:1px solid #d9f7ff;
 }
 
 .input-box input{
 flex:1;
-border:none;
-outline:none;
-background:#eefcff;
 padding:12px;
-border-radius:16px;
-font-size:14px;
-color:#000;
+border:none;
+border-radius:12px;
+background:#eafcff;
+outline:none;
 }
 
 .input-box button{
-border:none;
-background:#74e7ff;
-color:#000;
 padding:12px 18px;
-border-radius:16px;
+border:none;
+background:#6fe7ff;
+border-radius:12px;
 font-weight:700;
 cursor:pointer;
 }
@@ -165,33 +148,24 @@ cursor:pointer;
 display:none;
 position:fixed;
 inset:0;
-background:#74e7ff;
-z-index:999;
-}
-
-.story-screen{
-position:relative;
-width:100%;
-height:100%;
+background:linear-gradient(180deg,#6fe7ff,#bff6ff);
+z-index:998;
 }
 
 .story-right{
 position:absolute;
-right:12px;
-bottom:140px;
+right:15px;
+top:45%;
 display:flex;
 flex-direction:column;
-gap:20px;
-}
-
-.story-icon{
-font-size:32px;
+gap:25px;
+font-size:30px;
 }
 
 .story-bottom{
 position:absolute;
 left:15px;
-bottom:90px;
+bottom:80px;
 display:flex;
 align-items:center;
 gap:10px;
@@ -202,52 +176,47 @@ font-size:40px;
 }
 
 .story-name{
-font-size:16px;
 font-weight:700;
-color:#000;
 }
 
-/* ===== BOTTOM NAV ===== */
+/* ===== NAV ===== */
 .nav{
 position:fixed;
 bottom:0;
 left:0;
 width:100%;
-height:72px;
+height:70px;
 background:#fff;
 display:flex;
 justify-content:space-around;
 align-items:center;
-border-top:1px solid #d8f8ff;
-box-shadow:0 -2px 15px rgba(0,0,0,0.05);
+border-top:1px solid #d9f7ff;
 }
 
-.nav-icon{
+.nav div{
 font-size:24px;
 cursor:pointer;
 }
 
-/* ===== TIKTOK STYLE BUTTON ===== */
-.tiktok-btn{
-width:50px;
-height:40px;
-background:#74e7ff;
+/* ===== + BUTTON (TIKTOK STYLE) ===== */
+.plus{
+width:52px;
+height:42px;
+background:#6fe7ff;
 border-radius:12px;
 display:flex;
 align-items:center;
 justify-content:center;
 font-size:28px;
 font-weight:900;
-color:#000;
 position:relative;
 top:-12px;
+box-shadow:0 6px 15px rgba(0,0,0,.15);
 cursor:pointer;
-box-shadow:0 6px 15px rgba(0,0,0,0.12);
-transition:.2s;
 }
 
-.tiktok-btn:active{
-transform:scale(.9);
+.plus:active{
+transform:scale(.92);
 }
 
 </style>
@@ -255,7 +224,7 @@ transform:scale(.9);
 
 <body>
 
-<!-- CHAT PAGE -->
+<!-- CHAT LIST -->
 <div id="chatPage">
 
 <div class="chat" onclick="openChat('أحمد')">
@@ -274,65 +243,51 @@ transform:scale(.9);
 </div>
 </div>
 
-<div class="chat" onclick="openChat('محمد')">
-<div class="avatar"></div>
-<div>
-<div class="name">محمد</div>
-<div class="msg">أهلاً بك</div>
-</div>
 </div>
 
-</div>
-
-<!-- CHAT DETAIL -->
+<!-- CHAT -->
 <div id="chatDetail">
 
 <div class="header">
-<button class="back-btn" onclick="closeChat()">←</button>
+<button class="back" onclick="closeChat()">←</button>
 <div id="chatName">محادثة</div>
 </div>
 
 <div id="messages">
 <div class="other-msg">أهلاً 👋</div>
-<div class="my-msg">مرحباً</div>
+<div class="my-msg">مرحبا</div>
 </div>
 
 <div class="input-box">
 <input id="msgInput" placeholder="اكتب رسالة...">
-<button onclick="sendMessage()">إرسال</button>
-</div<!-- STORIES -->
+<button onclick="send()">إرسال</button>
+</div>
+
+</div>
+
+<!-- STORIES -->
 <div id="stories">
 
-<div class="story-screen">
-
 <div class="story-right">
-<div class="story-icon">❤️</div>
-<div class="story-icon">👁</div>
+<div>❤️</div>
+<div>👁</div>
 </div>
 
 <div class="story-bottom">
 <div class="story-avatar">🤵🏽</div>
-<div class="story-name">اسم المستخدم</div>
+<div class="story-name">المستخدم</div>
 </div>
 
 </div>
 
-</div>
-
-<!-- NAVIGATION -->
+<!-- NAV -->
 <div class="nav">
 
-<div class="nav-icon" onclick="showChats()">
-💬
-</div>
+<div onclick="showChats()">💬</div>
 
-<div class="tiktok-btn">
-+
-</div>
+<div class="plus">+</div>
 
-<div class="nav-icon" onclick="showStories()">
-👁
-</div>
+<div onclick="showStories()">👁</div>
 
 </div>
 
@@ -340,7 +295,6 @@ transform:scale(.9);
 
 function openChat(name){
 document.getElementById("chatPage").style.display="none";
-document.getElementById("stories").style.display="none";
 document.getElementById("chatDetail").style.display="flex";
 document.getElementById("chatName").innerText=name;
 }
@@ -352,8 +306,8 @@ document.getElementById("chatPage").style.display="block";
 
 function showChats(){
 document.getElementById("chatPage").style.display="block";
-document.getElementById("stories").style.display="none";
 document.getElementById("chatDetail").style.display="none";
+document.getElementById("stories").style.display="none";
 }
 
 function showStories(){
@@ -362,14 +316,13 @@ document.getElementById("chatDetail").style.display="none";
 document.getElementById("stories").style.display="block";
 }
 
-function sendMessage(){
+function send(){
 
 let input=document.getElementById("msgInput");
 
 if(input.value.trim()!==""){
 
 let msg=document.createElement("div");
-
 msg.className="my-msg";
 msg.innerText=input.value;
 
