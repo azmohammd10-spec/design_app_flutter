@@ -6,6 +6,20 @@
 <title>تطبيق دردشة</title>
 
 <style>
+  /* تأثير خفيف عند تمرير الفأرة (Hover) على المحادثة */
+.chat:hover {
+    border-right: 4px solid #00BFFF; /* خط سماوي خفيف يظهر بجانب المحادثة */
+}
+
+/* لون أيقونات التنقل في الأسفل */
+.nav div {
+    color: #555;
+    transition: color 0.3s;
+}
+.nav div:hover {
+    color: #00BFFF; /* الأيقونة تصبح سماوية عند الضغط عليها */
+}
+
   /* تنسيق زر الميكروفون/الإرسال */
 #sendBtn {
     width: 50px;
