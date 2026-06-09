@@ -378,15 +378,14 @@ cursor:pointer;
 </div>
 <!-- STORIES -->
 <div id="stories">
+    <button class="story-back" onclick="closeStories()">←</button>
 
-<button class="story-back" onclick="closeStories()">←</button>
-
-<div class="story-actions">
-<div>❤</div>
-<div>👁</div>
+    <div class="story-actions">
+        <div onclick="console.log('تم الإعجاب بالقصة')">❤</div>
+        <div onclick="console.log('فتح قائمة المشاهدات')">👁</div>
+    </div>
 </div>
 
-</div>
 
 <div id="plusMenu" class="plus-menu" style="display:none;">
     <div onclick="openCameraApp()">📸 كاميرا (تجميل)</div>
