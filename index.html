@@ -399,19 +399,21 @@ cursor:pointer;
 
     // 2. التحكم في الزر الذكي (الميكروفون/الإرسال)
     function toggleButton() {
-        var input = document.getElementById('msgInput');
-        var btn = document.getElementById('sendBtn');
-        
-        if (input.value.trim().length > 0) {
-            btn.innerHTML = "➤"; 
-            btn.style.backgroundColor = "#0084ff"; 
-            btn.style.color = "white";
-        } else {
-            btn.innerHTML = "🎙️"; 
-            btn.style.backgroundColor = "#25d366"; // اللون الأخضر
-            btn.style.color = "#000";
-        }
+    var input = document.getElementById('msgInput');
+    var btn = document.getElementById('sendBtn');
+    
+    if (input.value.trim().length > 0) {
+        btn.innerHTML = "➤"; 
+        // اللون السماوي الخفيف
+        btn.style.backgroundColor = "#00BFFF"; 
+        btn.style.color = "white";
+    } else {
+        btn.innerHTML = "🎙️"; 
+        btn.style.backgroundColor = "#25d366"; // أخضر الواتساب كما طلبت
+        btn.style.color = "#000";
     }
+}
+
 
     // 3. الإرسال
     function send(){
