@@ -387,10 +387,11 @@ cursor:pointer;
 </div>
 
 <div id="plusMenu" class="plus-menu" style="display:none;">
-    <div class="plus-btn" onclick="togglePlusMenu()">+</div>
-
+    <div onclick="openCameraApp()">📸 كاميرا (تجميل)</div>
     <div onclick="document.getElementById('fileInput').click()">🖼️ استوديو</div>
 </div>
+
+<div class="plus-btn" onclick="togglePlusMenu()">+</div>
 
 <input type="file" id="fileInput" style="display:none" accept="image/*,video/*" onchange="handleFile(event)">
 
