@@ -6,6 +6,14 @@
 <title>تطبيق دردشة</title>
 
 <style>
+  .emoji-box{
+display:none;
+padding:10px;
+background:#fff;
+border-top:1px solid #eee;
+font-size:24px;
+line-height:2;
+}
   .input-box{
 display:flex;
 align-items:center;
@@ -290,6 +298,8 @@ cursor:pointer;
 
 <button class="attach-btn">🖼️</button>
 
+<button class="emoji-btn" onclick="toggleEmoji()">😀</button>
+
 <input id="msgInput" placeholder="اكتب رسالة...">
 
 <button class="voice-btn">🎤</button>
@@ -298,6 +308,9 @@ cursor:pointer;
 
 </div>
 
+<!-- صندوق الإيموجي يوضع بعد input-box -->
+<div id="emojiBox" class="emoji-box">
+😀 😂 😍 😎 😢 😡 👍 ❤️ 💔 🔥 🎉 😁 🤔 😴 😘 😭
 </div>
 
 <!-- STORIES -->
@@ -361,7 +374,18 @@ document.getElementById("messages").appendChild(msg);
 input.value="";
 }
 }
+function toggleEmoji(){
+let box=document.getElementById("emojiBox");
+box.style.display=
+box.style.display==="block" ? "none" : "block";
+}
 
+document.addEventListener("click",function(e){
+if(e.target.parentElement &&
+e.target.parentElement.id==="emojiBox"){
+document.getElementById("msgInput").value += e.target.innerText;
+}
+});
 </script>
 
 </body>
