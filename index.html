@@ -367,60 +367,70 @@ cursor:pointer;
 
 <script>
 
-function openChat(name){
-document.getElementById("chatPage").style.display="none";
-document.getElementById("chatDetail").style.display="flex";
-document.getElementById("chatName").innerText=name;
-}
-
-function showChats(){
-document.getElementById("stories").style.display="none";
-document.getElementById("chatDetail").style.display="none";
-document.getElementById("chatPage").style.display="block";
-}
-
-function showStories(){
-document.getElementById("chatPage").style.display="none";
-document.getElementById("chatDetail").style.display="none";
-document.getElementById("stories").style.display="block";
-}
-
-function closeStories(){
-document.getElementById("stories").style.display="none";
-document.getElementById("chatPage").style.display="block";
-}
-  
-// 1. الدالة المسؤولة عن تبديل شكل الزر
-function toggleButton() {
-    var input = document.getElementById('msgInput');
-    var btn = document.getElementById('sendBtn');
-    
-    if (input.value.trim().length > 0) {
-        btn.innerHTML = "➤"; 
-        btn.style.backgroundColor = "#0084ff"; 
-        btn.style.color = "white";
-    } else {
-        btn.innerHTML = "🎙️"; 
-        btn.style.backgroundColor = "#f2f2f2"; // لون الخلفية الأصلي للأزرار
-        btn.style.color = "#000";
+<script>
+    // 1. التنقل بين الصفحات
+    function openChat(name){
+        document.getElementById("chatPage").style.display="none";
+        document.getElementById("chatDetail").style.display="flex";
+        document.getElementById("chatName").innerText=name;
+        document.getElementById("msgInput").focus(); // إضافة ميزة UX
     }
-}
 
-// 2. تحديث دالة send لتستدعي toggleButton بعد الإرسال
-function send(){
-    let input = document.getElementById("msgInput");
-    if(input.value.trim() !== ""){
-        let msg = document.createElement("div");
-        msg.className = "my-msg";
-        msg.innerText = input.value;
-        document.getElementById("messages").appendChild(msg);
-        input.value = "";
-        toggleButton(); // إعادة الزر للميكروفون بعد الإرسال
+    function closeChat(){
+        document.getElementById("chatDetail").style.display="none";
+        document.getElementById("chatPage").style.display="block";
     }
-}
 
+    function showChats(){
+        document.getElementById("stories").style.display="none";
+        document.getElementById("chatDetail").style.display="none";
+        document.getElementById("chatPage").style.display="block";
+    }
 
+    function showStories(){
+        document.getElementById("chatPage").style.display="none";
+        document.getElementById("chatDetail").style.display="none";
+        document.getElementById("stories").style.display="block";
+    }
+
+    function closeStories(){
+        document.getElementById("stories").style.display="none";
+        document.getElementById("chatPage").style.display="block";
+    }
+
+    // 2. التحكم في الزر الذكي (الميكروفون/الإرسال)
+    function toggleButton() {
+        var input = document.getElementById('msgInput');
+        var btn = document.getElementById('sendBtn');
+        
+        if (input.value.trim().length > 0) {
+            btn.innerHTML = "➤"; 
+            btn.style.backgroundColor = "#0084ff"; 
+            btn.style.color = "white";
+        } else {
+            btn.innerHTML = "🎙️"; 
+            btn.style.backgroundColor = "#25d366"; // اللون الأخضر
+            btn.style.color = "#000";
+        }
+    }
+
+    // 3. الإرسال
+    function send(){
+        let input = document.getElementById("msgInput");
+        if(input.value.trim() !== ""){
+            let msg = document.createElement("div");
+            msg.className = "my-msg";
+            msg.innerText = input.value;
+            document.getElementById("messages").appendChild(msg);
+            input.value = "";
+            toggleButton(); // إعادة الزر للميكروفون
+            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;
+        }
+    }
+
+    // 4. الإيموجي
+    function toggleEmoji(){
+        let box = document.getElementById("emojiBox");
+        box.style.display = (box.style.display === "block") ? "none" : "block";
+    }
 </script>
-
-</body>
-</html>
