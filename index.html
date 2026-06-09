@@ -6,6 +6,30 @@
 <title>تطبيق دردشة</title>
 
 <style>
+    body {
+    background-color: #F9F9F9; /* خلفية ناعمة جداً */
+    color: #2D3436;           /* نص مريح للعين */
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.my-msg {
+    align-self: flex-end;
+    background-color: #00BFFF; /* فقاعة رسالتك سماوية */
+    color: white;             /* نص أبيض ليتناسب مع السماوي */
+    padding: 10px 14px;
+    border-radius: 18px 18px 0 18px; /* شكل فقاعة حديث */
+    max-width: 75%;
+}
+
+.other-msg {
+    align-self: flex-start;
+    background-color: #FFFFFF; /* رسائل الآخرين بيضاء */
+    border: 1px solid #E0E0E0;
+    padding: 10px 14px;
+    border-radius: 18px 18px 18px 0;
+    max-width: 75%;
+}
+
     #sendBtn:active {
     transform: scale(0.9); /* الزر يصغر قليلاً عند الضغط عليه */
 }
