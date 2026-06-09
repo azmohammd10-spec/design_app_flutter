@@ -317,18 +317,14 @@ cursor:pointer;
 <div id="messages"></div>
 
 <div class="input-box">
+    <button class="attach-btn">🖼️</button>
+    <button class="emoji-btn" onclick="toggleEmoji()">😀</button>
+    
+    <input id="msgInput" oninput="toggleButton()" placeholder="اكتب رسالة...">
 
-<button class="attach-btn">🖼️</button>
-
-<button class="emoji-btn" onclick="toggleEmoji()">😀</button>
-
-<input id="msgInput" placeholder="اكتب رسالة...">
-
-<button class="voice-btn">🎤</button>
-
-<button class="send-btn" onclick="send()">➤</button>
-
+    <button id="sendBtn" class="voice-btn" onclick="send()">🎙️</button>
 </div>
+
   <div id="emojiBox" class="emoji-box">
 <span>😀</span>
 <span>😂</span>
@@ -409,35 +405,35 @@ document.getElementById("messages").appendChild(msg);
 input.value="";
 }
 }
-function toggleEmoji(){
-let box=document.getElementById("emojiBox");
-box.style.display=
-box.style.display==="block" ? "none" : "block";
-}
-
-document.addEventListener("click",function(e){
-if(e.target.parentElement &&
-e.target.parentElement.id==="emojiBox"){
-document.getElementById("msgInput").value += e.target.innerText;
-}
-});
-  function toggleButton() {
+// 1. الدالة المسؤولة عن تبديل شكل الزر
+function toggleButton() {
     var input = document.getElementById('msgInput');
     var btn = document.getElementById('sendBtn');
     
-    // إذا كان هناك نص، اجعله سهم إرسال أزرق
     if (input.value.trim().length > 0) {
         btn.innerHTML = "➤"; 
         btn.style.backgroundColor = "#0084ff"; 
         btn.style.color = "white";
-    } 
-    // إذا كان فارغاً، أعده ميكروفون أخضر
-    else {
+    } else {
         btn.innerHTML = "🎙️"; 
-        btn.style.backgroundColor = "#25d366"; 
+        btn.style.backgroundColor = "#f2f2f2"; // لون الخلفية الأصلي للأزرار
         btn.style.color = "#000";
     }
 }
+
+// 2. تحديث دالة send لتستدعي toggleButton بعد الإرسال
+function send(){
+    let input = document.getElementById("msgInput");
+    if(input.value.trim() !== ""){
+        let msg = document.createElement("div");
+        msg.className = "my-msg";
+        msg.innerText = input.value;
+        document.getElementById("messages").appendChild(msg);
+        input.value = "";
+        toggleButton(); // إعادة الزر للميكروفون بعد الإرسال
+    }
+}
+
 
 </script>
 
