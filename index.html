@@ -29,13 +29,7 @@ transition:.25s;
 
 .plus-btn:active{
 transform:translateX(-50%) scale(.92);
-}
 
-/* تأثير عند الضغط */
-.plus-btn:active {
-    transform: translateX(-50%) scale(0.9);
-}
-  
     .my-msg {
     align-self: flex-end;
     background-color: #00BFFF !important; /* سماوي للرسائل الصادرة */
@@ -478,7 +472,6 @@ document.getElementById("msgInput").addEventListener("keypress", function(e){
     }
 });    
 </script>
-
 <div class="nav">
     <div onclick="showChats()">💬</div>
     <div class="plus-btn" onclick="togglePlusMenu()">+</div>
@@ -487,8 +480,5 @@ document.getElementById("msgInput").addEventListener("keypress", function(e){
 
 <input type="file" id="fileInput" style="display:none" accept="image/*,video/*" onchange="handleFile(event)">
 
-</style>
-</head>
-<body>
-
-
+</body>
+</html>
