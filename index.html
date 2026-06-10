@@ -204,13 +204,17 @@ cursor:pointer;
 }
 /* ===== تنسيق واجهة المحادثة الرئيسية ===== */
 #chatDetail {
-    display: none; /* مخفي افتراضياً */
+    display: none;
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* تأكد أنه يأخذ كامل الارتفاع */
     background: #fff;
-    flex-direction: column; /* ترتيب العناصر بشكل عمودي */
-    z-index: 999;
+    flex-direction: column;
+    z-index: 9999; /* رقم كبير جداً لضمان ظهوره فوق أي شيء */
 }
+
 
 /* الرأس */
 .header {
