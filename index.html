@@ -21,10 +21,33 @@ body { background-color: #FFFFFF !important; color: #000000; }
 }
 
 /* زر + العصري (أسود) */
-.plus-btn {
-    width: 50px; height: 50px; border-radius: 50%; background: #000000;
-    color: #fff; font-size: 24px; display: flex; align-items: center;
-    justify-content: center; cursor: pointer; z-index: 2001;
+.plus-btn{
+    position:fixed;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    width:62px;
+    height:62px;
+    border:none;
+    border-radius:20px;
+    background:linear-gradient(135deg,#ff0050,#00f2ea);
+    color:#fff;
+    font-size:34px;
+    font-weight:bold;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:2001;
+    box-shadow:
+        -4px 0 15px rgba(255,0,80,.6),
+         4px 0 15px rgba(0,242,234,.6),
+         0 8px 25px rgba(0,0,0,.25);
+    transition:all .2s ease;
+}
+
+.plus-btn:active{
+    transform:translateX(-50%) scale(.92);
 }
 
 /* صفحة المحادثات */
