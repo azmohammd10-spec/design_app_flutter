@@ -202,62 +202,57 @@ border-radius:10px;
 background:#f2f2f2;
 cursor:pointer;
 }
-
-/* ===== CHAT ===== */
-#chatDetail{
-display:none;
-position:fixed;
-inset:0;
-background:#fff;
-flex-direction:column;
-z-index:999;
+/* ===== تنسيق واجهة المحادثة الرئيسية ===== */
+#chatDetail {
+    display: none; /* مخفي افتراضياً */
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    flex-direction: column; /* ترتيب العناصر بشكل عمودي */
+    z-index: 999;
 }
 
-.header{
-height:55px;
-display:flex;
-align-items:center;
-gap:10px;
-padding:0 12px;
-border-bottom:1px solid #eee;
+/* الرأس */
+.header {
+    height: 55px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    border-bottom: 1px solid #eee;
+    flex-shrink: 0; /* منع الرأس من الانكماش */
 }
 
-.back-btn{
-width:38px;
-height:38px;
-border:none;
-border-radius:10px;
-background:#f2f2f2;
-cursor:pointer;
+/* منطقة الرسائل تأخذ المساحة المتبقية */
+#messages {
+    flex: 1; 
+    padding: 12px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-/* messages */
-#messages{
-flex:1;
-padding:12px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:10px;
+/* صندوق الإدخال يظهر دائماً في الأسفل */
+.input-box {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    background: #fff;
+    flex-shrink: 0; /* منع الصندوق من الاختفاء */
+    align-items: center;
 }
 
-
-/* input */
-.input-box{
-display:flex;
-gap:8px;
-padding:10px;
-border-top:1px solid #eee;
+.input-box input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    background: #f7f7f7;
+    border-radius: 10px;
 }
 
-.input-box input{
-flex:1;
-padding:10px;
-border:none;
-outline:none;
-background:#f7f7f7;
-border-radius:10px;
-}
 
 /* ===== STORIES ===== */
 #stories{
