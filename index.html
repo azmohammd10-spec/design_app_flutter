@@ -490,6 +490,11 @@ cursor:pointer;
             togglePlusMenu();
         }
     }
+document.getElementById("msgInput").addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        send();
+    }
+});    
 </script>
 
 <div class="plus-btn" onclick="togglePlusMenu()">+</div>
