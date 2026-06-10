@@ -7,29 +7,30 @@
 
 <style>
 .plus-btn{
-position:fixed;
-bottom:10px;
-left:50%;
-transform:translateX(-50%);
-width:60px;
-height:60px;
-border-radius:18px;
-background:linear-gradient(135deg,#00BFFF,#00E5FF);
-color:#fff;
-font-size:34px;
-font-weight:bold;
-display:flex;
-align-items:center;
-justify-content:center;
-cursor:pointer;
-box-shadow:0 8px 25px rgba(0,191,255,.35);
-z-index:2001;
-transition:.25s;
-}
-.plus-btn:active{
-    transform:translateX(-50%) scale(.92);
+.plus-menu{
+    position:fixed;
+    bottom:90px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#fff;
+    border:1px solid #eee;
+    border-radius:12px;
+    width:180px;
+    display:none;
+    flex-direction:column;
+    overflow:hidden;
+    z-index:3000;
 }
 
+.plus-menu div{
+    padding:12px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.plus-menu div:hover{
+    background:#f2f2f2;
+}
 .my-msg{
     align-self:flex-end;
     background-color:#00BFFF !important;
