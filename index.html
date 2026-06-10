@@ -24,33 +24,35 @@
     cursor:pointer;
     box-shadow:0 8px 25px rgba(0,191,255,.35);
     z-index:2001;
-    transition:.25s;
+    transition:0.25s ease;
 }
 
 .plus-btn:active{
-    transform:translateX(-50%) scale(.92);
+    transform:translateX(-50%) scale(0.92);
 }
 
-/* قائمة الزر + */
+/* قائمة زر + */
 .plus-menu{
     position:fixed;
     bottom:90px;
     left:50%;
     transform:translateX(-50%);
-    background:#fff;
+    background:#ffffff;
     border:1px solid #eee;
-    border-radius:12px;
-    width:180px;
+    border-radius:14px;
+    width:190px;
     display:none;
     flex-direction:column;
     overflow:hidden;
     z-index:3000;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
 .plus-menu div{
     padding:12px;
     cursor:pointer;
     font-size:14px;
+    transition:0.2s;
 }
 
 .plus-menu div:hover{
@@ -60,25 +62,29 @@
 /* الرسائل */
 .my-msg{
     align-self:flex-end;
-    background-color:#00BFFF !important;
-    color:white;
+    background:#00BFFF !important;
+    color:#fff;
     padding:10px 14px;
     border-radius:18px 18px 0 18px;
     max-width:75%;
+    word-wrap:break-word;
 }
 
 .other-msg{
     align-self:flex-start;
-    background-color:#FFFFFF !important;
+    background:#fff !important;
     border:1px solid #E0E0E0;
     padding:10px 14px;
     border-radius:18px 18px 18px 0;
     max-width:75%;
+    word-wrap:break-word;
 }
-    body {
-    background-color: #F9F9F9; /* خلفية ناعمة جداً */
-    color: #2D3436;           /* نص مريح للعين */
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+
+/* خلفية التطبيق */
+body{
+    background-color:#F9F9F9;
+    color:#2D3436;
+    font-family:'Segoe UI', Tahoma, sans-serif;
 }
 
     #sendBtn:active {
