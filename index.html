@@ -64,13 +64,8 @@ body { background-color: #FFFFFF !important; color: #000000; }
 .header { height: 60px; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #F0F0F0; }
 
 /* الرسائل */
-#messages {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+#messages{
+    padding-bottom: 140px;
 }
 
 .my-msg {
@@ -89,27 +84,23 @@ body { background-color: #FFFFFF !important; color: #000000; }
     padding: 10px 15px;
     border-radius: 18px 18px 18px 0;
 }
-
 .input-box{
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-
-    width: 90%;
-    max-width: 500px;
+    bottom: 65px; /* فوق شريط التنقل */
+    left: 0;
+    width: 100%;
 
     display: flex;
     gap: 10px;
-    padding: 15px;
+    padding: 10px 12px;
 
     background: #fff;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-top: 1px solid #eee;
 
     align-items: center;
-    z-index: 9999;
+    z-index: 999;
 }
+
 /* ===== قائمة + ===== */
 .plus-menu {
     position: fixed;
