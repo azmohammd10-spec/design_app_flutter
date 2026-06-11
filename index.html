@@ -243,8 +243,8 @@ gap:25px;
 }
 
 .story-actions div{
-font-size:26px;
-color:#fff;
+    font-size:26px;
+    color:#fff;
 }
 
 .nav{
@@ -258,50 +258,57 @@ color:#fff;
     justify-content:space-around;
     align-items:center;
     border-top:1px solid #eee;
-    z-index: 1000; /* لضمان بقائه فوق كل شيء */
+    z-index: 1000;
 }
 
 .nav div{
     font-size:22px;
     cursor:pointer;
 }
-
 </style>
 </head>
+
 <body>
 
 <!-- CHAT LIST -->
 <div id="chatPage">
 
-<div class="chat" onclick="openChat('أحمد')">
-<div class="left">
-<div class="avatar"></div>
-<div>
-<div class="name">أحمد</div>
-<div class="msg">مرحباً 👋</div>
-</div>
-</div>
-<button class="call-btn">📞</button>
-</div>
+    <div class="chat" onclick="openChat('أحمد')">
+        <div class="left">
+            <div class="avatar"></div>
+            <div>
+                <div class="name">أحمد</div>
+                <div class="msg">مرحباً 👋</div>
+            </div>
+        </div>
+        <button class="call-btn">📞</button>
+    </div>
 
-<div class="chat" onclick="openChat('خالد')">
-<div class="left">
-<div class="avatar"></div>
-<div>
-<div class="name">خالد</div>
-<div class="msg">كيف حالك؟</div>
-</div>
-</div>
-<button class="call-btn">📞</button>
-</div>
+    <div class="chat" onclick="openChat('خالد')">
+        <div class="left">
+            <div class="avatar"></div>
+            <div>
+                <div class="name">خالد</div>
+                <div class="msg">كيف حالك؟</div>
+            </div>
+        </div>
+        <button class="call-btn">📞</button>
+    </div>
+
+</div> <!-- إغلاق chatPage بشكل صحيح -->
 
 <!-- CHAT -->
 <div id="chatDetail">
 
-<div class="header">
-<button class="back-btn" onclick="closeChat()">←</button>
-<div id="chatName">محادثة</div>
+    <div class="header">
+        <button class="back-btn" onclick="closeChat()">←</button>
+        <div id="chatName">محادثة</div>
+    </div>
+
 </div>
+
+</body>
+</html>
 
 <div id="messages"></div>
 
