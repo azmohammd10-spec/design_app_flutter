@@ -90,24 +90,26 @@ body { background-color: #FFFFFF !important; color: #000000; }
     border-radius: 18px 18px 18px 0;
 }
 
-.input-box {
+.input-box{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 90%;
+    max-width: 500px;
+
     display: flex;
     gap: 10px;
     padding: 15px;
-    border-top: 1px solid #F0F0F0;
-    background: #FFFFFF;
+
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+
     align-items: center;
+    z-index: 9999;
 }
-
-.input-box input {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    outline: none;
-    background: #f7f7f7;
-    border-radius: 10px;
-}
-
 /* ===== قائمة + ===== */
 .plus-menu {
     position: fixed;
