@@ -20,8 +20,10 @@
     width:100%;
     height:100%;
     transition:transform 0.3s ease;
-}   
- .top-header{
+}
+
+/* الهيدر */
+.top-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -45,14 +47,22 @@
 
 .add-friend-btn:active{
     transform:scale(.96);
-}  
-/* تصفير العناصر الأساسي */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+}
 
-/* جسم التطبيق (أبيض ناصع) */
-body { background-color: #FFFFFF !important; color: #000000; }
+/* إعادة تعيين */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
 
-/* شريط التنقل السفلي */
+body {
+    background-color: #FFFFFF;
+    color: #000;
+}
+
+/* nav */
 .nav{
     position:fixed;
     bottom:0;
@@ -78,17 +88,20 @@ body { background-color: #FFFFFF !important; color: #000000; }
     color:#00bfff;
 }
 
-
-.plus-btn:active{
-    transform:translateX(-50%) scale(.92);
+/* chat */
+#chatPage {
+    padding: 70px 12px 90px;
 }
 
-/* صفحة المحادثات */
-<div class="top-header">
-#chatPage { padding: 70px 12px 90px; }
-.chat { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #F0F0F0; }
+.chat {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:15px;
+    border-bottom:1px solid #F0F0F0;
+}
 
-/* واجهة المحادثة (تغطي الشاشة) */
+/* chat detail */
 #chatDetail{
     display:none;
     position:fixed;
