@@ -72,9 +72,6 @@ body { background-color: #FFFFFF !important; color: #000000; }
 
 /* صفحة المحادثات */
 <div class="top-header">
-    <h3>الدردشات</h3>
-    <button class="add-friend-btn" onclick="addFriend()">➕ إضافة صديق</button>
-</div>   
 #chatPage { padding: 70px 12px 90px; }
 .chat { display: flex; align-items: center; justify-content: space-between; padding: 15px; border-bottom: 1px solid #F0F0F0; }
 
@@ -295,6 +292,10 @@ cursor:pointer;
 <!-- CHAT LIST -->
 <div id="chatPage">
     <div class="chat" onclick="openChat('أحمد')">
+       <div class="top-header">
+    <h3>الدردشات</h3>
+    <button class="add-friend-btn" onclick="addFriend()">➕ إضافة صديق</button>
+</div>
         <div class="left">
             <div class="avatar"></div>
             <div>
