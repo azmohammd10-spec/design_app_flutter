@@ -109,37 +109,9 @@ body {
     background:#fff;
     flex-direction:column;
     z-index:9999;
-}
+} /* ✅ لازم هذا القوس */
 
-#messages{
-    flex:1;
-    overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    padding:15px;
-    margin-top:60px;
-    margin-bottom:75px;
-}
-
-.my-msg{
-    align-self:flex-end;
-    background:#0084ff;
-    color:#fff;
-    padding:10px 15px;
-    border-radius:18px 18px 0 18px;
-    max-width:75%;
-}
-
-.other-msg{
-    align-self:flex-start;
-    background:#f2f2f2;
-    color:#000;
-    padding:10px 15px;
-    border-radius:18px 18px 18px 0;
-    max-width:75%;
-}
-
+/* input */
 .input-box{
     position:absolute;
     bottom:0;
@@ -174,7 +146,7 @@ body {
     border-top:1px solid #eee;
     z-index:10000;
 }
-
+   
 /* تأثير خفيف عند تمرير الفأرة على المحادثة */
 .chat:hover {
     border-right: 4px solid #00BFFF;
@@ -291,8 +263,7 @@ cursor:pointer;
     font-size:26px;
     color:#fff;
 }
-
-   </style>
+</style>
 </head>
 <body>
 <div id="app">
