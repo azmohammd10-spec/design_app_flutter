@@ -127,22 +127,6 @@ body { background-color: #FFFFFF !important; color: #000000; }
     border-top:1px solid #eee;
     z-index:10000;
 }
-/* ===== قائمة + ===== */
-.plus-menu {
-    position: fixed;
-    bottom: 90px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffffff;
-    border: 1px solid #eee;
-    border-radius: 14px;
-    width: 190px;
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 3000;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
 
 /* تأثير خفيف عند تمرير الفأرة على المحادثة */
 .chat:hover {
@@ -439,40 +423,21 @@ cursor:pointer;
         box.style.display = (box.style.display === "block") ? "none" : "block";
     }
 
-    // 5. فتح وإغلاق القائمة
-    function togglePlusMenu() {
-        let menu = document.getElementById("plusMenu");
-        menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
-    }
-
-    // تشغيل الكاميرا
-    function openCameraApp() {
-        let camInput = document.createElement('input');
-        camInput.type = 'file';
-        camInput.accept = 'image/*';
-        camInput.capture = 'user'; 
-        camInput.click();
-        togglePlusMenu(); 
-    }
-
-    // معالجة الملفات
-    function handleFile(event) {
-        let file = event.target.files[0];
-        if (file) {
-            alert("تم اختيار الملف: " + file.name);
-            togglePlusMenu();
-        }
-    }
 document.getElementById("msgInput").addEventListener("keypress", function(e){
     if(e.key === "Enter"){
         send();
     }
-});    
+});   
+   function openProfile(){
+    alert("الملف الشخصي");
+}
 </script>
 <div class="nav">
-    <div onclick="showChats()">💬</div>
-    <div class="plus-btn" onclick="togglePlusMenu()">+</div>
-    <div onclick="showStories()">👁</div>
+    <div onclick="showChats()">💬<br>دردشة</div>
+
+    <div onclick="showStories()">👁<br>قصص</div>
+
+    <div onclick="openProfile()">👤<br>حسابي</div>
 </div>
 
 <input type="file" id="fileInput" style="display:none" accept="image/*,video/*" onchange="handleFile(event)">
