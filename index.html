@@ -268,56 +268,53 @@ cursor:pointer;
 <body>
 <div id="app">
 
-    <div id="chatPage" class="page">الدردشات</div>
+    <!-- CHAT PAGE -->
+    <div id="chatPage" class="page">
 
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
+            <h3 style="margin:0;">الدردشات</h3>
+            <button class="add-friend-btn" onclick="addFriend()">➕ إضافة صديق</button>
+        </div>
+
+        <div class="chat" onclick="openChat('أحمد')">
+            <div class="left">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">أحمد</div>
+                    <div class="msg">مرحباً 👋</div>
+                </div>
+            </div>
+            <button class="call-btn">📞</button>
+        </div>
+
+        <div class="chat" onclick="openChat('خالد')">
+            <div class="left">
+                <div class="avatar"></div>
+                <div>
+                    <div class="name">خالد</div>
+                    <div class="msg">كيف حالك؟</div>
+                </div>
+            </div>
+            <button class="call-btn">📞</button>
+        </div>
+
+    </div>
+
+    <!-- STORIES -->
     <div id="stories" class="page" style="display:none;">القصص</div>
 
+    <!-- PROFILE -->
     <div id="profilePage" class="page" style="display:none;">الحساب</div>
 
 </div>
-<div id="chatPage">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
-        <h3 style="margin:0;">الدردشات</h3>
-        <button class="add-friend-btn" onclick="addFriend()">➕ إضافة صديق</button>
-    </div>
-
-</div>
-
-    <!-- قائمة الدردشات -->
-    <div class="chat" onclick="openChat('أحمد')">
-        <div class="left">
-            <div class="avatar"></div>
-            <div>
-                <div class="name">أحمد</div>
-                <div class="msg">مرحباً 👋</div>
-            </div>
-        </div>
-        <button class="call-btn">📞</button>
-    </div>
-
-    <div class="chat" onclick="openChat('خالد')">
-        <div class="left">
-            <div class="avatar"></div>
-            <div>
-                <div class="name">خالد</div>
-                <div class="msg">كيف حالك؟</div>
-            </div>
-        </div>
-        <button class="call-btn">📞</button>
-    </div>
-
-</div>
-<!-- CHAT -->
+<!-- CHAT DETAIL -->
 <div id="chatDetail">
-
     <div class="header">
         <button class="back-btn" onclick="closeChat()">←</button>
         <div id="chatName">محادثة</div>
-    
-
+    </div>
 </div>
-
 
 <div id="messages"></div>
 
