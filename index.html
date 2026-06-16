@@ -6,7 +6,21 @@
 <title>تطبيق دردشة</title>
 
 <style>
-   
+#app{
+    position:relative;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+}
+
+.page{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    transition:transform 0.3s ease;
+}   
  .top-header{
     display:flex;
     justify-content:space-between;
@@ -268,7 +282,15 @@ cursor:pointer;
    </style>
 </head>
 <body>
+<div id="app">
 
+    <div id="chatPage" class="page">الدردشات</div>
+
+    <div id="stories" class="page" style="display:none;">القصص</div>
+
+    <div id="profilePage" class="page" style="display:none;">الحساب</div>
+
+</div>
 <div id="chatPage">
 
     <div style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
@@ -440,16 +462,51 @@ document.getElementById("msgInput").addEventListener("keypress", function(e){
         alert("تم إرسال طلب صداقة إلى: " + name);
     }
 }  
-</script>
-<div class="nav">
+   <div class="nav">
     <div onclick="showChats()">💬<br>دردشة</div>
-
     <div onclick="showStories()">👁<br>قصص</div>
-
     <div onclick="openProfile()">👤<br>حسابي</div>
 </div>
 
 <input type="file" id="fileInput" style="display:none" accept="image/*,video/*" onchange="handleFile(event)">
+
+<script>
+let current = 0;
+const pages = ["chatPage", "stories", "profilePage"];
+
+function showPage(index){
+    pages.forEach((id, i)=>{
+        document.getElementById(id).style.display = (i === index) ? "block" : "none";
+    });
+    current = index;
+}
+
+// أزرار الضغط
+function showChats(){ showPage(0); }
+function showStories(){ showPage(1); }
+function showProfile(){ showPage(2); }
+
+// السحب
+let startX = 0;
+
+document.addEventListener("touchstart", e=>{
+    startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchend", e=>{
+    let endX = e.changedTouches[0].clientX;
+    let diff = startX - endX;
+
+    if(Math.abs(diff) > 50){
+        if(diff > 0){
+            if(current < pages.length - 1) current++;
+        }else{
+            if(current > 0) current--;
+        }
+        showPage(current);
+    }
+});
+</script>
 
 </body>
 </html>
