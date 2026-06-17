@@ -9,18 +9,19 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI}
 body{background:#fff}
 
-/* pages */
-.page{position:absolute;width:100%;height:100%;top:0;left:0}
+/* app */
 #app{position:relative;height:100vh;overflow:hidden}
+.page{position:absolute;width:100%;height:100%;top:0;left:0}
 
 /* nav */
 .nav{
 position:fixed;bottom:0;width:100%;height:65px;
 background:#fff;border-top:1px solid #eee;
-display:flex;justify-content:space-around;align-items:center
+display:flex;justify-content:space-around;align-items:center;
+z-index:9999
 }
 
-/* chats */
+/* chat page */
 #chatPage{padding:70px 12px 90px}
 .chat{
 display:flex;justify-content:space-between;
@@ -34,8 +35,9 @@ padding:15px;border-bottom:1px solid #eee;cursor:pointer
 /* chat detail */
 #chatDetail{
 display:none;position:fixed;inset:0;background:#fff;
-flex-direction:column
+flex-direction:column;z-index:99999
 }
+
 .header{
 display:flex;gap:10px;align-items:center;
 padding:10px;border-bottom:1px solid #eee
@@ -45,23 +47,24 @@ padding:10px;border-bottom:1px solid #eee
 flex:1;overflow:auto;padding:10px
 }
 
-.msg-box{
+.msg{
 margin:8px 0;padding:10px;border-radius:10px;
-max-width:70%
+max-width:70%;background:#dcf8c6;margin-left:auto
 }
-.me{background:#dcf8c6;margin-left:auto}
-.other{background:#f1f1f1}
 
 .input-box{
 display:flex;gap:5px;padding:10px;
 border-top:1px solid #eee
 }
+
 .input-box input{
 flex:1;border:none;background:#f5f5f5;
 border-radius:20px;padding:10px
 }
+
 button{cursor:pointer}
 
+/* emoji */
 .emoji-box{
 display:none;position:absolute;bottom:70px;
 background:#fff;border-top:1px solid #eee;
@@ -78,7 +81,10 @@ padding:10px
 <!-- CHAT PAGE -->
 <div id="chatPage" class="page">
 
-<h3 style="padding:15px">الدردشات</h3>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px">
+<h3>الدردشات</h3>
+<button onclick="alert('إضافة صديق')" style="padding:8px 12px;border:none;background:#0084ff;color:#fff;border-radius:10px">➕</button>
+</div>
 
 <div class="chat" onclick="openChat('أحمد')">
 <div class="left">
@@ -96,7 +102,7 @@ padding:10px
 
 </div>
 
-<!-- CHAT DETAIL -->
+<!-- CHAT -->
 <div id="chatDetail">
 
 <div class="header">
@@ -123,30 +129,31 @@ padding:10px
 
 </div>
 
+<!-- NAV -->
+<div class="nav">
+<div onclick="showChats()">💬<br>دردشة</div>
+<div onclick="showStories()">👁<br>قصص</div>
+<div onclick="showProfile()">👤<br>حسابي</div>
+</div>
+
 <script>
 
-/* data */
 let active=null;
 let chats=JSON.parse(localStorage.getItem("chats"))||{};
 
-/* open chat */
 function openChat(name){
 active=name;
 document.getElementById("chatDetail").style.display="flex";
 document.getElementById("chatName").innerText=name;
-
 if(!chats[name]) chats[name]=[];
-
 render();
 }
 
-/* close */
 function closeChat(){
 document.getElementById("chatDetail").style.display="none";
 active=null;
 }
 
-/* send */
 function sendMsg(){
 let input=document.getElementById("msgInput");
 let text=input.value.trim();
@@ -158,27 +165,24 @@ save();
 render();
 }
 
-/* render */
 function render(){
 let box=document.getElementById("messages");
 box.innerHTML="";
 
 chats[active].forEach(m=>{
-let div=document.createElement("div");
-div.className="msg-box me";
-div.innerHTML=`${m.text}<br><small>${m.time}</small>`;
-box.appendChild(div);
+let d=document.createElement("div");
+d.className="msg";
+d.innerHTML=m.text+"<br><small>"+m.time+"</small>";
+box.appendChild(d);
 });
 
 box.scrollTop=box.scrollHeight;
 }
 
-/* save */
 function save(){
 localStorage.setItem("chats",JSON.stringify(chats));
 }
 
-/* emoji */
 function toggleEmoji(){
 document.getElementById("emojiBox").classList.toggle("hidden");
 }
@@ -187,8 +191,19 @@ function addEmoji(e){
 document.getElementById("msgInput").value+=e;
 }
 
-/* page switch simple */
+/* NAV (الأزرار تعمل الآن) */
+function showChats(){
 document.getElementById("chatPage").style.display="block";
+document.getElementById("chatDetail").style.display="none";
+}
+
+function showStories(){
+alert("قسم القصص");
+}
+
+function showProfile(){
+alert("الحساب");
+}
 
 </script>
 
