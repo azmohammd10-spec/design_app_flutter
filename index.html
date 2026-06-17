@@ -229,42 +229,48 @@ z-index:99999;
 <div class="dot"></div>
 
 </div>
-<!-- CHAT PAGE -->
 <div id="chatPage" class="page">
 
-<div style="display:flex;justify-content:space-between;align-items:center;padding:15px">
-<h3>الدردشات</h3>
-<button onclick="alert('إضافة صديق')" style="padding:8px 12px;border:none;background:#0084ff;color:#fff;border-radius:10px">➕</button>
-</div>
-    
-<div class="chat" onclick="openChat('أحمد')">
-<div class="left">
-<div class="avatar"></div>
-<div><div class="name">أحمد</div><div class="msg">مرحباً 👋</div></div>
-</div>
-</div>
-
-<div class="chat" onclick="openChat('خالد')">
-<div class="left">
-<div class="avatar"></div>
-<div><div class="name">خالد</div><div class="msg">كيف حالك؟</div></div>
-</div>
-</div>
-
-</div>
-
-<div id="chatDetail">
-
-    <div class="header">
-        <button onclick="closeChat()">←</button>
-        <div id="chatName">محادثة</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:15px">
+        <h3>الدردشات</h3>
+        <button onclick="alert('إضافة صديق')" style="padding:8px 12px;border:none;background:#0084ff;color:#fff;border-radius:10px">➕</button>
     </div>
 
-    <div id="messages"></div>
+    <div class="chat" onclick="openChat('أحمد')">
+        <div class="left">
+            <div class="avatar"></div>
+            <div>
+                <div class="name">أحمد</div>
+                <div class="msg">مرحباً 👋</div>
+            </div>
+        </div>
+    </div>
 
-    <div class="input-box">
-        <input id="msgInput" placeholder="اكتب رسالة...">
-        <button id="sendBtn" onclick="sendMsg()">🎤</button>
+    <div class="chat" onclick="openChat('خالد')">
+        <div class="left">
+            <div class="avatar"></div>
+            <div>
+                <div class="name">خالد</div>
+                <div class="msg">كيف حالك؟</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ مهم: داخل chatPage -->
+    <div id="chatDetail">
+
+        <div class="header">
+            <button onclick="closeChat()">←</button>
+            <div id="chatName">محادثة</div>
+        </div>
+
+        <div id="messages"></div>
+
+        <div class="input-box">
+            <input id="msgInput" placeholder="اكتب رسالة...">
+            <button id="sendBtn" onclick="sendMsg()">🎤</button>
+        </div>
+
     </div>
 
 </div>
