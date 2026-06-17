@@ -6,7 +6,108 @@
 <title>تطبيق دردشة</title>
 
 <style>
-  /* chat detail */
+
+/* ================= RESET ================= */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', sans-serif;
+}
+
+body{
+    background:#fff;
+    color:#000;
+}
+
+/* ================= APP LAYOUT ================= */
+#app{
+    position:relative;
+    width:100%;
+    height:100vh;
+    overflow:hidden;
+}
+
+.page{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+/* ================= NAV ================= */
+.nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:65px;
+    background:#fff;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:10000;
+}
+
+.nav div{
+    text-align:center;
+    font-size:18px;
+    cursor:pointer;
+    color:#333;
+}
+
+/* ================= CHAT PAGE ================= */
+#chatPage{
+    padding:70px 12px 90px;
+}
+
+.chat{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    border-bottom:1px solid #f0f0f0;
+}
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.avatar{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#ddd;
+}
+
+.name{font-weight:700;}
+.msg{font-size:13px;color:#777;margin-top:3px;}
+
+.call-btn{
+    width:38px;
+    height:38px;
+    border:none;
+    border-radius:10px;
+    background:#f2f2f2;
+    cursor:pointer;
+}
+
+.add-friend-btn{
+    border:none;
+    background:#0084ff;
+    color:#fff;
+    padding:10px 14px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ================= CHAT DETAIL ================= */
 #chatDetail{
     display:none;
     position:fixed;
@@ -22,115 +123,22 @@
     padding:15px;
     margin-top:60px;
     margin-bottom:80px;
-}  
-#app{
-    position:relative;
-    width:100%;
-    height:100vh;
-    overflow:hidden;
 }
 
-.page{
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    transition:transform 0.3s ease;
-}
-
-/* الهيدر */
-.top-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:15px;
-    background:#fff;
-    position:sticky;
-    top:0;
-    z-index:100;
-}
-
-.add-friend-btn{
-    border:none;
-    background:#0084ff;
-    color:#fff;
-    padding:10px 14px;
-    border-radius:12px;
-    font-size:14px;
-    cursor:pointer;
-    font-weight:bold;
-}
-
-.add-friend-btn:active{
-    transform:scale(.96);
-}
-
-/* إعادة تعيين */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-body {
-    background-color: #FFFFFF;
-    color: #000;
-}
-
-.nav{
-    position:fixed;
-    bottom:0;
-    left:0;
-    width:100%;
-    height:65px;
-    background:#fff;
-    border-top:1px solid #eee;
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    z-index:10000; /* لازم يكون أعلى من القصص */
-}
-
-.nav div{
-    text-align:center;
-    font-size:18px;
-    cursor:pointer;
-    color:#333;
-}
-
-.nav div:hover{
-    color:#00bfff;
-}
-
-/* chat */
-#chatPage {
-    padding: 70px 12px 90px;
-}
-
-.chat {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:15px;
-    border-bottom:1px solid #F0F0F0;
-}
 .input-box{
     position:fixed;
     bottom:0;
     left:0;
     right:0;
-    width:100%;
     display:flex;
-    align-items:center;
     gap:8px;
     padding:10px;
     background:#fff;
     border-top:1px solid #eee;
     z-index:99999;
 }
- .input-box input{
+
+.input-box input{
     flex:1;
     height:45px;
     border:none;
@@ -138,8 +146,18 @@ body {
     background:#f5f5f5;
     border-radius:25px;
     padding:0 15px;
-} 
+}
 
+#sendBtn{
+    width:50px;
+    height:50px;
+    border:none;
+    border-radius:50%;
+    background:#25d366;
+    cursor:pointer;
+}
+
+/* emoji */
 .emoji-box{
     display:none;
     position:absolute;
@@ -149,91 +167,13 @@ body {
     background:#fff;
     padding:10px;
     border-top:1px solid #eee;
-    z-index:10000;
-}
-   
-/* تأثير خفيف عند تمرير الفأرة على المحادثة */
-.chat:hover {
-    border-right: 4px solid #00BFFF;
 }
 
-/* زر الإرسال / الميكروفون */
-#sendBtn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    border: none;
-    background-color: #25d366;
-    color: #000;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-  .emoji-box span{
-cursor:pointer;
-padding:4px;
-display:inline-block;
-}
-  .emoji-box{
-display:none;
-padding:10px;
-background:#fff;
-border-top:1px solid #eee;
-font-size:24px;
-line-height:2;
-}
-  
-.attach-btn,
-.voice-btn,
-.send-btn{
-width:44px;
-height:44px;
-border:none;
-border-radius:12px;
-background:#f2f2f2;
-font-size:20px;
-cursor:pointer;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-   
-.left{
-display:flex;
-align-items:center;
-gap:12px;
-}
-
-.avatar{
-width:48px;
-height:48px;
-border-radius:50%;
-background:#ddd;
-}
-
-.name{font-weight:700;}
-.msg{font-size:13px;color:#777;margin-top:3px;}
-
-/* CALL */
-.call-btn{
-width:38px;
-height:38px;
-border:none;
-border-radius:10px;
-background:#f2f2f2;
-cursor:pointer;
-}
-
+/* ================= STORIES ================= */
 #stories{
     z-index:5000;
 }
 
-/* زر رجوع */
 .story-back{
     position:absolute;
     top:15px;
@@ -245,10 +185,8 @@ cursor:pointer;
     background:rgba(255,255,255,0.15);
     color:#fff;
     font-size:20px;
-    cursor:pointer;
 }
 
-/* أزرار القصص */
 .story-actions{
     position:absolute;
     right:20px;
@@ -263,16 +201,19 @@ cursor:pointer;
     font-size:26px;
     color:#fff;
 }
+
 </style>
 </head>
+
 <body>
+
 <div id="app">
 
     <!-- CHAT PAGE -->
     <div id="chatPage" class="page">
 
-        <div style="display:flex; justify-content:space-between; align-items:center; padding:15px;">
-            <h3 style="margin:0;">الدردشات</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:15px;">
+            <h3>الدردشات</h3>
             <button class="add-friend-btn" onclick="addFriend()">➕ إضافة صديق</button>
         </div>
 
@@ -300,128 +241,103 @@ cursor:pointer;
 
     </div>
 
-
     <!-- PROFILE -->
     <div id="profilePage" class="page" style="display:none;">الحساب</div>
 
 </div>
 
+<!-- CHAT DETAIL -->
 <div id="chatDetail">
 
     <div class="header">
-        <button class="back-btn" onclick="closeChat()">←</button>
+        <button onclick="closeChat()">←</button>
         <div id="chatName">محادثة</div>
     </div>
 
     <div id="messages"></div>
 
     <div class="input-box">
-        <button class="attach-btn">🖼️</button>
-        <button class="attach-btn" onclick="toggleEmoji()">😀</button>
-
-        <input
-            id="msgInput"
-            type="text"
-            placeholder="اكتب رسالة..."
-            oninput="toggleButton()">
-
-        <button id="sendBtn" onclick="send()">🎙️</button>
+        <button>🖼️</button>
+        <button onclick="toggleEmoji()">😀</button>
+        <input id="msgInput" placeholder="اكتب رسالة...">
+        <button id="sendBtn">🎙️</button>
     </div>
 
     <div id="emojiBox" class="emoji-box">
-        <span>😀</span>
-        <span>😂</span>
-        <span>😍</span>
-        <span>😎</span>
-        <span>😢</span>
-        <span>😡</span>
-        <span>👍</span>
-        <span>❤️</span>
-        <span>🔥</span>
+        <span>😀</span><span>😂</span><span>😍</span>
+        <span>😎</span><span>😢</span><span>😡</span>
+        <span>👍</span><span>❤️</span><span>🔥</span>
     </div>
 
 </div>
+
 <!-- STORIES -->
 <div id="stories">
     <button class="story-back" onclick="closeStories()">←</button>
 
     <div class="story-actions">
-        <div onclick="console.log('تم الإعجاب بالقصة')">❤</div>
-        <div onclick="console.log('فتح قائمة المشاهدات')">👁</div>
+        <div>❤</div>
+        <div>👁</div>
     </div>
 </div>
 
-<div id="plusMenu" class="plus-menu" style="display:none;">
-    <div onclick="document.getElementById('fileInput').click()">🖼️ استوديو</div>
+<!-- NAV -->
+<div class="nav">
+    <div onclick="showChats()">💬<br>دردشة</div>
+    <div onclick="showStories()">👁<br>قصص</div>
+    <div onclick="openProfile()">👤<br>حسابي</div>
 </div>
+
+<input type="file" id="fileInput" hidden>
 
 <script>
 
-function openProfile(){
-    alert("الملف الشخصي");
-}
+/* functions */
+function openProfile(){ alert("الملف الشخصي"); }
 
 function addFriend(){
     let name = prompt("أدخل اسم الصديق");
-
-    if(name && name.trim() !== ""){
-        alert("تم إرسال طلب صداقة إلى: " + name);
-    }
+    if(name) alert("تم إرسال طلب: " + name);
 }
 
-// الصفحات
+/* pages */
 let current = 0;
-const pages = ["chatPage", "stories", "profilePage"];
+const pages = ["chatPage","stories","profilePage"];
 
-function showPage(index){
-    pages.forEach((id, i)=>{
+function showPage(i){
+    pages.forEach((id, x)=>{
         document.getElementById(id).style.display =
-        (i === index) ? "block" : "none";
+        (x===i)?"block":"none";
     });
-    current = index;
+    current=i;
 }
 
-// أزرار التنقل
-function showChats(){ showPage(0); }
-function showStories(){ showPage(1); }
-function showProfile(){ showPage(2); }
+function showChats(){showPage(0);}
+function showStories(){showPage(1);}
+function showProfile(){showPage(2);}
 
-// السحب
-let startX = 0;
+/* swipe */
+let startX=0;
 
-document.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
+document.addEventListener("touchstart",e=>{
+    startX=e.touches[0].clientX;
 });
 
-document.addEventListener("touchend", e=>{
-    let endX = e.changedTouches[0].clientX;
-    let diff = startX - endX;
+document.addEventListener("touchend",e=>{
+    let diff=startX-e.changedTouches[0].clientX;
 
-    if(Math.abs(diff) > 50){
-        if(diff > 0){
-            if(current < pages.length - 1) current++;
-        }else{
-            if(current > 0) current--;
-        }
+    if(Math.abs(diff)>50){
+        if(diff>0) current++;
+        else current--;
+
+        if(current<0) current=0;
+        if(current>2) current=2;
+
         showPage(current);
     }
 });
 
-function closeStories(){
-    document.getElementById("stories").style.display = "none";
-}
-
 </script>
 
- <div class="nav">
-    <div onclick="showChats()">💬<br>دردشة</div>
-    <div onclick="showStories()">👁<br>قصص</div>
-    <div onclick="openProfile()">👤<br>حسابي</div>
-</div>   
- <input type="file" id="fileInput"
-style="display:none"
-accept="image/*,video/*"
-onchange="handleFile(event)">
-        
 </body>
 </html>
