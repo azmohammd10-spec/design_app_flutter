@@ -278,6 +278,26 @@ function closeStories(){
 function closeStories(){
     document.getElementById("stories").style.display = "none";
 } 
+  let startX = 0;
+let isSwiping = false;
+
+document.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+    isSwiping = true;
+});
+
+document.addEventListener("touchend", e => {
+    if (!isSwiping) return;
+
+    let diff = startX - e.changedTouches[0].clientX;
+
+    if (Math.abs(diff) > 50) {
+        if (diff > 0) showPage(current + 1);
+        else showPage(current - 1);
+    }
+
+    isSwiping = false;
+});
 </script>
 
 </body>
