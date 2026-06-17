@@ -282,40 +282,56 @@ function toggleEmoji(){
 }
 
 function addEmoji(e){
-    document.getElementById("msgInput").value += e;
+document.getElementById("msgInput").value += e;
 }
 
-/* ================= STORIES (FIXED) ================= */
+/* ================= STORIES ================= */
 
 function showStories(){
-    showPage(1);
+showPage(1);
 }
 
 function closeStories(){
-    showPage(0);
+showPage(0);
 }
 
-/* ================= NAV SYSTEM (IMPORTANT FIX) ================= */
+/* ================= NAV SYSTEM ================= */
 
 const pages = ["chatPage","stories","profilePage"];
 let current = 0;
 
-if(diff > 0) showPage(current - 1);
-else showPage(current + 1);
-    pages.forEach((id, index)=>{
-        document.getElementById(id).style.display =
-        (index === i) ? "block" : "none";
-    });
+function showPage(i){
 
-    current = i;
+if(i < 0) i = 0;
+if(i >= pages.length) i = pages.length - 1;
+
+pages.forEach((id,index)=>{
+    const page = document.getElementById(id);
+
+    if(page){
+        page.style.display =
+        (index === i) ? "block" : "none";
+    }
+});
+
+current = i;
+
+updateDots(i);
+
+}
+
+function updateDots(i){
+document.querySelectorAll(".dot").forEach((dot,index)=>{
+dot.classList.toggle("active", index === i);
+});
 }
 
 function showChats(){
-    showPage(0);
+showPage(0);
 }
 
 function showProfile(){
-    alert("الحساب");
+showPage(2);
 }
 
 /* ================= SWIPE ================= */
@@ -324,23 +340,31 @@ let startX = 0;
 let isSwiping = false;
 
 document.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
-    isSwiping = true;
+startX = e.touches[0].clientX;
+isSwiping = true;
 });
 
 document.addEventListener("touchend", e=>{
-    if(!isSwiping) return;
 
-    let diff = startX - e.changedTouches[0].clientX;
+if(!isSwiping) return;
 
-    if(Math.abs(diff) > 50){
-        if(diff > 0) showPage(current + 1);
-        else showPage(current - 1);
+let diff = startX - e.changedTouches[0].clientX;
+
+if(Math.abs(diff) > 50){
+
+    if(diff > 0){
+        showPage(current + 1);
+    }else{
+        showPage(current - 1);
     }
+}
 
-    isSwiping = false;
+isSwiping = false;
+
 });
-</script>
+
+showPage(0);
+<script>
 
 </body>
 </html>
