@@ -380,6 +380,62 @@ document.addEventListener("input", function(e){
         }
     }
 });
+const pages = ["chatPage", "stories", "profilePage"];
+let current = 0;
+
+function showPage(i){
+
+    if(i < 0) i = 0;
+    if(i >= pages.length) i = pages.length - 1;
+
+    pages.forEach((id, index)=>{
+        const el = document.getElementById(id);
+        if(el){
+            el.style.display = (index === i) ? "block" : "none";
+        }
+    });
+
+    current = i;
+
+    updateDots(i);
+}
+
+function updateDots(i){
+    document.querySelectorAll(".dot").forEach((d, index)=>{
+        d.classList.toggle("active", index === i);
+    });
+}
+
+function showChats(){ showPage(0); }
+function showStories(){ showPage(1); }
+function showProfile(){ showPage(2); }
+let startX = 0;
+let isSwiping = false;
+
+document.addEventListener("touchstart", e=>{
+    if(document.getElementById("chatDetail").style.display === "flex") return;
+
+    startX = e.touches[0].clientX;
+    isSwiping = true;
+});
+
+document.addEventListener("touchend", e=>{
+    if(!isSwiping) return;
+
+    if(document.getElementById("chatDetail").style.display === "flex") return;
+
+    let diff = startX - e.changedTouches[0].clientX;
+
+    if(Math.abs(diff) > 50){
+        if(diff > 0){
+            showPage(current + 1);
+        }else{
+            showPage(current - 1);
+        }
+    }
+
+    isSwiping = false;
+});    
 </script>
 
 </body>
