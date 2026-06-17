@@ -117,22 +117,29 @@ body {
     padding:15px;
     border-bottom:1px solid #F0F0F0;
 }
-
-/* chat detail */
-#chatDetail{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:#fff;
-    flex-direction:column;
-    z-index:9999;
-} /* ✅ لازم هذا القوس */
-
 .input-box{
     position:fixed;
     bottom:0;
     left:0;
     right:0;
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px;
+    background:#fff;
+    border-top:1px solid #eee;
+    z-index:99999;
+}
+ .input-box input{
+    flex:1;
+    height:45px;
+    border:none;
+    outline:none;
+    background:#f5f5f5;
+    border-radius:25px;
+    padding:0 15px;
+} 
 
 .emoji-box{
     display:none;
