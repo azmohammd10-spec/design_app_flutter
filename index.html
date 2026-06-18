@@ -6,35 +6,30 @@
 <title>تطبيق دردشة</title>
 
 <style>
-#sendBtn {
+#sendBtn{
     width: 52px;
     height: 52px;
     border-radius: 50%;
     border: none;
-    background: var(--main-color);
-    color: #fff;
-    font-size: 20px;
     cursor: pointer;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-    transition: all 0.25s ease;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    font-size:22px;
+    color:white;
+
+    /* تدرج ChatGPT (سماوي + وردي) */
+    background: linear-gradient(135deg, #00c6ff, #ff4ecd);
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    transition: 0.25s ease;
 }
-
-/* عند وجود رسالة */
-#sendBtn.active {
-    background: #25d366;
+#sendBtn.active{
+    background: linear-gradient(135deg, #00ffcc, #007bff);
     transform: scale(1.08);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
-}
-
-/* نبض عند وضع التسجيل */
-#sendBtn.record {
-    animation: pulse 1.2s infinite;
-}
+}    
 
 /* أنيميشن نبض */
 @keyframes pulse {
