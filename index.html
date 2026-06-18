@@ -404,48 +404,53 @@ if(text.length > 0){
   const pages = ["chatPage", "stories", "profilePage"];
 let current = 0;
 
-function updateNav(){
-
-    document.querySelectorAll(".nav-btn").forEach(btn=>{
+function updateNav() {
+    document.querySelectorAll(".nav-btn").forEach(btn => {
         btn.classList.remove("active-nav");
     });
 
-    if(current === 0){
+    if (current === 0) {
         document.getElementById("navChat").classList.add("active-nav");
-    }
-
-    if(current === 1){
+    } 
+    else if (current === 1) {
         document.getElementById("navStories").classList.add("active-nav");
-    }
-
-    if(current === 2){
+    } 
+    else if (current === 2) {
         document.getElementById("navProfile").classList.add("active-nav");
     }
 }
 
-function showPage(i){
+function showPage(i) {
 
-    if(i < 0) i = 0;
-    if(i >= pages.length) i = pages.length - 1;
+    if (i < 0) i = 0;
+    if (i >= pages.length) i = pages.length - 1;
 
-    pages.forEach((id, index)=>{
+    pages.forEach((id, index) => {
         const el = document.getElementById(id);
-        if(el){
-            el.style.display = (index === i) ? "block" : "none";
-        }
+        if (!el) return;
+
+        el.style.display = (index === i) ? "block" : "none";
     });
 
     current = i;
-
     updateNav();
 }
 
-/* تشغيل أول صفحة */
+/* تشغيل أولي */
 showPage(0);
 
-function showChats(){ showPage(0); }
-function showStories(){ showPage(1); }
-function showProfile(){ showPage(2); }
+/* أزرار التنقل */
+function showChats() {
+    showPage(0);
+}
+
+function showStories() {
+    showPage(1);
+}
+
+function showProfile() {
+    showPage(2);
+}
 </script>
 
 </body>
