@@ -51,13 +51,7 @@
         box-shadow: 0 0 0 0 rgba(0,188,255,0);
     }
 }
-/* ================= ROOT VARIABLES ================= */
-:root {
-    --main-color: #00bfff;
-    --text-color: #333;
-    --bg-color: #ffffff;
-    --border-color: #eee;
-}
+
 
 /* ================= DOTS ================= */
 .dot{
@@ -268,7 +262,7 @@ z-index:99999;
 
         <div class="input-box">
             <input id="msgInput" placeholder="اكتب رسالة...">
-            <button id="sendBtn" onclick="sendMsg()">🎤</button>
+            <button id="sendBtn" onclick="handleSend()">🎤</button>
         </div>
 
     </div>
