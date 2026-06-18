@@ -414,7 +414,13 @@ function showPage(i){
     });
 
     current = i;
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+    btn.classList.remove("active-nav");
+});
 
+if(i === 0) document.getElementById("navChat").classList.add("active-nav");
+if(i === 1) document.getElementById("navStories").classList.add("active-nav");
+if(i === 2) document.getElementById("navProfile").classList.add("active-nav");
     updateDots(i);
 }
 
