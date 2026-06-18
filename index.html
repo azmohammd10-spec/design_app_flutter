@@ -423,12 +423,6 @@ function updateNav(){
     }
 }
 
-function updateDots(i){
-    document.querySelectorAll(".dot").forEach((d, index)=>{
-        d.classList.toggle("active", index === i);
-    });
-}
-
 function showPage(i){
 
     if(i < 0) i = 0;
@@ -444,46 +438,14 @@ function showPage(i){
     current = i;
 
     updateNav();
-    updateDots(i);
 }
 
-/* أول تشغيل */
+/* تشغيل أول صفحة */
 showPage(0);
 
 function showChats(){ showPage(0); }
 function showStories(){ showPage(1); }
 function showProfile(){ showPage(2); }
-
-/* السحب بين الصفحات */
-let startX = 0;
-let isSwiping = false;
-
-document.addEventListener("touchstart", e => {
-
-    if(document.getElementById("chatDetail").style.display === "flex") return;
-
-    startX = e.touches[0].clientX;
-    isSwiping = true;
-});
-
-document.addEventListener("touchend", e => {
-
-    if(!isSwiping) return;
-
-    let endX = e.changedTouches[0].clientX;
-    let diff = startX - endX;
-
-    if(Math.abs(diff) > 60){
-
-        if(diff > 0){
-            showPage(current + 1);
-        } else {
-            showPage(current - 1);
-        }
-    }
-
-    isSwiping = false;
-});   
 </script>
 
 </body>
