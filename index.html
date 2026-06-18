@@ -376,31 +376,31 @@ document.addEventListener("input", function(e){
 
         let btn = document.getElementById("sendBtn");
         let text = e.target.value.trim();
+if(text.length > 0){
 
-        if(text.length > 0){
+    btn.classList.add("active");
+    btn.classList.remove("record");
 
-            btn.classList.add("active");
-            btn.classList.remove("record");
+    document.getElementById("micIcon").innerHTML = `
+        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z"
+              fill="white"/>
+    `;
 
-            document.getElementById("micIcon").innerHTML = `
-                <path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="white"/>
+} else {
 
-        } else {
+    btn.classList.remove("active");
+    btn.classList.add("record");
 
-            btn.classList.remove("active");
-            btn.classList.add("record");
-
-            document.getElementById("micIcon").innerHTML = `
-                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"
-                      stroke="white" stroke-width="2"/>
-                <path d="M19 11a7 7 0 0 1-14 0"
-                      stroke="white" stroke-width="2"/>
-                <path d="M12 18v3"
-                      stroke="white" stroke-width="2"/>
-            `;
-        }
-    }
-});
+    document.getElementById("micIcon").innerHTML = `
+        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z"
+              stroke="white" stroke-width="2"/>
+        <path d="M19 11a7 7 0 0 1-14 0"
+              stroke="white" stroke-width="2"/>
+        <path d="M12 18v3"
+              stroke="white" stroke-width="2"/>
+    `;
+}
+        
 const pages = ["chatPage", "stories", "profilePage"];
 let current = 0;
 
