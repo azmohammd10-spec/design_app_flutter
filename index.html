@@ -6,123 +6,106 @@
 <title>تطبيق دردشة</title>
 
 <style>
-/* Reset */
-* { margin:0; padding:0; box-sizing:border-box; font-family:Segoe UI; }
-body { background:#fff; }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
+body{background:#fff}
 
-/* ===== Pages ===== */
-#app { position:relative; height:100vh; overflow:hidden; }
-.page { position:absolute; width:100%; height:100%; top:0; left:0; }
+#app{position:relative;height:100vh;overflow:hidden}
+.page{position:absolute;width:100%;height:100%;top:0;left:0;display:none;background:#fff}
 
-/* ===== Navigation ===== */
-.nav {
-    position:fixed; bottom:0; width:100%; height:65px;
-    background:#fff; border-top:1px solid #eee;
-    display:flex; justify-content:space-around; align-items:center;
-    z-index:9999;
+/* شريط التنقل */
+.nav{
+    position:fixed;bottom:0;width:100%;height:65px;
+    background:#fff;border-top:1px solid #eee;
+    display:flex;justify-content:space-around;align-items:center;
+    z-index:9999
 }
-.nav-btn {
-    flex:1; text-align:center; position:relative; padding-top:8px;
-    cursor:pointer;
+.nav-btn{
+    flex:1;text-align:center;position:relative;padding-top:8px;
+    cursor:pointer;font-size:12px
 }
-.active-nav::before {
-    content:""; position:absolute; top:0; left:50%;
-    transform:translateX(-50%); width:30px; height:4px;
-    border-radius:10px; background:#00bfff;
+.nav-btn span{display:block;font-size:20px}
+.active-nav::before{
+    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:30px;height:4px;border-radius:10px;background:#00bfff
 }
 
-/* ===== Chat List ===== */
-#chatPage { padding:70px 12px 90px; background:#fff; }
-.chat {
-    display:flex; justify-content:space-between;
-    padding:15px; border-bottom:1px solid #eee; cursor:pointer;
+/* قائمة الدردشات */
+#chatPage{padding:70px 12px 90px}
+.chat{
+    display:flex;justify-content:space-between;
+    padding:15px;border-bottom:1px solid #eee;cursor:pointer
 }
-.left { display:flex; gap:10px; align-items:center; }
-.avatar { width:45px; height:45px; border-radius:50%; background:#ddd; }
-.chat .name { font-weight:bold; }
-.chat .msg { font-size:12px; color:#777; }
+.left{display:flex;gap:12px;align-items:center}
+.avatar{width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,#00c6ff,#ff4ecd)}
+.name{font-weight:bold}
+.chat .msg{font-size:12px;color:#777}
 
-/* ===== Chat Detail (overlay) ===== */
-#chatDetail {
-    display:none;
-    position:fixed; inset:0;
-    background:#fff;
-    flex-direction:column;
-    z-index:99999;
+/* نافذة المحادثة */
+#chatDetail{
+    display:none;position:fixed;inset:0;
+    background:#fff;flex-direction:column;z-index:99999
 }
-.header {
-    display:flex; gap:10px; align-items:center;
-    padding:10px; border-bottom:1px solid #eee;
+.header{
+    display:flex;gap:10px;align-items:center;
+    padding:10px 15px;border-bottom:1px solid #eee
 }
-.header button {
-    background:none; border:none; font-size:24px; cursor:pointer;
-}
-#messages {
-    flex:1; overflow:auto; padding:10px;
-}
-#messages .msg {
-    margin:8px 0; padding:10px; border-radius:10px;
-    max-width:70%; background:#dcf8c6; margin-left:auto;
-    font-size:14px; color:#000;
-}
-.input-box {
-    display:flex; gap:5px; padding:10px; border-top:1px solid #eee;
-}
-.input-box input {
-    flex:1; border:none; background:#f5f5f5;
-    border-radius:20px; padding:10px;
-}
-#sendBtn {
-    width:52px; height:52px; border-radius:50%; border:none;
-    display:flex; align-items:center; justify-content:center;
-    background: linear-gradient(135deg, #00c6ff, #ff4ecd);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    transition:0.3s; cursor:pointer;
-}
-#sendBtn.active {
-    background: linear-gradient(135deg, #00ff9d, #00c6ff);
-    transform: scale(1.1);
-}
-#sendBtn svg { transition:0.3s; }
+.header button{background:none;border:none;font-size:24px;cursor:pointer}
+#chatName{font-weight:bold;font-size:18px}
 
-/* ===== Stories ===== */
-#stories {
-    display:none; position:fixed; inset:0;
-    background:#000; z-index:5000;
+#messages{flex:1;overflow:auto;padding:12px}
+#messages .msg{
+    margin:6px 0;padding:10px 14px;border-radius:12px;
+    max-width:75%;background:#dcf8c6;margin-left:auto;
+    font-size:14px;color:#000;word-wrap:break-word
 }
-.story-actions {
-    position:absolute; right:20px; top:50%; transform:translateY(-50%);
-    display:flex; flex-direction:column; gap:25px;
-    color:white; font-size:26px;
+#messages .msg small{display:block;font-size:10px;color:#555;margin-top:4px;text-align:left}
+
+.input-box{
+    display:flex;gap:8px;padding:10px 15px;
+    border-top:1px solid #eee;align-items:center
 }
-.story-back {
-    position:absolute; top:15px; left:15px;
-    width:40px; height:40px; border:none; border-radius:10px;
-    background:rgba(255,255,255,0.2); color:white; font-size:20px;
-    cursor:pointer;
+.input-box input{
+    flex:1;border:none;background:#f5f5f5;
+    border-radius:25px;padding:12px 16px;font-size:14px
+}
+#sendBtn{
+    width:50px;height:50px;border-radius:50%;border:none;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#00c6ff,#ff4ecd);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    transition:0.3s;cursor:pointer;flex-shrink:0
+}
+#sendBtn.active{
+    background:linear-gradient(135deg,#00ff9d,#00c6ff);
+    transform:scale(1.1)
+}
+#sendBtn svg{transition:0.3s}
+
+/* القصص */
+#stories{background:#000;z-index:5000}
+.story-back{
+    position:absolute;top:15px;left:15px;
+    width:40px;height:40px;border:none;border-radius:10px;
+    background:rgba(255,255,255,0.2);color:#fff;font-size:20px;cursor:pointer
+}
+.story-actions{
+    position:absolute;right:20px;top:50%;transform:translateY(-50%);
+    display:flex;flex-direction:column;gap:25px;color:#fff;font-size:28px
 }
 
-/* ===== Profile ===== */
-#profilePage { display:none; background:#fff; }
-
-/* ===== Animations ===== */
-@keyframes pulse {
-    0% { transform:scale(1); box-shadow:0 0 0 0 rgba(0,188,255,0.6); }
-    70% { transform:scale(1.1); box-shadow:0 0 0 12px rgba(0,188,255,0); }
-    100% { transform:scale(1); box-shadow:0 0 0 0 rgba(0,188,255,0); }
-}
+/* صفحة الحساب */
+#profilePage{display:flex;align-items:center;justify-content:center}
 </style>
 </head>
-
 <body>
 
 <div id="app">
 
     <!-- صفحة الدردشات -->
     <div id="chatPage" class="page">
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:15px">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid #eee">
             <h3>الدردشات</h3>
-            <button onclick="alert('إضافة صديق')" style="padding:8px 12px;border:none;background:#0084ff;color:#fff;border-radius:10px">➕</button>
+            <button onclick="alert('إضافة صديق')" style="padding:8px 14px;border:none;background:#0084ff;color:#fff;border-radius:20px">➕</button>
         </div>
 
         <div class="chat" onclick="openChat('أحمد')">
@@ -145,7 +128,7 @@ body { background:#fff; }
             </div>
         </div>
 
-        <!-- نافذة المحادثة -->
+        <!-- نافذة المحادثة المنبثقة -->
         <div id="chatDetail">
             <div class="header">
                 <button onclick="closeChat()">←</button>
@@ -168,7 +151,7 @@ body { background:#fff; }
     <!-- صفحة القصص -->
     <div id="stories" class="page">
         <button class="story-back" onclick="closeStories()">←</button>
-        <div style="color:white; text-align:center; margin-top:50%;">هنا ستظهر القصص</div>
+        <div style="color:#fff;text-align:center;margin-top:50%;font-size:20px">📸 القصص قادمة قريباً</div>
         <div class="story-actions">
             <div>❤</div>
             <div>👁</div>
@@ -177,23 +160,30 @@ body { background:#fff; }
 
     <!-- صفحة الحساب -->
     <div id="profilePage" class="page">
-        <h2 style="padding:80px 20px;">حسابي</h2>
+        <h2 style="padding:30px">👤 حسابي</h2>
+        <p style="color:#888">سيظهر هنا الملف الشخصي</p>
     </div>
 
-    <!-- شريط التنقل -->
+    <!-- شريط التنقل السفلي -->
     <div class="nav">
-        <div id="navChat" class="nav-btn active-nav" onclick="showChats()">💬<br>دردشة</div>
-        <div id="navStories" class="nav-btn" onclick="showStories()">👁<br>قصص</div>
-        <div id="navProfile" class="nav-btn" onclick="showProfile()">👤<br>حسابي</div>
+        <div id="navChat" class="nav-btn active-nav" onclick="showChats()">
+            <span>💬</span>دردشة
+        </div>
+        <div id="navStories" class="nav-btn" onclick="showStories()">
+            <span>👁</span>قصص
+        </div>
+        <div id="navProfile" class="nav-btn" onclick="showProfile()">
+            <span>👤</span>حسابي
+        </div>
     </div>
 </div>
 
 <script>
-// ===== بيانات المحادثات =====
+// ===== بيانات المحادثات (مخزنة محلياً) =====
 let active = null;
 let chats = JSON.parse(localStorage.getItem("chats")) || {};
 
-// ===== دوال المحادثة =====
+// ===== فتح محادثة =====
 function openChat(name) {
     active = name;
     document.getElementById("chatDetail").style.display = "flex";
@@ -202,44 +192,51 @@ function openChat(name) {
     render();
 }
 
+// ===== إغلاق المحادثة =====
 function closeChat() {
     document.getElementById("chatDetail").style.display = "none";
     active = null;
 }
 
+// ===== إرسال رسالة =====
 function sendMsg() {
     let input = document.getElementById("msgInput");
     let text = input.value.trim();
     if (!text || !active) return;
-    chats[active].push({ text, time: new Date().toLocaleTimeString() });
+    chats[active].push({
+        text: text,
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    });
     input.value = "";
     save();
     render();
 }
 
+// ===== عرض الرسائل =====
 function render() {
     let box = document.getElementById("messages");
     box.innerHTML = "";
-    if (!active) return;
+    if (!active || !chats[active]) return;
     chats[active].forEach(m => {
         let d = document.createElement("div");
         d.className = "msg";
-        d.innerHTML = m.text + "<br><small>" + m.time + "</small>";
+        d.innerHTML = m.text + "<small>" + m.time + "</small>";
         box.appendChild(d);
     });
     box.scrollTop = box.scrollHeight;
 }
 
+// ===== حفظ البيانات =====
 function save() {
     localStorage.setItem("chats", JSON.stringify(chats));
 }
 
-// ===== زر الإرسال الذكي =====
+// ===== معالج الزر الذكي =====
 function handleSend() {
     sendMsg();
 }
 
-// تغيير أيقونة الزر بناءً على النص
+// تغيير شكل الزر عند الكتابة
 document.addEventListener("input", function(e) {
     if (e.target && e.target.id === "msgInput") {
         let btn = document.getElementById("sendBtn");
@@ -269,30 +266,25 @@ document.getElementById("msgInput").addEventListener("keypress", function(e) {
 const pages = ["chatPage", "stories", "profilePage"];
 let current = 0;
 
-function updateNav() {
-    document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active-nav"));
-    if (current === 0) document.getElementById("navChat").classList.add("active-nav");
-    else if (current === 1) document.getElementById("navStories").classList.add("active-nav");
-    else if (current === 2) document.getElementById("navProfile").classList.add("active-nav");
-}
-
 function showPage(i) {
     if (i < 0) i = 0;
     if (i >= pages.length) i = pages.length - 1;
-    pages.forEach((id, index) => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = (index === i) ? "block" : "none";
+    pages.forEach((id, idx) => {
+        document.getElementById(id).style.display = (idx === i) ? "block" : "none";
     });
     current = i;
-    // إغلاق المحادثة إذا انتقلنا لصفحة أخرى
+    // أغلق المحادثة إذا انتقلت لغير الدردشات
     if (i !== 0) closeChat();
-    updateNav();
+    // تحديث التبويب النشط
+    document.querySelectorAll(".nav-btn").forEach((btn, idx) => {
+        btn.classList.toggle("active-nav", idx === i);
+    });
 }
 
 function showChats()   { showPage(0); }
 function showStories() { showPage(1); }
 function showProfile() { showPage(2); }
-function closeStories() { showPage(0); }  // ← إضافة الدالة المفقودة
+function closeStories() { showPage(0); }  // العودة للدردشات
 
 // بدء التطبيق
 showPage(0);
