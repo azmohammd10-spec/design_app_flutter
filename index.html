@@ -378,11 +378,23 @@ function openChat(name) {
     if (!chats[name]) chats[name] = [];
     render();
 }
+// ===== 1️⃣ تعريف المتغيرات أولاً =====
+let active = null;
+let chats = JSON.parse(localStorage.getItem("chats")) || {};
+let recognition = null;      // ← تعريف هنا
+let isRecording = false;     // ← تعريف هنا
+
+// ===== 2️⃣ ثم الدوال التي تستخدمها =====
 function closeChat() {
     document.getElementById("chatDetail").style.display = "none";
     active = null;
-    if (recognition && recognition.listening) recognition.stop();
+    if (recognition && recognition.listening) recognition.stop(); // ✅ الآن يعمل
     document.getElementById("sendBtn").classList.remove("recording");
+}
+
+// ===== 3️⃣ دوال التسجيل =====
+function startRecording() {
+    // ... تستخدم recognition و isRecording
 }
 
 // ===== إرسال رسالة (تدعم النص القادم من الميكروفون) =====
