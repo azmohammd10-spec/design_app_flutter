@@ -359,29 +359,49 @@ function showChats()   { showPage(0); }
 function showStories() { showPage(1); }
 function showProfile() { showPage(2); }
 function closeStories() { showPage(0); }
-// ===== السحب للتنقل بين الصفحات =====
-let touchStartX = 0;
-let touchEndX = 0;
+
+// بدء التطبيق
+showPage(0);
+   // ===== السحب للتنقل بين الصفحات (إصدار مُحسَّن) =====
+let startX = 0;
+let startY = 0;
+let currentX = 0;
 let isSwiping = false;
+const SWIPE_THRESHOLD = 40;
 
-const SWIPE_THRESHOLD = 50; // الحد الأدنى للمسافة بالسحب (بكسل)
-
-// دوال مشتركة للسحب باللمس والفأرة
-function handleSwipeStart(clientX) {
-    touchStartX = clientX;
-    isSwiping = true;
+// منع التمرير العمودي أثناء السحب الأفقي
+function handleTouchStart(e) {
+    const touch = e.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    currentX = startX;
+    isSwiping = false; // نعيد تعيينه
 }
 
-function handleSwipeMove(clientX) {
-    if (!isSwiping) return;
-    touchEndX = clientX;
+function handleTouchMove(e) {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const diffX = startX - touch.clientX;
+    const diffY = startY - touch.clientY;
+
+    // إذا كان السحب أفقياً بشكل واضح، نمنع التمرير العمودي
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+        e.preventDefault();
+        isSwiping = true;
+        currentX = touch.clientX;
+    }
 }
 
-function handleSwipeEnd() {
-    if (!isSwiping) return;
-    isSwiping = false;
-    const diff = touchStartX - touchEndX;
-    if (Math.abs(diff) < SWIPE_THRESHOLD) return; // مسافة قصيرة جداً
+function handleTouchEnd(e) {
+    if (!isSwiping) {
+        isSwiping = false;
+        return;
+    }
+    const diff = startX - currentX;
+    if (Math.abs(diff) < SWIPE_THRESHOLD) {
+        isSwiping = false;
+        return;
+    }
 
     if (diff > 0) {
         // سحب لليسار → الصفحة التالية
@@ -390,46 +410,13 @@ function handleSwipeEnd() {
         // سحب لليمين → الصفحة السابقة
         if (current > 0) showPage(current - 1);
     }
+    isSwiping = false;
 }
 
-// === أحداث اللمس (للجوال) ===
-document.addEventListener('touchstart', function(e) {
-    handleSwipeStart(e.changedTouches[0].clientX);
-}, { passive: true });
-
-document.addEventListener('touchmove', function(e) {
-    handleSwipeMove(e.changedTouches[0].clientX);
-}, { passive: true });
-
-document.addEventListener('touchend', function(e) {
-    handleSwipeEnd();
-}, { passive: true });
-
-// === أحداث الفأرة (للكمبيوتر) ===
-let isMouseDown = false;
-
-document.addEventListener('mousedown', function(e) {
-    isMouseDown = true;
-    handleSwipeStart(e.clientX);
-});
-
-document.addEventListener('mousemove', function(e) {
-    if (isMouseDown) handleSwipeMove(e.clientX);
-});
-
-document.addEventListener('mouseup', function(e) {
-    if (isMouseDown) {
-        isMouseDown = false;
-        handleSwipeEnd();
-    }
-});
-
-// منع تحديد النص أثناء السحب (اختياري)
-document.addEventListener('selectstart', function(e) {
-    if (isMouseDown || isSwiping) e.preventDefault();
-});
-// بدء التطبيق
-showPage(0);
+// إضافة المستمعات مع منع التمرير الافتراضي
+document.addEventListener('touchstart', handleTouchStart, { passive: true });
+document.addEventListener('touchmove', handleTouchMove, { passive: false }); // مهم: false لاستخدام preventDefault
+document.addEventListener('touchend', handleTouchEnd, { passive: true }); 
 </script>
 </body>
 </html>
