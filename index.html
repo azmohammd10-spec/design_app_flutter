@@ -55,26 +55,120 @@ body{background:#fff}
 .name{font-weight:bold}
 .chat .msg{font-size:12px;color:#777}
 
-/* نافذة المحادثة */
-#chatDetail{
-    display:none;position:fixed;inset:0;
-    background:#fff;flex-direction:column;z-index:99999
+/* ===== نافذة المحادثة (أساسيات) ===== */
+#chatDetail {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    flex-direction: column;
+    z-index: 99999;
 }
-.header{
-    display:flex;gap:10px;align-items:center;
-    padding:10px 15px;border-bottom:1px solid #eee
-}
-.header button{background:none;border:none;font-size:24px;cursor:pointer}
-#chatName{font-weight:bold;font-size:18px}
 
-#messages{flex:1;overflow:auto;padding:12px}
-#messages .msg{
-    margin:6px 0;padding:10px 14px;border-radius:12px;
-    max-width:75%;background:#dcf8c6;margin-left:auto;
-    font-size:14px;color:#000;word-wrap:break-word
+/* ===== تصميم عصري للمحادثة (الكود الجديد) ===== */
+#chatDetail .header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 10px 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-#messages .msg small{display:block;font-size:10px;color:#555;margin-top:4px;text-align:left}
+#chatDetail .header button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #007bff;
+    padding: 0 10px;
+}
+#chatDetail .header .chat-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+#chatDetail .header .chat-user-info .avatar-sm {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00c6ff, #ff4ecd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #fff;
+}
+#chatDetail .header .chat-user-info .user-name {
+    font-weight: bold;
+    font-size: 16px;
+}
+#chatDetail .header .chat-user-info .user-status {
+    font-size: 12px;
+    color: #28a745;
+}
 
+/* ===== فقاعات الرسائل ===== */
+#messages {
+    flex: 1;
+    overflow: auto;
+    padding: 12px 15px;
+    background: #e5ddd5;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e5ddd5"/><path d="M10 10 L90 10 L90 90 L10 90 Z" fill="%23d5cbc4" opacity="0.3"/></svg>');
+    background-size: 60px 60px;
+}
+#messages .msg-wrapper {
+    display: flex;
+    margin-bottom: 12px;
+    align-items: flex-end;
+    gap: 8px;
+}
+#messages .msg-wrapper.sent {
+    flex-direction: row-reverse;
+}
+#messages .msg-wrapper .avatar-msg {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #fff;
+    flex-shrink: 0;
+}
+#messages .msg-wrapper.sent .avatar-msg {
+    display: none;
+}
+#messages .msg-wrapper .bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+#messages .msg-wrapper.received .bubble {
+    background: #fff;
+    border-top-left-radius: 4px;
+    color: #000;
+}
+#messages .msg-wrapper.sent .bubble {
+    background: #dcf8c6;
+    border-top-right-radius: 4px;
+    color: #000;
+}
+#messages .msg-wrapper .bubble .time {
+    display: block;
+    font-size: 10px;
+    color: #888;
+    margin-top: 4px;
+    text-align: left;
+    direction: ltr;
+}
+#messages .msg-wrapper.sent .bubble .time {
+    text-align: right;
+}
 .input-box{
     display:flex;gap:8px;padding:10px 15px;
     border-top:1px solid #eee;align-items:center
@@ -155,23 +249,28 @@ body{background:#fff}
 
         <!-- نافذة المحادثة المنبثقة -->
         <div id="chatDetail">
-            <div class="header">
-                <button onclick="closeChat()">←</button>
-                <div id="chatName">محادثة</div>
-            </div>
-            <div id="messages"></div>
-            <div class="input-box">
-                <input id="msgInput" placeholder="اكتب رسالة...">
-                <button id="sendBtn" onclick="handleButtonClick()">
-                    <svg id="micIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
-                        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-                        <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-                        <path d="M12 18v3" stroke="white" stroke-width="2"/>
-                    </svg>
-                </button>
+    <div class="header">                          <!-- ← الجديد -->
+        <button onclick="closeChat()">←</button>
+        <div class="chat-user-info">
+            <div class="avatar-sm" id="chatAvatar">👤</div>
+            <div>
+                <div class="user-name" id="chatName">محادثة</div>
+                <div class="user-status" id="chatStatus">متصل الآن</div>
             </div>
         </div>
     </div>
+    <div id="messages"></div>
+    <div class="input-box">
+        <input id="msgInput" placeholder="اكتب رسالة...">
+        <button id="sendBtn" onclick="handleButtonClick()">
+            <svg id="micIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
+                <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+                <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+                <path d="M12 18v3" stroke="white" stroke-width="2"/>
+            </svg>
+        </button>
+    </div>
+</div>
 
     <!-- صفحة القصص -->
     <div id="stories" class="page">
@@ -413,7 +512,19 @@ function showChats()   { showPage(0); }
 function showStories() { showPage(1); }
 function showProfile() { showPage(2); }
 function closeStories() { showPage(0); }
-
+// ===== تحديث رأس المحادثة مع صورة وحالة =====
+function updateChatHeader(name) {
+    document.getElementById("chatName").innerText = name;
+    // جلب صورة المستخدم من ملفه الشخصي (إذا كان موجوداً)
+    let avatar = "👤";
+    if (name === "أحمد") avatar = "😎";
+    else if (name === "خالد") avatar = "🧑‍💻";
+    else avatar = "👤";
+    document.getElementById("chatAvatar").innerHTML = avatar;
+    // الحالة عشوائية
+    const statuses = ["متصل الآن", "آخر ظهور منذ دقيقة", "يكتب...", "شوهد منذ 5 دقائق"];
+    document.getElementById("chatStatus").innerText = statuses[Math.floor(Math.random() * statuses.length)];
+}
 // بدء التطبيق
 showPage(0);
    // ===== السحب للتنقل بين الصفحات (معكوس للـ RTL) =====
