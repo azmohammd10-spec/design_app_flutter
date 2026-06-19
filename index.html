@@ -369,7 +369,8 @@ function sendMsg(text) {
     if (!msg || !active) return;
     chats[active].push({
         text: msg,
-        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+        sender: "me" // تحديد أن هذه الرسالة مرسلة مني
     });
     input.value = "";
     save();
