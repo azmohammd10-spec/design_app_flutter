@@ -68,15 +68,29 @@ body{background:#fff}
     flex:1;border:none;background:#f5f5f5;
     border-radius:25px;padding:12px 16px;font-size:14px
 }
-#sendBtn.recording{
-    animation: pulse 1s infinite;
-    background: linear-gradient(135deg, #ff4d4d, #ff1a1a);
+#sendBtn{
+    width:50px;height:50px;border-radius:50%;border:none;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,#00c6ff,#ff4ecd);
+    box-shadow:0 4px 12px rgba(0,0,0,0.15);
+    transition:0.3s;cursor:pointer;flex-shrink:0
 }
+#sendBtn.active{
+    background:linear-gradient(135deg,#00ff9d,#00c6ff);
+    transform:scale(1.1)
+}
+#sendBtn.recording{
+    animation:pulse 1s infinite;
+    background:linear-gradient(135deg,#ff4d4d,#ff1a1a);
+}
+#sendBtn svg{transition:0.3s}
+
 @keyframes pulse{
     0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,0,0,0.5)}
     70%{transform:scale(1.1);box-shadow:0 0 0 15px rgba(255,0,0,0)}
     100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,0,0,0)}
 }
+
 /* القصص */
 #stories{background:#000;z-index:5000}
 .story-back{
@@ -175,11 +189,11 @@ body{background:#fff}
 </div>
 
 <script>
-// ===== بيانات المحادثات (مخزنة محلياً) =====
+// ===== بيانات المحادثات =====
 let active = null;
 let chats = JSON.parse(localStorage.getItem("chats")) || {};
 
-// ===== فتح محادثة =====
+// ===== فتح / إغلاق المحادثة =====
 function openChat(name) {
     active = name;
     document.getElementById("chatDetail").style.display = "flex";
@@ -188,16 +202,17 @@ function openChat(name) {
     render();
 }
 
-// ===== إغلاق المحادثة =====
 function closeChat() {
     document.getElementById("chatDetail").style.display = "none";
     active = null;
+    if (recognition && recognition.listening) recognition.stop();
+    document.getElementById("sendBtn").classList.remove("recording");
 }
 
-// ===== إرسال رسالة =====
+// ===== إرسال رسالة (تدعم النص القادم من الميكروفون) =====
 function sendMsg(text) {
     let input = document.getElementById("msgInput");
-    let msg = text || input.value.trim();  // إذا أرسلنا نصاً من الميكروفون استخدمه، وإلا خذ من الحقل
+    let msg = text || input.value.trim();
     if (!msg || !active) return;
     chats[active].push({
         text: msg,
@@ -206,7 +221,7 @@ function sendMsg(text) {
     input.value = "";
     save();
     render();
-    updateButtonUI(false); // إعادة الزر لمظهر الميكروفون
+    updateButtonUI(false);
 }
 
 // ===== عرض الرسائل =====
@@ -228,28 +243,29 @@ function save() {
     localStorage.setItem("chats", JSON.stringify(chats));
 }
 
-// ===== معالج الزر الذكي =====
-function handleSend() {
-    sendMsg();
-}
-
-// تغيير شكل الزر عند الكتابة
-// متغيرات التسجيل
-let recognition = null;
-let isRecording = false;
-
-// دالة الضغط على الزر (تقرر إرسال أو تسجيل)
-function handleButtonClick() {
-    let input = document.getElementById("msgInput");
-    let text = input.value.trim();
-    if (text.length > 0) {
-        sendMsg(); // إرسال النص المكتوب
+// ===== تحديث شكل الزر =====
+function updateButtonUI(hasText) {
+    let btn = document.getElementById("sendBtn");
+    let icon = document.getElementById("micIcon");
+    if (hasText) {
+        btn.classList.add("active");
+        btn.classList.remove("recording");
+        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
     } else {
-        startRecording(); // بدء التسجيل الصوتي
+        btn.classList.remove("active");
+        btn.classList.remove("recording");
+        icon.innerHTML = `
+            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+            <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+            <path d="M12 18v3" stroke="white" stroke-width="2"/>
+        `;
     }
 }
 
-// بدء التسجيل
+// ===== التعرف على الصوت =====
+let recognition = null;
+let isRecording = false;
+
 function startRecording() {
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
         alert("المتصفح لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.");
@@ -275,7 +291,7 @@ function startRecording() {
     recognition.onresult = function(event) {
         let transcript = event.results[0][0].transcript;
         document.getElementById("msgInput").value = transcript;
-        sendMsg(transcript); // إرسال فوراً
+        sendMsg(transcript);
     };
 
     recognition.onerror = function(event) {
@@ -291,7 +307,6 @@ function startRecording() {
     recognition.start();
 }
 
-// إيقاف التسجيل (واجهة)
 function stopRecordingUI() {
     isRecording = false;
     let btn = document.getElementById("sendBtn");
@@ -300,27 +315,27 @@ function stopRecordingUI() {
     updateButtonUI(input.value.trim().length > 0);
 }
 
-// تحديث شكل الزر (ميكروفون/إرسال) – موجودة مسبقاً لكن نضيفها إن لم تكن
-function updateButtonUI(hasText) {
-    let btn = document.getElementById("sendBtn");
-    let icon = document.getElementById("micIcon");
-    if (hasText) {
-        btn.classList.add("active");
-        btn.classList.remove("recording");
-        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
+// ===== معالج الضغط على الزر =====
+function handleButtonClick() {
+    let input = document.getElementById("msgInput");
+    let text = input.value.trim();
+    if (text.length > 0) {
+        sendMsg();
     } else {
-        btn.classList.remove("active");
-        btn.classList.remove("recording");
-        icon.innerHTML = `
-            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-            <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-            <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        `;
+        startRecording();
     }
 }
-// إرسال بالضغط على Enter
+
+// ===== أحداث الإدخال =====
+document.addEventListener("input", function(e) {
+    if (e.target && e.target.id === "msgInput") {
+        let text = e.target.value.trim();
+        updateButtonUI(text.length > 0);
+    }
+});
+
 document.getElementById("msgInput").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") handleSend();
+    if (e.key === "Enter") handleButtonClick();
 });
 
 // ===== التنقل بين الصفحات =====
@@ -334,9 +349,7 @@ function showPage(i) {
         document.getElementById(id).style.display = (idx === i) ? "block" : "none";
     });
     current = i;
-    // أغلق المحادثة إذا انتقلت لغير الدردشات
     if (i !== 0) closeChat();
-    // تحديث التبويب النشط
     document.querySelectorAll(".nav-btn").forEach((btn, idx) => {
         btn.classList.toggle("active-nav", idx === i);
     });
@@ -345,100 +358,10 @@ function showPage(i) {
 function showChats()   { showPage(0); }
 function showStories() { showPage(1); }
 function showProfile() { showPage(2); }
-function closeStories() { showPage(0); }  // العودة للدردشات
+function closeStories() { showPage(0); }
 
 // بدء التطبيق
 showPage(0);
-   document.addEventListener("input", function(e) {
-    if (e.target && e.target.id === "msgInput") {
-        let text = e.target.value.trim();
-        updateButtonUI(text.length > 0);
-    }
-}); 
-   // متغيرات التسجيل
-let recognition = null;
-let isRecording = false;
-
-// دالة الضغط على الزر (تقرر إرسال أو تسجيل)
-function handleButtonClick() {
-    let input = document.getElementById("msgInput");
-    let text = input.value.trim();
-    if (text.length > 0) {
-        sendMsg(); // إرسال النص المكتوب
-    } else {
-        startRecording(); // بدء التسجيل الصوتي
-    }
-}
-
-// بدء التسجيل
-function startRecording() {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-        alert("المتصفح لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.");
-        return;
-    }
-    if (isRecording) return;
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ar-AR';
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    let btn = document.getElementById("sendBtn");
-    btn.classList.add("recording");
-    btn.classList.remove("active");
-    document.getElementById("micIcon").innerHTML = `
-        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/>
-        <rect x="9" y="9" width="6" height="6" rx="1" fill="white"/>
-    `;
-    isRecording = true;
-
-    recognition.onresult = function(event) {
-        let transcript = event.results[0][0].transcript;
-        document.getElementById("msgInput").value = transcript;
-        sendMsg(transcript); // إرسال فوراً
-    };
-
-    recognition.onerror = function(event) {
-        console.error("خطأ:", event.error);
-        alert("خطأ في التسجيل: " + event.error);
-        stopRecordingUI();
-    };
-
-    recognition.onend = function() {
-        stopRecordingUI();
-    };
-
-    recognition.start();
-}
-
-// إيقاف التسجيل (واجهة)
-function stopRecordingUI() {
-    isRecording = false;
-    let btn = document.getElementById("sendBtn");
-    btn.classList.remove("recording");
-    let input = document.getElementById("msgInput");
-    updateButtonUI(input.value.trim().length > 0);
-}
-
-// تحديث شكل الزر (ميكروفون/إرسال) – موجودة مسبقاً لكن نضيفها إن لم تكن
-function updateButtonUI(hasText) {
-    let btn = document.getElementById("sendBtn");
-    let icon = document.getElementById("micIcon");
-    if (hasText) {
-        btn.classList.add("active");
-        btn.classList.remove("recording");
-        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
-    } else {
-        btn.classList.remove("active");
-        btn.classList.remove("recording");
-        icon.innerHTML = `
-            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-            <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-            <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        `;
-    }
-} 
 </script>
 </body>
 </html>
