@@ -8,16 +8,17 @@
 <style> 
  
 /* 1️⃣ جعل #chatDetail لا يتجاوز شريط التنقل */
-#chatDetail {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: #fff;
-    flex-direction: column;
-    z-index: 99999;
-    height: 100vh;
-    max-height: 100vh;
-    padding-bottom: 65px; /* ✅ مساحة لشريط التنقل */
+#chatDetail{
+    display:none;
+    position:fixed;
+    top:0;
+    right:0;
+    left:0;
+    bottom:65px; /* ارتفاع شريط التنقل */
+    background:#fff;
+    flex-direction:column;
+    z-index:99998;
+    overflow:hidden;
 }
 
 /* 2️⃣ جعل شريط الإدخال في مكانه الصحيح */
@@ -101,7 +102,7 @@ body {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    z-index: 9999;
+    z-index: 99999;
 }
 .nav-btn {
     flex: 1;
