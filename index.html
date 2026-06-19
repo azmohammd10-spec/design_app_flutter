@@ -6,21 +6,24 @@
 <title>تطبيق دردشة</title>
 
 <style>
- /* ===== صفحة الملف الشخصي ===== */
+/* ===== صفحة الملف الشخصي ===== */
 #profilePage {
-    background:#fff;
-    overflow-y:auto;
+    background: #fff;
+    overflow-y: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #profilePage .avatar-edit {
-    position:relative;
-    cursor:pointer;
+    position: relative;
+    cursor: pointer;
 }
 #profilePage .avatar-edit:hover {
-    opacity:0.8;
+    opacity: 0.8;
 }
 #profilePage input[type="file"] {
-    display:none;
-}   
+    display: none;
+}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,sans-serif}
 body{background:#fff}
 
@@ -355,14 +358,26 @@ let active = null;
 let chats = JSON.parse(localStorage.getItem("chats")) || {};
 
 // ===== فتح / إغلاق المحادثة =====
+// ===== 1️⃣ تعريف الدالة أولاً =====
+function updateChatHeader(name) {
+    document.getElementById("chatName").innerText = name;
+    let avatar = "👤";
+    if (name === "أحمد") avatar = "😎";
+    else if (name === "خالد") avatar = "🧑‍💻";
+    else avatar = "👤";
+    document.getElementById("chatAvatar").innerHTML = avatar;
+    const statuses = ["متصل الآن", "آخر ظهور منذ دقيقة", "يكتب...", "شوهد منذ 5 دقائق"];
+    document.getElementById("chatStatus").innerText = statuses[Math.floor(Math.random() * statuses.length)];
+}
+
+// ===== 2️⃣ ثم استدعها في الدوال الأخرى =====
 function openChat(name) {
     active = name;
     document.getElementById("chatDetail").style.display = "flex";
-    updateChatHeader(name); // استدعاء الدالة الجديدة
+    updateChatHeader(name); // ✅ الآن الدالة معرفة
     if (!chats[name]) chats[name] = [];
     render();
 }
-
 function closeChat() {
     document.getElementById("chatDetail").style.display = "none";
     active = null;
