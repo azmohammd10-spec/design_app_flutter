@@ -195,17 +195,18 @@ function closeChat() {
 }
 
 // ===== إرسال رسالة =====
-function sendMsg() {
+function sendMsg(text) {
     let input = document.getElementById("msgInput");
-    let text = input.value.trim();
-    if (!text || !active) return;
+    let msg = text || input.value.trim();  // إذا أرسلنا نصاً من الميكروفون استخدمه، وإلا خذ من الحقل
+    if (!msg || !active) return;
     chats[active].push({
-        text: text,
+        text: msg,
         time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
     });
     input.value = "";
     save();
     render();
+    updateButtonUI(false); // إعادة الزر لمظهر الميكروفون
 }
 
 // ===== عرض الرسائل =====
@@ -354,6 +355,90 @@ showPage(0);
         updateButtonUI(text.length > 0);
     }
 }); 
+   // متغيرات التسجيل
+let recognition = null;
+let isRecording = false;
+
+// دالة الضغط على الزر (تقرر إرسال أو تسجيل)
+function handleButtonClick() {
+    let input = document.getElementById("msgInput");
+    let text = input.value.trim();
+    if (text.length > 0) {
+        sendMsg(); // إرسال النص المكتوب
+    } else {
+        startRecording(); // بدء التسجيل الصوتي
+    }
+}
+
+// بدء التسجيل
+function startRecording() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("المتصفح لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.");
+        return;
+    }
+    if (isRecording) return;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'ar-AR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    let btn = document.getElementById("sendBtn");
+    btn.classList.add("recording");
+    btn.classList.remove("active");
+    document.getElementById("micIcon").innerHTML = `
+        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" fill="none"/>
+        <rect x="9" y="9" width="6" height="6" rx="1" fill="white"/>
+    `;
+    isRecording = true;
+
+    recognition.onresult = function(event) {
+        let transcript = event.results[0][0].transcript;
+        document.getElementById("msgInput").value = transcript;
+        sendMsg(transcript); // إرسال فوراً
+    };
+
+    recognition.onerror = function(event) {
+        console.error("خطأ:", event.error);
+        alert("خطأ في التسجيل: " + event.error);
+        stopRecordingUI();
+    };
+
+    recognition.onend = function() {
+        stopRecordingUI();
+    };
+
+    recognition.start();
+}
+
+// إيقاف التسجيل (واجهة)
+function stopRecordingUI() {
+    isRecording = false;
+    let btn = document.getElementById("sendBtn");
+    btn.classList.remove("recording");
+    let input = document.getElementById("msgInput");
+    updateButtonUI(input.value.trim().length > 0);
+}
+
+// تحديث شكل الزر (ميكروفون/إرسال) – موجودة مسبقاً لكن نضيفها إن لم تكن
+function updateButtonUI(hasText) {
+    let btn = document.getElementById("sendBtn");
+    let icon = document.getElementById("micIcon");
+    if (hasText) {
+        btn.classList.add("active");
+        btn.classList.remove("recording");
+        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
+    } else {
+        btn.classList.remove("active");
+        btn.classList.remove("recording");
+        icon.innerHTML = `
+            <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+            <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+            <path d="M12 18v3" stroke="white" stroke-width="2"/>
+        `;
+    }
+} 
 </script>
 </body>
 </html>
