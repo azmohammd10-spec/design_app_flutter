@@ -131,12 +131,18 @@ body {
 #chatPage {
     padding: 70px 12px 90px;
 }
-.chat {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    border-bottom: 1p9x solid #eee;
-    cursor: pointer;
+.chat{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px;
+    border-bottom:1px solid #eee;
+    cursor:pointer;
+    transition:background .2s ease;
+}
+
+.chat:hover{
+    background:#f8f9fa;
 }
 .left {
     display: flex;
