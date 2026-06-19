@@ -359,7 +359,75 @@ function showChats()   { showPage(0); }
 function showStories() { showPage(1); }
 function showProfile() { showPage(2); }
 function closeStories() { showPage(0); }
+// ===== السحب للتنقل بين الصفحات =====
+let touchStartX = 0;
+let touchEndX = 0;
+let isSwiping = false;
 
+const SWIPE_THRESHOLD = 50; // الحد الأدنى للمسافة بالسحب (بكسل)
+
+// دوال مشتركة للسحب باللمس والفأرة
+function handleSwipeStart(clientX) {
+    touchStartX = clientX;
+    isSwiping = true;
+}
+
+function handleSwipeMove(clientX) {
+    if (!isSwiping) return;
+    touchEndX = clientX;
+}
+
+function handleSwipeEnd() {
+    if (!isSwiping) return;
+    isSwiping = false;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) < SWIPE_THRESHOLD) return; // مسافة قصيرة جداً
+
+    if (diff > 0) {
+        // سحب لليسار → الصفحة التالية
+        if (current < pages.length - 1) showPage(current + 1);
+    } else {
+        // سحب لليمين → الصفحة السابقة
+        if (current > 0) showPage(current - 1);
+    }
+}
+
+// === أحداث اللمس (للجوال) ===
+document.addEventListener('touchstart', function(e) {
+    handleSwipeStart(e.changedTouches[0].clientX);
+}, { passive: true });
+
+document.addEventListener('touchmove', function(e) {
+    handleSwipeMove(e.changedTouches[0].clientX);
+}, { passive: true });
+
+document.addEventListener('touchend', function(e) {
+    handleSwipeEnd();
+}, { passive: true });
+
+// === أحداث الفأرة (للكمبيوتر) ===
+let isMouseDown = false;
+
+document.addEventListener('mousedown', function(e) {
+    isMouseDown = true;
+    handleSwipeStart(e.clientX);
+});
+
+document.addEventListener('mousemove', function(e) {
+    if (isMouseDown) handleSwipeMove(e.clientX);
+});
+
+document.addEventListener('mouseup', function(e) {
+    if (isMouseDown) {
+        isMouseDown = false;
+        handleSwipeEnd();
+    }
+});
+
+// منع تحديد النص أثناء السحب (اختياري)
+document.addEventListener('selectstart', function(e) {
+    if (isMouseDown || isSwiping) e.preventDefault();
+});
 // بدء التطبيق
 showPage(0);
 </script>
