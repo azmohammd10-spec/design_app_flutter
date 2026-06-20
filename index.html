@@ -328,86 +328,30 @@ body {
     }
 }
 
-/* ===== صفحة القصص ===== */
-#stories {
-    background: #000;
-    z-index: 5000;
-}
-.story-back {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    font-size: 20px;
-    cursor: pointer;
-}
-.story-actions {
-    position: absolute;
-    left: 20px;          /* من right إلى left */
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    color: #fff;
-    font-size: 28px;
-    z-index: 10;
-}
-/* ===== زر إنشاء قصة ===== */
-.story-create-btn {
-    position: fixed;
-    bottom: 80px;          /* فوق شريط التنقل مباشرة */
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    width: 90%;
-    max-width: 320px;
-}
+<!-- ===== صفحة القصص ===== -->
+<div id="stories" class="page">
+    <button class="story-back" onclick="closeStories()">←</button>
+    
+    <!-- حاوية القصص (feed) -->
+    <div id="storyFeed" class="story-feed">
+        <!-- سيتم إضافة القصص هنا بواسطة JavaScript -->
+    </div>
 
-/* ===== زر إنشاء قصة (صغير وأنيق) ===== */
-.story-create-btn {
-    position: fixed;
-    bottom: 85px;           /* فوق شريط التنقل */
-    right: 20px;            /* في الزاوية اليمنى السفلية */
-    z-index: 100;
-}
+    <!-- أزرار التفاعل الجانبية -->
+    <div class="story-actions">
+        <div onclick="likeStory()">❤️</div>
+        <div onclick="viewStory()">👁️</div>
+        <div onclick="shareStory()">♻️</div>
+        <div onclick="downloadStory()">⬇️</div>
+    </div>
 
-.story-create-btn button {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: none;
-    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
-    color: #fff;
-    font-size: 32px;
-    font-weight: bold;
-    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.story-create-btn button:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(108, 92, 231, 0.6);
-}
-
-.story-create-btn button:active {
-    transform: scale(0.9);
-}
-
-.story-create-btn button span {
-    font-size: 36px;
-    line-height: 1;
-    margin-top: -2px;       /* لتوسيط علامة + */
-}
+    <!-- زر إنشاء قصة (صغير وأنيق) -->
+    <div class="story-create-btn">
+        <button onclick="createNewStory()">
+            <span>+</span>
+        </button>
+    </div>
+</div>
 </style>
 </head>
 <body>
@@ -467,31 +411,30 @@ body {
         </div>
     </div>
 
-
-<!-- ===== صفحة القصص ===== -->
+   <!-- ===== صفحة القصص ===== -->
 <div id="stories" class="page">
     <button class="story-back" onclick="closeStories()">←</button>
     
-    <div style="color:#fff;text-align:center;margin-top:50%;font-size:20px">
-        📸 القصص قادمة قريباً
+    <!-- حاوية القصص (feed) -->
+    <div id="storyFeed" class="story-feed">
+        <!-- سيتم إضافة القصص هنا بواسطة JavaScript -->
     </div>
 
-    <!-- أيقونات التفاعل (على اليسار) -->
+    <!-- أزرار التفاعل الجانبية -->
     <div class="story-actions">
-        <div>❤️</div>
-        <div>👁️</div>
-        <div>♻️</div>
-        <div>⬇️</div>
+        <div onclick="likeStory()">❤️</div>
+        <div onclick="viewStory()">👁️</div>
+        <div onclick="shareStory()">♻️</div>
+        <div onclick="downloadStory()">⬇️</div>
     </div>
 
     <!-- زر إنشاء قصة (صغير وأنيق) -->
     <div class="story-create-btn">
-        <button onclick="createStory()">
+        <button onclick="createNewStory()">
             <span>+</span>
         </button>
     </div>
 </div>
-    
     <!-- ===== صفحة الحساب ===== -->
     <div id="profilePage" class="page">
         <div style="padding:30px 20px; text-align:center;">
