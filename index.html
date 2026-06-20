@@ -6,6 +6,69 @@
 <title>تطبيق دردشة</title>
 
 <style> 
+  /* زر إنشاء قصة (وسط الشاشة) */
+.story-create-center {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+}
+
+.story-create-center button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.5);
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.story-create-center button:hover {
+    transform: scale(1.1);
+}
+
+/* حساب المستخدم (أسفل يمين) */
+.story-user-info {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,0,0,0.6);
+    padding: 6px 15px 6px 8px;
+    border-radius: 30px;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.story-user-info .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00c6ff, #ff4ecd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #fff;
+}
+
+.story-user-info .user-name {
+    color: #fff;
+    font-size: 15px;
+    font-weight: bold;
+}  
 /* ===== زر كتم الصوت على الفيديو ===== */
 .story-item .mute-btn {
     position: absolute;
@@ -531,6 +594,25 @@ body {
         <button onclick="createNewStory()">
             <span>+</span>
         </button>
+   <!-- زر إنشاء قصة (وسط الشاشة) -->
+<div class="story-create-center">
+    <button onclick="openCreateOptions()">
+        <span>+</span>
+    </button>
+</div>
+
+<!-- نافذة الخيارات (تظهر عند الضغط على +) -->
+<div id="createOptions" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); border-radius:20px; padding:25px; z-index:9999; min-width:220px; text-align:center;">
+    <button onclick="createTextStory()" style="display:block; width:100%; padding:14px; margin:8px 0; background:linear-gradient(135deg,#6c5ce7,#a29bfe); border:none; border-radius:12px; color:#fff; font-size:18px; cursor:pointer;">📝 كتابة حالة</button>
+    <button onclick="createMediaStory()" style="display:block; width:100%; padding:14px; margin:8px 0; background:linear-gradient(135deg,#00b894,#00cec9); border:none; border-radius:12px; color:#fff; font-size:18px; cursor:pointer;">📸 اختيار من المعرض</button>
+    <button onclick="closeCreateOptions()" style="display:block; width:100%; padding:14px; margin:8px 0; background:#ff4d4d; border:none; border-radius:12px; color:#fff; font-size:16px; cursor:pointer;">إلغاء</button>
+</div>
+
+<!-- حساب المستخدم (أسفل يمين) -->
+<div class="story-user-info">
+    <div class="user-avatar" id="storyUserAvatar">👤</div>
+    <div class="user-name" id="storyUserName">مستخدم</div>
+</div> 
     </div>
 
     <!-- ===== نافذة التحرير (قص الفيديو) ===== -->
@@ -1167,14 +1249,42 @@ function closeEditModal() {
 }
 
 // دالة إضافة قصة جديدة (مع دعم الفيديو)
-function createNewStory() {
+// فتح وإغلاق نافذة الخيارات
+function openCreateOptions() {
+    document.getElementById('createOptions').style.display = 'block';
+}
+
+function closeCreateOptions() {
+    document.getElementById('createOptions').style.display = 'none';
+}
+
+// إنشاء قصة نصية
+function createTextStory() {
+    closeCreateOptions();
+    const text = prompt("📝 اكتب حالتك:");
+    if (text && text.trim() !== '') {
+        const newStory = {
+            type: "text",
+            text: text.trim(),
+            username: profile.name || "مستخدم",
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        };
+        stories.unshift(newStory);
+        localStorage.setItem("stories", JSON.stringify(stories));
+        renderStories();
+        document.getElementById("storyFeed").scrollTop = 0;
+    }
+}
+
+// إنشاء قصة من المعرض
+function createMediaStory() {
+    closeCreateOptions();
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*,video/*";
     input.onchange = function(event) {
         const file = event.target.files[0];
         if (!file) return;
-        
         const reader = new FileReader();
         reader.onload = function(e) {
             const newStory = {
@@ -1183,13 +1293,12 @@ function createNewStory() {
                 username: profile.name || "مستخدم",
                 time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
                 startTime: 0,
-                endTime: 0 // سيتم تعيينه لاحقاً عند التحميل
+                endTime: 0
             };
             stories.unshift(newStory);
             localStorage.setItem("stories", JSON.stringify(stories));
             renderStories();
             document.getElementById("storyFeed").scrollTop = 0;
-            // إذا كان فيديو، افتح محرر القص تلقائياً
             if (newStory.type === 'video') {
                 setTimeout(() => openEditModal(0), 500);
             }
@@ -1199,14 +1308,16 @@ function createNewStory() {
     input.click();
 }
 
-// دوال التفاعل
-function likeStory() { alert("❤️ تم الإعجاب بالقصة!"); }
-function viewStory() { alert("👁️ تم مشاهدة القصة!"); }
-function shareStory() { alert("♻️ تم مشاركة القصة!"); }
-function downloadStory() { alert("⬇️ يتم تحميل القصة..."); }
+// تحديث معلومات المستخدم في صفحة القصص
+function updateStoryUserInfo() {
+    const avatar = document.getElementById('storyUserAvatar');
+    const name = document.getElementById('storyUserName');
+    if (avatar) avatar.textContent = profile.avatar || '👤';
+    if (name) name.textContent = profile.name || 'مستخدم';
+}
 
-// تحميل القصص
-renderStories();
+// استدعاء تحديث المعلومات
+updateStoryUserInfo();
 showPage(0);
 </script>
 </body>
