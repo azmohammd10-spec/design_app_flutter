@@ -328,7 +328,119 @@ body {
     }
 }
 
-<!-- ===== صفحة القصص ===== -->
+/* ===== صفحة القصص - تيك توك ===== */
+#stories {
+    background: #000;
+    z-index: 5000;
+    overflow: hidden;
+}
+
+.story-feed {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
+.story-feed::-webkit-scrollbar {
+    display: none;
+}
+
+.story-item {
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #111;
+}
+
+.story-item img,
+.story-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-item .story-username {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+
+.story-item .story-time {
+    position: absolute;
+    bottom: 50px;
+    left: 20px;
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    z-index: 5;
+}
+
+/* أزرار التفاعل (على اليسار) */
+.story-actions {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    color: #fff;
+    font-size: 28px;
+    z-index: 10;
+    cursor: pointer;
+}
+.story-actions div {
+    transition: transform 0.2s;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+.story-actions div:hover {
+    transform: scale(1.2);
+}
+
+/* زر إنشاء قصة */
+.story-create-btn {
+    position: fixed;
+    bottom: 85px;
+    right: 20px;
+    z-index: 100;
+}
+
+.story-create-btn button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: #fff;
+    font-size: 36px;
+    font-weight: bold;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+.story-create-btn button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(108, 92, 231, 0.6);
+}
+.story-create-btn button:active {
+    transform: scale(0.9);
+}
+
+  <!-- ===== صفحة القصص ===== -->
 <div id="stories" class="page">
     <button class="story-back" onclick="closeStories()">←</button>
     
@@ -351,7 +463,7 @@ body {
             <span>+</span>
         </button>
     </div>
-</div>
+</div>  
 </style>
 </head>
 <body>
@@ -833,10 +945,93 @@ function logout() {
 // ============================================
 //  🔟 بدء التطبيق
 // ============================================
- function createStory() {
-    alert("📸 اختر صورة أو فيديو لنشره كقصة.");
-    // يمكنك لاحقاً إضافة كود لفتح الكاميرا أو اختيار ملف
+ // ============================================
+//  إدارة القصص (مثل تيك توك)
+// ============================================
+
+// تحميل القصص من localStorage أو مصفوفة افتراضية
+let stories = JSON.parse(localStorage.getItem("stories")) || [];
+
+// دالة عرض القصص
+function renderStories() {
+    const feed = document.getElementById("storyFeed");
+    feed.innerHTML = "";
+    
+    if (stories.length === 0) {
+        feed.innerHTML = `
+            <div style="color:#fff;text-align:center;margin-top:50%;font-size:20px">
+                📸 لا توجد قصص حالياً<br>
+                <span style="font-size:16px;color:#aaa;">اضغط + لإضافة قصة</span>
+            </div>
+        `;
+        return;
+    }
+
+    stories.forEach((story, index) => {
+        const item = document.createElement("div");
+        item.className = "story-item";
+        
+        let mediaHTML = "";
+        if (story.type === "video") {
+            mediaHTML = `<video src="${story.url}" autoplay muted loop playsinline></video>`;
+        } else {
+            mediaHTML = `<img src="${story.url}" alt="قصة">`;
+        }
+        
+        item.innerHTML = `
+            ${mediaHTML}
+            <div class="story-username">${story.username || "مستخدم"}</div>
+            <div class="story-time">${story.time || "الآن"}</div>
+        `;
+        
+        feed.appendChild(item);
+    });
 }
+
+// دالة إضافة قصة جديدة (تفتح مستعرض الملفات)
+function createNewStory() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*,video/*";
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const newStory = {
+                url: e.target.result,
+                type: file.type.startsWith("video") ? "video" : "image",
+                username: profile.name || "مستخدم",
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            };
+            stories.unshift(newStory); // إضافة في البداية
+            localStorage.setItem("stories", JSON.stringify(stories));
+            renderStories();
+            // التمرير إلى أعلى لعرض القصة الجديدة
+            document.getElementById("storyFeed").scrollTop = 0;
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
+// دوال التفاعل (للتوضيح)
+function likeStory() {
+    alert("❤️ تم الإعجاب بالقصة!");
+}
+function viewStory() {
+    alert("👁️ تم مشاهدة القصة!");
+}
+function shareStory() {
+    alert("♻️ تم مشاركة القصة!");
+}
+function downloadStory() {
+    alert("⬇️ يتم تحميل القصة...");
+}
+
+// تحميل القصص عند فتح الصفحة
+renderStories();
 showPage(0);
 </script>
 </body>
