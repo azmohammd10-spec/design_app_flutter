@@ -547,70 +547,7 @@ body {
 <body>
 
 <div id="app">
- <!-- ===== صفحة القصص ===== -->
-<div id="stories" class="page">
-    <button class="story-back" onclick="closeStories()">←</button>
-    
-    <!-- حاوية القصص -->
-    <div id="storyFeed" class="story-feed"></div>
 
-    <!-- أزرار التفاعل -->
-    <div class="story-actions">
-        <div onclick="likeStory()">❤️</div>
-        <div onclick="viewStory()">👁️</div>
-        <div onclick="shareStory()">♻️</div>
-        <div onclick="downloadStory()">⬇️</div>
-    </div>
-<!-- زر إنشاء قصة -->
-<div class="story-create-center">
-    <button onclick="openCreateOptions()">
-        <span>+</span>
-    </button>
-</div>
-
-<!-- حساب المستخدم -->
-<div class="story-user-info">
-    <div class="user-avatar" id="storyUserAvatar">👤</div>
-    <div class="user-name" id="storyUserName">مستخدم</div>
-</div>
-    <!-- زر إنشاء قصة (وسط الشاشة) -->
-    <div class="story-create-center">
-        <button onclick="openCreateOptions()">
-            <span>+</span>
-        </button>
-    </div>
-
-    <!-- نافذة الخيارات -->
-    <div id="createOptions" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.9); border-radius:20px; padding:25px; z-index:9999; min-width:220px; text-align:center;">
-        <button onclick="createTextStory()" style="display:block; width:100%; padding:14px; margin:8px 0; background:linear-gradient(135deg,#6c5ce7,#a29bfe); border:none; border-radius:12px; color:#fff; font-size:18px; cursor:pointer;">📝 كتابة حالة</button>
-        <button onclick="createMediaStory()" style="display:block; width:100%; padding:14px; margin:8px 0; background:linear-gradient(135deg,#00b894,#00cec9); border:none; border-radius:12px; color:#fff; font-size:18px; cursor:pointer;">📸 اختيار من المعرض</button>
-        <button onclick="closeCreateOptions()" style="display:block; width:100%; padding:14px; margin:8px 0; background:#ff4d4d; border:none; border-radius:12px; color:#fff; font-size:16px; cursor:pointer;">إلغاء</button>
-    </div>
-
-    <!-- حساب المستخدم -->
-    <div class="story-user-info">
-        <div class="user-avatar" id="storyUserAvatar">👤</div>
-        <div class="user-name" id="storyUserName">مستخدم</div>
-    </div>
-
-    <!-- نافذة التحرير -->
-    <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:#222; border-radius:20px; padding:20px; width:90%; max-width:500px; color:#fff;">
-            <h3 style="text-align:center; margin-bottom:15px;">✂️ قص الفيديو</h3>
-            <video id="editVideo" controls style="width:100%; border-radius:10px; max-height:300px;"></video>
-            <div style="margin:15px 0;">
-                <label>🟢 بداية: <span id="startLabel">0</span> ثانية</label>
-                <input type="range" id="startRange" min="0" max="100" value="0" style="width:100%;">
-                <label>🔴 نهاية: <span id="endLabel">100</span> ثانية</label>
-                <input type="range" id="endRange" min="0" max="100" value="100" style="width:100%;">
-            </div>
-            <div style="display:flex; gap:10px; justify-content:center;">
-                <button onclick="saveEditedStory()" style="padding:10px 30px; background:#6c5ce7; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">💾 حفظ</button>
-                <button onclick="closeEditModal()" style="padding:10px 30px; background:#ff4d4d; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">إلغاء</button>
-            </div>
-        </div>
-    </div>
-</div>
     <!-- ===== صفحة الدردشات ===== -->
     <div id="chatPage" class="page">
 
