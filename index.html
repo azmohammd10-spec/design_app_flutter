@@ -1699,51 +1699,62 @@
           container.scrollTop = container.scrollHeight;
         }
 
-        async sendMessage(text, file = null) {
-  // 1. تحقق من القفل قبل أي شيء
+        // داخل الكلاس ChatModule
+
+async sendMessage(text, file = null) {
   if (this.isSending) return;
   if (!this.activeChatId) return;
   
-  this.isSending = true; // تفعيل القفل
+  this.isSending = true; 
   
   try {
-    // (الكود الخاص بـ fileId و mediaType كما هو)
-    let fileId = null;
-    let mediaType = null;
-    if (file) {
-      // ... كود معالجة الملفات ...
-    }
-
     const msg = {
+      id: Utils.generateId(), // إنشاء ID ثابت للرسالة
       chatId: this.activeChatId,
       text: Utils.sanitize(text || ''),
       senderId: this.profile.getUserId(),
       senderName: this.profile.getUserName(),
       status: 'sent',
-      fileId: fileId,
-      mediaType: mediaType,
       createdAt: Date.now()
     };
 
-    // 2. الحفظ في قاعدة البيانات
+    // 1. حفظ الرسالة (الحالة الأولى: Sent)
     await this.dataManager.saveMessage(msg);
     
-    // 3. التحديث مرة واحدة فقط
+    // 2. تحديث الواجهة فوراً
     await this.renderMessages(this.activeChatId);
     await this.renderChatList();
 
-    // القفل سيتم فتحه بعد تأكيد الإرسال
+    // 3. تأخير بسيط لمحاكاة الإرسال الناجح ثم التحديث
     setTimeout(async () => {
-      this.isSending = false; // فتح القفل بعد المعالجة
       msg.status = 'delivered';
-      await this.dataManager.saveMessage(msg);
-      if (this.activeChatId === msg.chatId) await this.renderMessages(this.activeChatId);
+      await this.dataManager.saveMessage(msg); // تحديث الحالة في DB
+      
+      // التحديث هنا مشروط بأن المحادثة لا تزال مفتوحة
+      if (this.activeChatId === msg.chatId) {
+        await this.renderMessages(this.activeChatId);
+      }
+      
+      this.isSending = false; // فتح القفل فقط بعد انتهاء العملية بالكامل
       this._simulateReply(this.activeChatId);
-    }, 500);
+    }, 600);
 
   } catch (err) {
     this.isSending = false;
     console.error("خطأ في الإرسال:", err);
+  }
+}
+
+handleSend() {
+  const text = this.messageInput.value.trim();
+  if (this.isSending) return; // منع التكرار أثناء المعالجة
+  
+  if (text) {
+    this.messageInput.value = ''; // مسح الحقل فوراً لمنع الضغط المكرر
+    this._updateSendIcon();
+    this.sendMessage(text);
+  } else {
+    this.startRecording();
   }
 }
 
