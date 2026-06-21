@@ -639,15 +639,6 @@ body {
             </div>
         </div>
     </div>
-
-     <!-- ===== صفحة القصص ===== -->
-<div id="stories" class="page">
-    <!-- شريط تيك توك العلوي -->
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; position:absolute; top:0; left:0; right:0; z-index:20; background:linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);">
-        <span style="font-size:18px; font-weight:bold; color:#fff;">لك</span>
-        <span style="font-size:18px; font-weight:bold; color:#fff;">قصتي</span>
-    </div>
-
     <button class="story-back" onclick="closeStories()">←</button>
     <div id="storyFeed" class="story-feed"></div>
     <div class="story-actions">
@@ -660,39 +651,23 @@ body {
         <div class="user-avatar" id="storyUserAvatar">👤</div>
         <div class="user-name" id="storyUserName">مستخدم</div>
     </div>
-    <div id="editModal" style="display:none; ...">
-        ...
-    </div>
-</div>
-        <button class="story-back" onclick="closeStories()">←</button>
-        <div id="storyFeed" class="story-feed"></div>
-        <div class="story-actions">
-            <div onclick="likeStory()">❤️</div>
-            <div onclick="viewStory()">👁️</div>
-            <div onclick="shareStory()">♻️</div>
-            <div onclick="downloadStory()">⬇️</div>
-        </div>
-        <div class="story-user-info">
-            <div class="user-avatar" id="storyUserAvatar">👤</div>
-            <div class="user-name" id="storyUserName">مستخدم</div>
-        </div>
-        <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-            <div style="background:#222; border-radius:20px; padding:20px; width:90%; max-width:500px; color:#fff;">
-                <h3 style="text-align:center; margin-bottom:15px;">✂️ قص الفيديو</h3>
-                <video id="editVideo" controls style="width:100%; border-radius:10px; max-height:300px;"></video>
-                <div style="margin:15px 0;">
-                    <label>🟢 بداية: <span id="startLabel">0</span> ثانية</label>
-                    <input type="range" id="startRange" min="0" max="100" value="0" style="width:100%;">
-                    <label>🔴 نهاية: <span id="endLabel">100</span> ثانية</label>
-                    <input type="range" id="endRange" min="0" max="100" value="100" style="width:100%;">
-                </div>
-                <div style="display:flex; gap:10px; justify-content:center;">
-                    <button onclick="saveEditedStory()" style="padding:10px 30px; background:#6c5ce7; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">💾 حفظ</button>
-                    <button onclick="closeEditModal()" style="padding:10px 30px; background:#ff4d4d; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">إلغاء</button>
-                </div>
+    <div id="editModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#222; border-radius:20px; padding:20px; width:90%; max-width:500px; color:#fff;">
+            <h3 style="text-align:center; margin-bottom:15px;">✂️ قص الفيديو</h3>
+            <video id="editVideo" controls style="width:100%; border-radius:10px; max-height:300px;"></video>
+            <div style="margin:15px 0;">
+                <label>🟢 بداية: <span id="startLabel">0</span> ثانية</label>
+                <input type="range" id="startRange" min="0" max="100" value="0" style="width:100%;">
+                <label>🔴 نهاية: <span id="endLabel">100</span> ثانية</label>
+                <input type="range" id="endRange" min="0" max="100" value="100" style="width:100%;">
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button onclick="saveEditedStory()" style="padding:10px 30px; background:#6c5ce7; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">💾 حفظ</button>
+                <button onclick="closeEditModal()" style="padding:10px 30px; background:#ff4d4d; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer;">إلغاء</button>
             </div>
         </div>
     </div>
+</div>
 
     <!-- ===== صفحة الحساب ===== -->
     <div id="profilePage" class="page">
