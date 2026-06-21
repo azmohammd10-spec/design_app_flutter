@@ -1404,28 +1404,6 @@ function openGalleryPicker() {
     input.click();
 }
             
-            // إضافة القصة إلى الأعلى
-            stories.unshift(newStory);
-            localStorage.setItem("stories", JSON.stringify(stories));
-            
-            // تحديث العرض
-            renderStories();
-            document.getElementById("storyFeed").scrollTop = 0;
-            
-            // إغلاق نافذة المعرض بعد التحميل
-            closeGalleryModal();
-            
-            // إذا كان فيديو، افتح محرر القص
-            if (newStory.type === 'video') {
-                setTimeout(function() {
-                    openEditModal(0);
-                }, 500);
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-    input.click();
-}
 // إنشاء قصة احتفال
 function createCelebrationStory() {
     closeGalleryModal();
