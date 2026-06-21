@@ -782,6 +782,17 @@ let isRecording = false;
 let current = 0;
 const pages = ["chatPage", "stories", "profilePage"];
 
+let profile = JSON.parse(localStorage.getItem("profile")) || {
+    name: "مستخدم",
+    status: "متصل الآن",
+    avatar: "👤",
+    phone: "+966 50 000 0000",
+    email: "user@example.com"
+};
+
+let stories = JSON.parse(localStorage.getItem("stories")) || [];
+let currentEditIndex = null;
+
 // ============================================
 //  2️⃣ دوال تحديث رأس المحادثة
 // ============================================
@@ -804,7 +815,7 @@ function openChat(name) {
     document.getElementById("chatDetail").style.display = "flex";
     updateChatHeader(name);
     if (!chats[name]) chats[name] = [];
-    render();
+    renderMessages();
 }
 
 function closeChat() {
@@ -827,12 +838,12 @@ function sendMsg(text) {
         sender: "me"
     });
     input.value = "";
-    save();
-    render();
+    saveChats();
+    renderMessages();
     updateButtonUI(false);
 }
 
-function render() {
+function renderMessages() {
     let box = document.getElementById("messages");
     box.innerHTML = "";
     if (!active || !chats[active]) return;
@@ -842,45 +853,28 @@ function render() {
     else if (active === "خالد") otherAvatar = "🧑‍💻";
     else otherAvatar = "👤";
 
-    chats[active].forEach((m, index) => {
+    chats[active].forEach((m) => {
         let wrapper = document.createElement("div");
         wrapper.className = "msg-wrapper";
-
-        let isSent = false;
-        if (m.sender) {
-            isSent = (m.sender === "me");
-        } else {
-            isSent = (index % 2 !== 0);
-        }
-
-        if (isSent) {
-            wrapper.classList.add("sent");
-        } else {
-            wrapper.classList.add("received");
-        }
-
+        let isSent = (m.sender === "me");
+        if (isSent) wrapper.classList.add("sent");
+        else wrapper.classList.add("received");
         let avatarDiv = document.createElement("div");
         avatarDiv.className = "avatar-msg";
         avatarDiv.innerHTML = otherAvatar;
         if (isSent) avatarDiv.style.display = "none";
-
         let bubble = document.createElement("div");
         bubble.className = "bubble";
         bubble.innerHTML = m.text + `<span class="time">${m.time}</span>`;
-
         wrapper.appendChild(avatarDiv);
         wrapper.appendChild(bubble);
         box.appendChild(wrapper);
     });
 
-    // ✅ تأخير صغير لضمان التمرير إلى الأسفل
-    setTimeout(() => {
-        box.scrollTop = box.scrollHeight;
-    }, 10);
+    setTimeout(() => { box.scrollTop = box.scrollHeight; }, 10);
 }
-  
 
-function save() {
+function saveChats() {
     localStorage.setItem("chats", JSON.stringify(chats));
 }
 
@@ -995,24 +989,25 @@ function showPage(i) {
 }
 
 function showChats() { 
-    storyMode = false; // السماح بالسحب
+    storyMode = false;
     showPage(0); 
 }
 
 function showStories() { 
-    storyMode = true;  // منع السحب أثناء القصص
+    storyMode = true;
     showPage(1); 
 }
 
 function showProfile() { 
-    storyMode = false; // السماح بالسحب
+    storyMode = false;
     showPage(2); 
 }
 
 function closeStories() { 
-    storyMode = false; // السماح بالسحب بعد الإغلاق
+    storyMode = false;
     showPage(0); 
 }
+
 // ============================================
 //  8️⃣ السحب للتنقل (Swipe)
 // ============================================
@@ -1021,25 +1016,18 @@ let startY = 0;
 let currentX = 0;
 let isSwiping = false;
 const SWIPE_THRESHOLD = 40;
- let storyMode = false;
-function handleTouchMove(e) {
-    if (storyMode) return; // 🚫 يمنع السحب بين الصفحات أثناء القصص
+let storyMode = false;
 
-    if (e.touches.length !== 1) return;
-
+function handleTouchStart(e) {
     const touch = e.touches[0];
-    const diffX = startX - touch.clientX;
-    const diffY = startY - touch.clientY;
-
-    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
-        e.preventDefault();
-        isSwiping = true;
-        currentX = touch.clientX;
-    }
+    startX = touch.clientX;
+    startY = touch.clientY;
+    currentX = startX;
+    isSwiping = false;
 }
 
-
 function handleTouchMove(e) {
+    if (storyMode) return;
     if (e.touches.length !== 1) return;
     const touch = e.touches[0];
     const diffX = startX - touch.clientX;
@@ -1078,14 +1066,6 @@ document.addEventListener('touchend', handleTouchEnd, { passive: true });
 // ============================================
 //  9️⃣ الملف الشخصي
 // ============================================
-let profile = JSON.parse(localStorage.getItem("profile")) || {
-    name: "مستخدم",
-    status: "متصل الآن",
-    avatar: "👤",
-    phone: "+966 50 000 0000",
-    email: "user@example.com"
-};
-
 function loadProfile() {
     document.getElementById("profileName").innerText = profile.name;
     document.getElementById("profileStatus").innerText = profile.status;
@@ -1102,18 +1082,15 @@ function saveProfile() {
 function editProfile() {
     let newName = prompt("اسم المستخدم:", profile.name);
     if (newName !== null && newName.trim() !== "") profile.name = newName.trim();
-
     let newStatus = prompt("الحالة:", profile.status);
     if (newStatus !== null) profile.status = newStatus.trim() || "متصل الآن";
-
     let newPhone = prompt("رقم الهاتف:", profile.phone);
     if (newPhone !== null) profile.phone = newPhone.trim();
-
     let newEmail = prompt("البريد الإلكتروني:", profile.email);
     if (newEmail !== null) profile.email = newEmail.trim();
-
     saveProfile();
     loadProfile();
+    updateStoryUserInfo();
 }
 
 function changeAvatar() {
@@ -1123,6 +1100,7 @@ function changeAvatar() {
         profile.avatar = emojis[choice-1];
         saveProfile();
         loadProfile();
+        updateStoryUserInfo();
     } else if (choice !== null) {
         alert("يمكنك لاحقاً رفع صورة من جهازك.");
     }
@@ -1138,16 +1116,8 @@ function logout() {
 }
 
 // ============================================
-//  🔟 بدء التطبيق
-  // ============================================
-      // ============================================
-//  إدارة القصص (إنشاء + عرض + حذف + قص)
+//  🔟 إدارة القصص
 // ============================================
-
-let stories = JSON.parse(localStorage.getItem("stories")) || [];
-let currentEditIndex = null;
-
-// عرض القصص
 function renderStories() {
     const feed = document.getElementById("storyFeed");
     feed.innerHTML = "";
@@ -1166,7 +1136,6 @@ function renderStories() {
         item.className = "story-item";
         
         let mediaHTML = "";
-        
         if (story.type === "text") {
             mediaHTML = `
                 <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #2d3436, #636e72); padding:40px;">
@@ -1210,9 +1179,7 @@ function renderStories() {
         feed.appendChild(item);
     });
 }
-        
 
-// إعداد الفيديو (القص)
 function setupVideo(index, start, end) {
     const video = document.getElementById(`video-${index}`);
     if (!video) return;
@@ -1226,7 +1193,6 @@ function setupVideo(index, start, end) {
     });
 }
 
-// كتم/إلغاء كتم الصوت
 function toggleMute(index) {
     const video = document.getElementById(`video-${index}`);
     if (!video) return;
@@ -1235,7 +1201,6 @@ function toggleMute(index) {
     btn.textContent = video.muted ? '🔇' : '🔊';
 }
 
-// حذف قصة
 function deleteStory(index) {
     if (confirm('هل تريد حذف هذه القصة؟')) {
         stories.splice(index, 1);
@@ -1244,7 +1209,6 @@ function deleteStory(index) {
     }
 }
 
-// فتح نافذة التحرير (قص الفيديو)
 function openEditModal(index) {
     const story = stories[index];
     if (story.type !== 'video') return alert('يمكن قص الفيديوهات فقط.');
@@ -1276,7 +1240,6 @@ function openEditModal(index) {
     };
 }
 
-// حفظ التعديلات
 function saveEditedStory() {
     if (currentEditIndex === null) return;
     const start = parseFloat(document.getElementById('startRange').value);
@@ -1294,26 +1257,15 @@ function closeEditModal() {
     currentEditIndex = null;
 }
 
-// فتح وإغلاق نافذة الخيارات
-setTimeout(() => openEditModal(0), 500);
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-    input.click();
-}
-
-// تحديث معلومات المستخدم
 // ============================================
-//  إنشاء القصص (كاميرا، نص، موسيقى، معرض، مثال)
+//  1️⃣1️⃣ إنشاء القصص (كاميرا، نص، موسيقى، معرض، مثال)
 // ============================================
 
-// فتح نافذة إنشاء القصة
+// فتح وإغلاق نافذة إنشاء القصة
 function openCreateOptions() {
     document.getElementById('storyCreator').style.display = 'flex';
 }
 
-// إغلاق نافذة إنشاء القصة
 function closeCreateOptions() {
     document.getElementById('storyCreator').style.display = 'none';
 }
@@ -1321,7 +1273,6 @@ function closeCreateOptions() {
 // إنشاء قصة من الكاميرا
 function createCameraStory() {
     closeCreateOptions();
-    // فتح الكاميرا باستخدام input capture
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*,video/*";
@@ -1352,7 +1303,57 @@ function createCameraStory() {
     input.click();
 }
 
-// إنشاء قصة من الموسيقى (تطبيق بسيط - اختيار ملف صوتي)
+// إنشاء قصة نصية
+function createTextStory() {
+    closeCreateOptions();
+    const text = prompt("📝 اكتب حالتك:");
+    if (text && text.trim() !== '') {
+        const newStory = {
+            type: "text",
+            text: text.trim(),
+            username: profile.name || "مستخدم",
+            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+        };
+        stories.unshift(newStory);
+        localStorage.setItem("stories", JSON.stringify(stories));
+        renderStories();
+        document.getElementById("storyFeed").scrollTop = 0;
+    }
+}
+
+// إنشاء قصة من المعرض
+function createMediaStory() {
+    closeCreateOptions();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*,video/*";
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const newStory = {
+                url: e.target.result,
+                type: file.type.startsWith("video") ? "video" : "image",
+                username: profile.name || "مستخدم",
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}),
+                startTime: 0,
+                endTime: 0
+            };
+            stories.unshift(newStory);
+            localStorage.setItem("stories", JSON.stringify(stories));
+            renderStories();
+            document.getElementById("storyFeed").scrollTop = 0;
+            if (newStory.type === 'video') {
+                setTimeout(() => openEditModal(0), 500);
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+
+// إنشاء قصة من الموسيقى
 function createMusicStory() {
     closeCreateOptions();
     const input = document.createElement("input");
@@ -1363,7 +1364,6 @@ function createMusicStory() {
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            // عرض القصة كصورة مع موسيقى (خلفية ثابتة)
             const newStory = {
                 type: "music",
                 url: e.target.result,
@@ -1381,7 +1381,7 @@ function createMusicStory() {
     input.click();
 }
 
-// إنشاء قصة مثال (قصة افتراضية)
+// إنشاء قصة مثال
 function createExampleStory() {
     closeCreateOptions();
     const exampleStories = [
@@ -1405,10 +1405,25 @@ function createExampleStory() {
     document.getElementById("storyFeed").scrollTop = 0;
 }
 
-// تحميل القصص وتحديث معلومات المستخدم
+function updateStoryUserInfo() {
+    const avatar = document.getElementById('storyUserAvatar');
+    const name = document.getElementById('storyUserName');
+    if (avatar) avatar.textContent = profile.avatar || '👤';
+    if (name) name.textContent = profile.name || 'مستخدم';
+}
+
+function likeStory() { alert("❤️ تم الإعجاب بالقصة!"); }
+function viewStory() { alert("👁️ تم مشاهدة القصة!"); }
+function shareStory() { alert("♻️ تم مشاركة القصة!"); }
+function downloadStory() { alert("⬇️ يتم تحميل القصة..."); }
+
+// ============================================
+//  1️⃣2️⃣ بدء التطبيق
+// ============================================
 renderStories();
-updateStoryUserInfo();          
+updateStoryUserInfo();
 showPage(0);
+
 </script>
 </body>
 </html>
