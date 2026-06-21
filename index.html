@@ -1049,846 +1049,1190 @@
 </div>
 
 <script>
-  (function() {
-    'use strict';
+  // ================================================================
+//  1.  CORE: الأدوات الأساسية والأمان
+// ================================================================
 
-    // ============================================================
-    //  1.  الأمان والتنقية
-    // ============================================================
-    function sanitize(text) {
-      if (typeof text !== 'string') return '';
-      return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-    }
+class Utils {
+  static sanitize(text) {
+    if (typeof text !== 'string') return '';
+    return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  }
 
-    function sanitizeHTML(html) {
-      return DOMPurify.sanitize(html);
-    }
+  static generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
 
-    // ============================================================
-    //  2.  البيانات والتخزين (مع التحقق)
-    // ============================================================
-    let profile = loadProfile();
-    let chats = loadChats();
-    let stories = loadStories();
-    let activeChat = null;
-    let currentPage = 0;
-    let isRecording = false;
-    let recognition = null;
-    let storyTimer = null;
-    let currentEditIndex = null;
+  static formatTime(timestamp) {
+    return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
 
-    // ملفات مؤقتة (للميديا)
-    let mediaCache = {};
+  static formatDate(timestamp) {
+    return new Date(timestamp).toLocaleDateString('ar-EG');
+  }
 
-    function loadProfile() {
-      try {
-        const raw = localStorage.getItem('profile');
-        if (!raw) return defaultProfile();
-        const data = JSON.parse(raw);
-        // التحقق من الصحة
-        if (typeof data.name !== 'string') data.name = 'مستخدم';
-        if (typeof data.status !== 'string') data.status = 'متصل الآن';
-        if (typeof data.avatar !== 'string') data.avatar = '👤';
-        if (typeof data.phone !== 'string') data.phone = '+966 50 000 0000';
-        if (typeof data.email !== 'string') data.email = 'user@example.com';
-        return data;
-      } catch { return defaultProfile(); }
-    }
+  static getAvatarEmoji(name) {
+    const map = { 'أحمد': '😎', 'خالد': '🧑‍💻', 'سارة': '👩‍🦰' };
+    return map[name] || '👤';
+  }
 
-    function defaultProfile() {
-      return { name: 'مستخدم', status: 'متصل الآن', avatar: '👤', phone: '+966 50 000 0000', email: 'user@example.com' };
-    }
+  static getRandomStatus() {
+    const statuses = ['متصل الآن', 'آخر ظهور منذ دقيقة', 'يكتب...', 'شوهد منذ 5 دقائق'];
+    return statuses[Math.floor(Math.random() * statuses.length)];
+  }
+}
 
-    function saveProfile() {
-      localStorage.setItem('profile', JSON.stringify(profile));
-    }
+// ================================================================
+//  2.  DATA MANAGER (IndexedDB + localStorage)
+// ================================================================
 
-    function loadChats() {
-      try {
-        const raw = localStorage.getItem('chats');
-        if (!raw) return {};
-        const data = JSON.parse(raw);
-        // تأكد من أن كل محادثة هي مصفوفة
-        for (let key in data) {
-          if (!Array.isArray(data[key])) data[key] = [];
-          data[key] = data[key].filter(m => m && typeof m.text === 'string' && typeof m.time === 'string');
+class DataManager {
+  constructor() {
+    this.dbName = 'ChatAppDB';
+    this.dbVersion = 1;
+    this.db = null;
+    this.stores = {
+      files: '++id, name, type, size, data',
+      messages: '++id, chatId, createdAt',
+      stories: '++id, createdAt'
+    };
+    this._initDB();
+  }
+
+  async _initDB() {
+    return new Promise((resolve, reject) => {
+      if (this.db) return resolve(this.db);
+      const request = indexedDB.open(this.dbName, this.dbVersion);
+      request.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('files')) {
+          db.createObjectStore('files', { keyPath: 'id' });
         }
-        return data;
-      } catch { return {}; }
-    }
-
-    function saveChats() {
-      localStorage.setItem('chats', JSON.stringify(chats));
-    }
-
-    function loadStories() {
-      try {
-        const raw = localStorage.getItem('stories');
-        if (!raw) return [];
-        const data = JSON.parse(raw);
-        if (!Array.isArray(data)) return [];
-        return data.filter(s => s && typeof s.url === 'string');
-      } catch { return []; }
-    }
-
-    function saveStories() {
-      localStorage.setItem('stories', JSON.stringify(stories));
-    }
-
-    // ============================================================
-    //  3.  إدارة الصفحات والتنقل
-    // ============================================================
-    const pageIds = ['chatPage', 'storiesPage', 'profilePage'];
-
-    function navigateTo(index) {
-      if (index < 0 || index >= pageIds.length) return;
-      currentPage = index;
-      // إخفاء الكل
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageIds[index]).classList.add('active');
-      // تحديث شريط التنقل
-      document.querySelectorAll('.nav-btn').forEach((btn, i) => {
-        btn.classList.toggle('active-nav', i === index);
-      });
-      // إغلاق المحادثة إذا انتقلنا
-      if (index !== 0) closeChat();
-      // إيقاف الفيديوهات في القصص عند الخروج
-      if (index !== 1) pauseAllVideos();
-      // تحديث واجهة القصص إذا دخلناها
-      if (index === 1) renderStories();
-      // تحديث الملف الشخصي
-      if (index === 2) loadProfileUI();
-    }
-
-    // السحب للتنقل (swipe)
-    let touchStartX = 0, touchStartY = 0, touchCurrentX = 0, isSwiping = false;
-    const SWIPE_THRESHOLD = 40;
-
-    document.addEventListener('touchstart', function(e) {
-      const t = e.touches[0];
-      touchStartX = t.clientX;
-      touchStartY = t.clientY;
-      touchCurrentX = touchStartX;
-      isSwiping = false;
-    }, { passive: true });
-
-    document.addEventListener('touchmove', function(e) {
-      if (e.touches.length !== 1) return;
-      const t = e.touches[0];
-      const diffX = touchStartX - t.clientX;
-      const diffY = touchStartY - t.clientY;
-      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
-        e.preventDefault();
-        isSwiping = true;
-        touchCurrentX = t.clientX;
-      }
-    }, { passive: false });
-
-    document.addEventListener('touchend', function() {
-      if (!isSwiping) return;
-      const diff = touchStartX - touchCurrentX;
-      if (Math.abs(diff) < SWIPE_THRESHOLD) return;
-      if (diff > 0 && currentPage < pageIds.length - 1) {
-        navigateTo(currentPage + 1);
-      } else if (diff < 0 && currentPage > 0) {
-        navigateTo(currentPage - 1);
-      }
-      isSwiping = false;
-    }, { passive: true });
-
-    // ============================================================
-    //  4.  الدردشات
-    // ============================================================
-    const defaultChats = ['أحمد', 'خالد', 'سارة'];
-
-    function renderChatList() {
-      const container = document.getElementById('chatList');
-      container.innerHTML = '';
-      const names = Object.keys(chats);
-      if (names.length === 0) {
-        // أضف الافتراضيين
-        defaultChats.forEach(name => {
-          if (!chats[name]) chats[name] = [];
-        });
-        saveChats();
-      }
-      const sorted = Object.keys(chats).sort((a, b) => {
-        const lastA = chats[a].length ? chats[a][chats[a].length-1].time : '';
-        const lastB = chats[b].length ? chats[b][chats[b].length-1].time : '';
-        return lastB.localeCompare(lastA);
-      });
-      sorted.forEach(name => {
-        const msgs = chats[name] || [];
-        const last = msgs.length ? msgs[msgs.length-1] : null;
-        const div = document.createElement('div');
-        div.className = 'chat-item';
-        div.setAttribute('data-name', name);
-        div.innerHTML = `
-          <div class="left">
-            <div class="avatar">${getAvatarEmoji(name)}</div>
-            <div class="info">
-              <div class="name">${sanitize(name)}</div>
-              <div class="last-msg">${last ? sanitize(last.text) : 'ابدأ المحادثة'}</div>
-            </div>
-          </div>
-          <div class="time">${last ? last.time : ''}</div>
-        `;
-        div.addEventListener('click', () => openChat(name));
-        container.appendChild(div);
-      });
-    }
-
-    function getAvatarEmoji(name) {
-      const map = { 'أحمد': '😎', 'خالد': '🧑‍💻', 'سارة': '👩‍🦰' };
-      return map[name] || '👤';
-    }
-
-    function openChat(name) {
-      activeChat = name;
-      document.getElementById('chatModal').classList.add('open');
-      document.getElementById('chatName').textContent = name;
-      document.getElementById('chatAvatar').textContent = getAvatarEmoji(name);
-      const statuses = ['متصل الآن', 'آخر ظهور منذ دقيقة', 'يكتب...', 'شوهد منذ 5 دقائق'];
-      document.getElementById('chatStatus').textContent = statuses[Math.floor(Math.random() * statuses.length)];
-      renderMessages();
-      document.getElementById('messageInput').focus();
-    }
-
-    function closeChat() {
-      document.getElementById('chatModal').classList.remove('open');
-      activeChat = null;
-      if (recognition && recognition.listening) recognition.stop();
-      document.getElementById('sendButton').classList.remove('recording');
-      updateSendIcon(false);
-    }
-
-    function renderMessages() {
-      const box = document.getElementById('messages');
-      box.innerHTML = '';
-      if (!activeChat || !chats[activeChat]) return;
-      const msgs = chats[activeChat];
-      const avatar = getAvatarEmoji(activeChat);
-      msgs.forEach((m, idx) => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'msg-wrapper';
-        if (m.sender === 'me') wrapper.classList.add('sent');
-        else wrapper.classList.add('received');
-
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'avatar-msg';
-        avatarDiv.textContent = avatar;
-        if (m.sender === 'me') avatarDiv.style.display = 'none';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        // عرض الميديا إن وجدت
-        let content = sanitize(m.text);
-        if (m.media) {
-          if (m.type === 'image') content += `<br><img src="${sanitize(m.media)}" alt="صورة">`;
-          else if (m.type === 'video') content += `<br><video src="${sanitize(m.media)}" controls style="max-width:100%;border-radius:10px;"></video>`;
-          else if (m.type === 'audio') content += `<br><audio src="${sanitize(m.media)}" controls style="width:100%;"></audio>`;
+        if (!db.objectStoreNames.contains('messages')) {
+          const msgStore = db.createObjectStore('messages', { keyPath: 'id' });
+          msgStore.createIndex('chatId', 'chatId', { unique: false });
+          msgStore.createIndex('createdAt', 'createdAt', { unique: false });
         }
-        bubble.innerHTML = content + `<span class="time">${m.time}</span>`;
-
-        wrapper.appendChild(avatarDiv);
-        wrapper.appendChild(bubble);
-        box.appendChild(wrapper);
-      });
-      // تمرير للأسفل
-      setTimeout(() => { box.scrollTop = box.scrollHeight; }, 50);
-    }
-
-    function sendMessage(text, media = null, mediaType = null) {
-      if (!activeChat) return;
-      const msg = {
-        text: text || '',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sender: 'me'
+        if (!db.objectStoreNames.contains('stories')) {
+          const storyStore = db.createObjectStore('stories', { keyPath: 'id' });
+          storyStore.createIndex('createdAt', 'createdAt', { unique: false });
+        }
       };
-      if (media) {
-        msg.media = media;
-        msg.type = mediaType || 'image';
+      request.onsuccess = (e) => {
+        this.db = e.target.result;
+        resolve(this.db);
+      };
+      request.onerror = (e) => reject(e.target.error);
+    });
+  }
+
+  async _store(storeName, data) {
+    await this._initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.put(data);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _get(storeName, id) {
+    await this._initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      const req = store.get(id);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _delete(storeName, id) {
+    await this._initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readwrite');
+      const store = tx.objectStore(storeName);
+      const req = store.delete(id);
+      req.onsuccess = () => resolve();
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async _getAll(storeName, indexName = null, key = null) {
+    await this._initDB();
+    return new Promise((resolve, reject) => {
+      const tx = this.db.transaction(storeName, 'readonly');
+      const store = tx.objectStore(storeName);
+      let req;
+      if (indexName && key !== null) {
+        const index = store.index(indexName);
+        req = index.getAll(key);
+      } else {
+        req = store.getAll();
       }
-      chats[activeChat].push(msg);
-      saveChats();
-      renderMessages();
-      // محاكاة رد
-      simulateReply(activeChat);
-      // تحديث القائمة
-      renderChatList();
-    }
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
 
-    function simulateReply(name) {
-      const replies = ['مرحباً!', 'كيف الحال؟', 'شكراً لك', '❤️', 'ممتاز!', 'أنا بخير', '😂', '👍'];
-      const delay = 1000 + Math.random() * 3000;
-      setTimeout(() => {
-        if (!chats[name]) return;
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        chats[name].push({
-          text: reply,
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          sender: 'other'
-        });
-        saveChats();
-        if (activeChat === name) renderMessages();
-        renderChatList();
-        // إشعار
-        if (document.hidden) {
-          notifyUser(name, reply);
-        }
-      }, delay);
-    }
+  // ===== طرق خاصة بالملفات =====
+  async saveFile(file) {
+    const id = Utils.generateId();
+    const fileData = {
+      id,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      data: await this._fileToBase64(file)
+    };
+    await this._store('files', fileData);
+    return id;
+  }
 
-    // ============================================================
-    //  5.  إرسال الملفات
-    // ============================================================
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const files = e.target.files;
-      if (!files.length) return;
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          const data = ev.target.result;
-          let type = 'image';
-          if (file.type.startsWith('video')) type = 'video';
-          else if (file.type.startsWith('audio')) type = 'audio';
-          sendMessage('', data, type);
-        };
-        reader.readAsDataURL(file);
+  async getFile(id) {
+    const fileData = await this._get('files', id);
+    if (!fileData) return null;
+    return fileData.data;
+  }
+
+  async deleteFile(id) {
+    await this._delete('files', id);
+  }
+
+  async _fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ===== طرق خاصة بالرسائل =====
+  async saveMessage(message) {
+    const msg = {
+      ...message,
+      id: message.id || Utils.generateId(),
+      createdAt: message.createdAt || Date.now()
+    };
+    await this._store('messages', msg);
+    return msg;
+  }
+
+  async getMessages(chatId) {
+    const all = await this._getAll('messages', 'chatId', chatId);
+    return all.sort((a, b) => a.createdAt - b.createdAt);
+  }
+
+  async deleteMessage(id) {
+    await this._delete('messages', id);
+  }
+
+  // ===== طرق خاصة بالقصص =====
+  async saveStory(story) {
+    const s = {
+      ...story,
+      id: story.id || Utils.generateId(),
+      createdAt: story.createdAt || Date.now()
+    };
+    await this._store('stories', s);
+    return s;
+  }
+
+  async getStories() {
+    const all = await this._getAll('stories');
+    return all.sort((a, b) => b.createdAt - a.createdAt);
+  }
+
+  async deleteStory(id) {
+    await this._delete('stories', id);
+    // حذف الملف المرتبط إن وجد
+    // يمكن إضافة منطق لاحقاً
+  }
+
+  // ===== تخزين الإعدادات والملف الشخصي في localStorage =====
+  static getProfile() {
+    try {
+      const raw = localStorage.getItem('profile');
+      if (!raw) return DataManager.defaultProfile();
+      const data = JSON.parse(raw);
+      // التحقق من الصحة
+      ['name', 'status', 'avatar', 'phone', 'email'].forEach(key => {
+        if (typeof data[key] !== 'string') data[key] = DataManager.defaultProfile()[key];
       });
-      this.value = ''; // إعادة تعيين
-    });
-
-    // ============================================================
-    //  6.  الزر والميكروفون
-    // ============================================================
-    function updateSendIcon(hasText) {
-      const icon = document.getElementById('sendIcon');
-      if (hasText) {
-        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
-      } else {
-        icon.innerHTML = `
-          <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-          <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-          <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        `;
-      }
+      return data;
+    } catch {
+      return DataManager.defaultProfile();
     }
+  }
 
-    document.getElementById('messageInput').addEventListener('input', function() {
-      updateSendIcon(this.value.trim().length > 0);
-    });
+  static saveProfile(profile) {
+    localStorage.setItem('profile', JSON.stringify(profile));
+  }
 
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') handleSend();
-    });
+  static defaultProfile() {
+    return { name: 'مستخدم', status: 'متصل الآن', avatar: '👤', phone: '+966 50 000 0000', email: 'user@example.com' };
+  }
 
-    function handleSend() {
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if (text) {
-        sendMessage(text);
-        input.value = '';
-        updateSendIcon(false);
-      } else {
-        startVoiceRecording();
+  static getTheme() {
+    return localStorage.getItem('theme') || 'light';
+  }
+
+  static saveTheme(theme) {
+    localStorage.setItem('theme', theme);
+  }
+
+  // ترقية البيانات القديمة (إن وجدت)
+  static async migrateOldData(dataManager) {
+    // محاولة تحويل chats القديم إلى رسائل
+    try {
+      const oldChats = localStorage.getItem('chats');
+      if (oldChats) {
+        const chats = JSON.parse(oldChats);
+        for (const chatId in chats) {
+          const msgs = chats[chatId];
+          for (const m of msgs) {
+            // تحويل الرسالة القديمة إلى الشكل الجديد
+            const newMsg = {
+              chatId,
+              text: m.text || '',
+              sender: m.sender || 'other',
+              status: 'delivered',
+              createdAt: m.time ? new Date('1970-01-01T' + m.time + ':00').getTime() : Date.now(),
+              fileId: null
+            };
+            if (m.media) {
+              // إذا كانت هناك ملفات base64 قديمة، نحاول تخزينها في IndexedDB (اختياري)
+              // نتركها مؤقتاً في الرسالة كـ media (سيتم التعامل معها)
+              newMsg.media = m.media;
+              newMsg.mediaType = m.type || 'image';
+            }
+            await dataManager.saveMessage(newMsg);
+          }
+        }
+        localStorage.removeItem('chats'); // حذف القديم بعد الترحيل
       }
-    }
+    } catch (e) { console.warn('ترحيل المحادثات القديمة فشل:', e); }
 
-    function startVoiceRecording() {
-      if (isRecording) return;
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('المتصفح لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.');
+    // ترحيل القصص القديمة
+    try {
+      const oldStories = localStorage.getItem('stories');
+      if (oldStories) {
+        const stories = JSON.parse(oldStories);
+        for (const s of stories) {
+          const newStory = {
+            url: s.url,
+            type: s.type || 'image',
+            username: s.username || 'مستخدم',
+            text: s.text || '',
+            filename: s.filename || '',
+            startTime: s.startTime || 0,
+            endTime: s.endTime || 0,
+            createdAt: Date.now()
+          };
+          await dataManager.saveStory(newStory);
+        }
+        localStorage.removeItem('stories');
+      }
+    } catch (e) { console.warn('ترحيل القصص القديمة فشل:', e); }
+  }
+}
+
+// ================================================================
+//  3.  CHAT MODULE
+// ================================================================
+
+class ChatModule {
+  constructor(dataManager, profile) {
+    this.dataManager = dataManager;
+    this.profile = profile;
+    this.activeChatId = null;
+    this.messagesCache = {}; // chatId -> [messages]
+    this.fileInput = document.getElementById('fileInput');
+    this.messageInput = document.getElementById('messageInput');
+    this.sendButton = document.getElementById('sendButton');
+    this.messagesContainer = document.getElementById('messages');
+    this.chatListContainer = document.getElementById('chatList');
+    this.modal = document.getElementById('chatModal');
+    this.chatNameEl = document.getElementById('chatName');
+    this.chatAvatarEl = document.getElementById('chatAvatar');
+    this.chatStatusEl = document.getElementById('chatStatus');
+    this.recognition = null;
+    this.isRecording = false;
+    this._setupListeners();
+  }
+
+  _setupListeners() {
+    this.fileInput.addEventListener('change', (e) => this._handleFileUpload(e.target.files));
+    this.messageInput.addEventListener('input', () => this._updateSendIcon());
+    this.messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') this.handleSend();
+    });
+    this.sendButton.addEventListener('click', () => this.handleSend());
+  }
+
+  // ===== عرض قائمة الدردشات =====
+  async renderChatList() {
+    const container = this.chatListContainer;
+    container.innerHTML = '';
+    // نحصل على جميع chatIds من الرسائل
+    const allMessages = await this.dataManager._getAll('messages');
+    const chatIds = [...new Set(allMessages.map(m => m.chatId))];
+    if (!chatIds.length) {
+      // عرض افتراضي
+      const defaultNames = ['أحمد', 'خالد', 'سارة'];
+      defaultNames.forEach(name => {
+        if (!chatIds.includes(name)) chatIds.push(name);
+      });
+    }
+    // ترتيب حسب آخر رسالة
+    chatIds.sort((a, b) => {
+      const msgsA = allMessages.filter(m => m.chatId === a);
+      const msgsB = allMessages.filter(m => m.chatId === b);
+      const lastA = msgsA.length ? msgsA[msgsA.length - 1].createdAt : 0;
+      const lastB = msgsB.length ? msgsB[msgsB.length - 1].createdAt : 0;
+      return lastB - lastA;
+    });
+
+    for (const chatId of chatIds) {
+      const msgs = allMessages.filter(m => m.chatId === chatId);
+      const last = msgs.length ? msgs[msgs.length - 1] : null;
+      const div = document.createElement('div');
+      div.className = 'chat-item';
+      div.dataset.chatId = chatId;
+      div.innerHTML = `
+        <div class="left">
+          <div class="avatar">${Utils.getAvatarEmoji(chatId)}</div>
+          <div class="info">
+            <div class="name">${Utils.sanitize(chatId)}</div>
+            <div class="last-msg">${last ? Utils.sanitize(last.text) : 'ابدأ المحادثة'}</div>
+          </div>
+        </div>
+        <div class="time">${last ? Utils.formatTime(last.createdAt) : ''}</div>
+      `;
+      div.addEventListener('click', () => this.openChat(chatId));
+      container.appendChild(div);
+    }
+  }
+
+  // ===== فتح محادثة =====
+  async openChat(chatId) {
+    if (this.activeChatId === chatId && this.modal.classList.contains('open')) return;
+    this.activeChatId = chatId;
+    this.modal.classList.add('open');
+    this.chatNameEl.textContent = chatId;
+    this.chatAvatarEl.textContent = Utils.getAvatarEmoji(chatId);
+    this.chatStatusEl.textContent = Utils.getRandomStatus();
+    await this.renderMessages(chatId);
+    this.messageInput.focus();
+  }
+
+  closeChat() {
+    this.modal.classList.remove('open');
+    this.activeChatId = null;
+    if (this.recognition && this.recognition.listening) this.recognition.stop();
+    this.sendButton.classList.remove('recording');
+    this._updateSendIcon();
+  }
+
+  // ===== عرض الرسائل =====
+  async renderMessages(chatId) {
+    if (!chatId) chatId = this.activeChatId;
+    if (!chatId) return;
+    const msgs = await this.dataManager.getMessages(chatId);
+    this.messagesCache[chatId] = msgs;
+    const container = this.messagesContainer;
+    container.innerHTML = '';
+    const fragment = document.createDocumentFragment();
+    const avatar = Utils.getAvatarEmoji(chatId);
+
+    for (const m of msgs) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'msg-wrapper';
+      if (m.sender === 'me') wrapper.classList.add('sent');
+      else wrapper.classList.add('received');
+
+      const avatarDiv = document.createElement('div');
+      avatarDiv.className = 'avatar-msg';
+      avatarDiv.textContent = avatar;
+      if (m.sender === 'me') avatarDiv.style.display = 'none';
+
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+
+      // النص
+      const textSpan = document.createElement('span');
+      textSpan.textContent = m.text || '';
+      bubble.appendChild(textSpan);
+
+      // الملف إن وجد
+      if (m.fileId) {
+        const fileData = await this.dataManager.getFile(m.fileId);
+        if (fileData) {
+          if (m.mediaType === 'image') {
+            const img = document.createElement('img');
+            img.src = fileData;
+            img.alt = 'صورة';
+            img.style.maxWidth = '100%';
+            img.style.borderRadius = '10px';
+            img.style.marginTop = '6px';
+            bubble.appendChild(img);
+          } else if (m.mediaType === 'video') {
+            const vid = document.createElement('video');
+            vid.src = fileData;
+            vid.controls = true;
+            vid.style.maxWidth = '100%';
+            vid.style.borderRadius = '10px';
+            vid.style.marginTop = '6px';
+            bubble.appendChild(vid);
+          } else if (m.mediaType === 'audio') {
+            const aud = document.createElement('audio');
+            aud.src = fileData;
+            aud.controls = true;
+            aud.style.width = '100%';
+            aud.style.marginTop = '6px';
+            bubble.appendChild(aud);
+          }
+        }
+      } else if (m.media) {
+        // توافق مع البيانات القديمة
+        if (m.mediaType === 'image') {
+          const img = document.createElement('img');
+          img.src = m.media;
+          img.alt = 'صورة';
+          img.style.maxWidth = '100%';
+          img.style.borderRadius = '10px';
+          img.style.marginTop = '6px';
+          bubble.appendChild(img);
+        } else if (m.mediaType === 'video') {
+          const vid = document.createElement('video');
+          vid.src = m.media;
+          vid.controls = true;
+          vid.style.maxWidth = '100%';
+          vid.style.borderRadius = '10px';
+          vid.style.marginTop = '6px';
+          bubble.appendChild(vid);
+        } else if (m.mediaType === 'audio') {
+          const aud = document.createElement('audio');
+          aud.src = m.media;
+          aud.controls = true;
+          aud.style.width = '100%';
+          aud.style.marginTop = '6px';
+          bubble.appendChild(aud);
+        }
+      }
+
+      // حالة الرسالة
+      const statusSpan = document.createElement('span');
+      statusSpan.className = 'time';
+      const statusIcon = m.status === 'sent' ? '✓' : m.status === 'delivered' ? '✓✓' : '✓✓✓';
+      statusSpan.textContent = `${Utils.formatTime(m.createdAt)} ${statusIcon}`;
+      bubble.appendChild(statusSpan);
+
+      wrapper.appendChild(avatarDiv);
+      wrapper.appendChild(bubble);
+      fragment.appendChild(wrapper);
+    }
+    container.appendChild(fragment);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ===== إرسال رسالة (مع ملف اختياري) =====
+  async sendMessage(text, file = null) {
+    if (!this.activeChatId) return;
+    let fileId = null;
+    let mediaType = null;
+    if (file) {
+      // التحقق من الحجم والنوع
+      if (file.size > 10 * 1024 * 1024) {
+        alert('حجم الملف يتجاوز 10 ميجابايت');
         return;
       }
-      recognition = new SpeechRecognition();
-      recognition.lang = 'ar-AR';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      const btn = document.getElementById('sendButton');
-      btn.classList.add('recording');
-      isRecording = true;
-
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        document.getElementById('messageInput').value = transcript;
-        sendMessage(transcript);
-        document.getElementById('messageInput').value = '';
-        updateSendIcon(false);
-      };
-
-      recognition.onerror = function(event) {
-        console.error('خطأ في التسجيل:', event.error);
-        alert('خطأ في التسجيل: ' + event.error);
-        stopRecordingUI();
-      };
-
-      recognition.onend = function() {
-        stopRecordingUI();
-      };
-
-      recognition.start();
+      if (!['image/', 'video/', 'audio/'].some(t => file.type.startsWith(t))) {
+        alert('نوع الملف غير مدعوم');
+        return;
+      }
+      fileId = await this.dataManager.saveFile(file);
+      mediaType = file.type.startsWith('image') ? 'image' :
+                   file.type.startsWith('video') ? 'video' : 'audio';
     }
+    const msg = {
+      chatId: this.activeChatId,
+      text: text || '',
+      sender: 'me',
+      status: 'sent',
+      fileId: fileId,
+      mediaType: mediaType,
+      createdAt: Date.now()
+    };
+    await this.dataManager.saveMessage(msg);
+    // تحديث الواجهة
+    await this.renderMessages(this.activeChatId);
+    await this.renderChatList();
+    // محاكاة حالة delivered بعد 1 ثانية
+    setTimeout(async () => {
+      msg.status = 'delivered';
+      await this.dataManager.saveMessage(msg);
+      if (this.activeChatId === msg.chatId) await this.renderMessages(this.activeChatId);
+    }, 1000);
+    // محاكاة رد
+    this._simulateReply(this.activeChatId);
+  }
 
-    function stopRecordingUI() {
-      isRecording = false;
-      document.getElementById('sendButton').classList.remove('recording');
-      updateSendIcon(document.getElementById('messageInput').value.trim().length > 0);
+  async _simulateReply(chatId) {
+    const replies = ['مرحباً!', 'كيف الحال؟', 'شكراً لك', '❤️', 'ممتاز!', 'أنا بخير', '😂', '👍'];
+    const delay = 1500 + Math.random() * 2000;
+    setTimeout(async () => {
+      const reply = replies[Math.floor(Math.random() * replies.length)];
+      const msg = {
+        chatId,
+        text: reply,
+        sender: 'other',
+        status: 'delivered',
+        createdAt: Date.now()
+      };
+      await this.dataManager.saveMessage(msg);
+      if (this.activeChatId === chatId) {
+        await this.renderMessages(chatId);
+        // محاكاة read
+        setTimeout(async () => {
+          msg.status = 'read';
+          await this.dataManager.saveMessage(msg);
+          if (this.activeChatId === chatId) await this.renderMessages(chatId);
+        }, 1000);
+      }
+      await this.renderChatList();
+      // إشعار
+      if (document.hidden) {
+        App.notify(chatId, reply);
+      }
+    }, delay);
+  }
+
+  // ===== رفع ملف =====
+  async _handleFileUpload(files) {
+    if (!files || !files.length) return;
+    const file = files[0];
+    await this.sendMessage('', file);
+    this.fileInput.value = '';
+  }
+
+  // ===== ميكروفون =====
+  startRecording() {
+    if (this.isRecording) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert('المتصفح لا يدعم التعرف على الصوت. استخدم Chrome أو Edge.');
+      return;
     }
+    this.recognition = new SpeechRecognition();
+    this.recognition.lang = 'ar-AR';
+    this.recognition.continuous = false;
+    this.recognition.interimResults = false;
 
-    // ============================================================
-    //  7.  الإشعارات
-    // ============================================================
-    function notifyUser(sender, text) {
-      if (!('Notification' in window) || Notification.permission !== 'granted') return;
-      new Notification(`📩 ${sender}`, { body: text, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💬</text></svg>' });
+    this.sendButton.classList.add('recording');
+    this.isRecording = true;
+
+    this.recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      this.messageInput.value = transcript;
+      this.sendMessage(transcript);
+      this.messageInput.value = '';
+      this._updateSendIcon();
+    };
+    this.recognition.onerror = (event) => {
+      console.error('خطأ في التسجيل:', event.error);
+      alert('خطأ في التسجيل: ' + event.error);
+      this._stopRecordingUI();
+    };
+    this.recognition.onend = () => this._stopRecordingUI();
+    this.recognition.start();
+  }
+
+  _stopRecordingUI() {
+    this.isRecording = false;
+    this.sendButton.classList.remove('recording');
+    this._updateSendIcon();
+  }
+
+  _updateSendIcon() {
+    const hasText = this.messageInput.value.trim().length > 0;
+    const icon = document.getElementById('sendIcon');
+    if (hasText) {
+      icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
+    } else {
+      icon.innerHTML = `
+        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+        <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+        <path d="M12 18v3" stroke="white" stroke-width="2"/>
+      `;
     }
+  }
 
+  handleSend() {
+    const text = this.messageInput.value.trim();
+    if (text) {
+      this.sendMessage(text);
+      this.messageInput.value = '';
+      this._updateSendIcon();
+    } else {
+      this.startRecording();
+    }
+  }
+
+  // إضافة صديق (محاكاة)
+  async addFriend() {
+    const name = prompt('أدخل اسم الصديق:');
+    if (name && name.trim()) {
+      const clean = Utils.sanitize(name.trim());
+      // نتحقق إذا كان هناك محادثة بهذا الاسم
+      const allMessages = await this.dataManager._getAll('messages');
+      const exists = allMessages.some(m => m.chatId === clean);
+      if (!exists) {
+        // نضيف رسالة ترحيبية
+        const welcome = {
+          chatId: clean,
+          text: 'بدأت المحادثة',
+          sender: 'other',
+          status: 'delivered',
+          createdAt: Date.now()
+        };
+        await this.dataManager.saveMessage(welcome);
+        await this.renderChatList();
+        alert(`تمت إضافة ${clean} إلى الدردشات.`);
+      } else {
+        alert('هذه المحادثة موجودة بالفعل.');
+      }
+    }
+  }
+}
+
+// ================================================================
+//  4.  STORIES MODULE
+// ================================================================
+
+class StoriesModule {
+  constructor(dataManager, profile) {
+    this.dataManager = dataManager;
+    this.profile = profile;
+    this.feed = document.getElementById('storyFeed');
+    this.stories = [];
+    this.observer = null;
+    this.videoListeners = new Map(); // storyId -> { video, handler }
+    this._setupUI();
+  }
+
+  _setupUI() {
+    // ربط الأزرار (سيتم ربطها لاحقاً في app)
+  }
+
+  // ===== تحميل وعرض القصص =====
+  async loadStories() {
+    this.stories = await this.dataManager.getStories();
+    this.render();
+  }
+
+  render() {
+    this.feed.innerHTML = '';
+    if (!this.stories.length) {
+      this.feed.innerHTML = `<div style="color:#fff;text-align:center;margin-top:40%;font-size:20px;">📸 لا توجد قصص حالياً</div>`;
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    this.stories.forEach((story, index) => {
+      const item = document.createElement('div');
+      item.className = 'story-item';
+      item.dataset.storyId = story.id;
+      item.style.display = index === 0 ? 'flex' : 'none';
+
+      // بناء المحتوى حسب النوع
+      if (story.type === 'text') {
+        const div = document.createElement('div');
+        div.style.cssText = 'width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2d3436,#636e72);padding:40px;';
+        const textDiv = document.createElement('div');
+        textDiv.style.cssText = 'color:#fff;font-size:32px;text-align:center;font-weight:700;text-shadow:0 4px 20px rgba(0,0,0,0.5);';
+        textDiv.textContent = story.text || '';
+        div.appendChild(textDiv);
+        item.appendChild(div);
+      } else if (story.type === 'video') {
+        const video = document.createElement('video');
+        video.id = `storyVideo-${story.id}`;
+        video.src = story.url;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.muted = true;
+        // تطبيق القص
+        if (story.startTime || story.endTime) {
+          video.addEventListener('loadedmetadata', () => {
+            video.currentTime = story.startTime || 0;
+            const handler = () => {
+              if (story.endTime && video.currentTime >= story.endTime) {
+                video.pause();
+                video.currentTime = story.startTime || 0;
+                video.play();
+              }
+            };
+            video.addEventListener('timeupdate', handler);
+            this.videoListeners.set(story.id, { video, handler });
+          });
+        }
+        item.appendChild(video);
+
+        // زر كتم
+        const muteBtn = document.createElement('button');
+        muteBtn.className = 'mute-btn';
+        muteBtn.textContent = '🔇';
+        muteBtn.addEventListener('click', () => {
+          video.muted = !video.muted;
+          muteBtn.textContent = video.muted ? '🔇' : '🔊';
+        });
+        item.appendChild(muteBtn);
+
+        // زر قص
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-btn';
+        editBtn.textContent = '✂️';
+        editBtn.addEventListener('click', () => {
+          this.openEditModal(index);
+        });
+        item.appendChild(editBtn);
+      } else if (story.type === 'music') {
+        const container = document.createElement('div');
+        container.style.cssText = 'width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:40px;';
+        const icon = document.createElement('div');
+        icon.style.cssText = 'font-size:80px;margin-bottom:20px;';
+        icon.textContent = '🎵';
+        const nameDiv = document.createElement('div');
+        nameDiv.style.cssText = 'color:#fff;font-size:24px;font-weight:700;text-align:center;';
+        nameDiv.textContent = story.filename || 'مقطع موسيقي';
+        const audio = document.createElement('audio');
+        audio.controls = true;
+        audio.style.cssText = 'margin-top:20px;width:80%;max-width:400px;';
+        audio.src = story.url;
+        container.appendChild(icon);
+        container.appendChild(nameDiv);
+        container.appendChild(audio);
+        item.appendChild(container);
+      } else { // image
+        const img = document.createElement('img');
+        img.src = story.url;
+        img.alt = 'قصة';
+        img.loading = 'lazy';
+        item.appendChild(img);
+      }
+
+      // زر الحذف
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '✕';
+      deleteBtn.addEventListener('click', () => this.deleteStory(index));
+      item.appendChild(deleteBtn);
+
+      // اسم المستخدم
+      const usernameDiv = document.createElement('div');
+      usernameDiv.className = 'story-username';
+      usernameDiv.textContent = story.username || 'مستخدم';
+      item.appendChild(usernameDiv);
+
+      // الوقت
+      const timeDiv = document.createElement('div');
+      timeDiv.className = 'story-time';
+      timeDiv.textContent = Utils.formatTime(story.createdAt);
+      item.appendChild(timeDiv);
+
+      fragment.appendChild(item);
+    });
+    this.feed.appendChild(fragment);
+
+    // إعداد المراقبة
+    this._setupObserver();
+    // بدء التشغيل التلقائي لأول فيديو
+    this._playVisibleVideos();
+  }
+
+  _setupObserver() {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.videoListeners.clear();
+    }
+    if (!('IntersectionObserver' in window)) return;
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector('video');
+        if (!video) return;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+          // إزالة مستمع timeupdate عند الاختفاء لتجنب التسرب
+          const storyId = entry.target.dataset.storyId;
+          if (storyId && this.videoListeners.has(storyId)) {
+            const { handler } = this.videoListeners.get(storyId);
+            video.removeEventListener('timeupdate', handler);
+            this.videoListeners.delete(storyId);
+          }
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.story-item').forEach(item => this.observer.observe(item));
+  }
+
+  _playVisibleVideos() {
+    document.querySelectorAll('.story-item').forEach(item => {
+      if (item.style.display !== 'none') {
+        const video = item.querySelector('video');
+        if (video) video.play().catch(() => {});
+      }
+    });
+  }
+
+  // ===== التنقل بين القصص (سكريبت) =====
+  // سيتم استدعاؤها من التطبيق الرئيسي عند التمرير
+
+  // ===== إنشاء قصة جديدة =====
+  async createStory(file, type = 'image', text = '') {
+    let url = '';
+    let fileId = null;
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('حجم الملف يتجاوز 10 ميجابايت');
+        return;
+      }
+      fileId = await this.dataManager.saveFile(file);
+      const fileData = await this.dataManager.getFile(fileId);
+      url = fileData;
+    }
+    const story = {
+      url,
+      type,
+      text: text || '',
+      username: this.profile.name || 'مستخدم',
+      filename: file ? file.name : '',
+      startTime: 0,
+      endTime: 0,
+      createdAt: Date.now()
+    };
+    const saved = await this.dataManager.saveStory(story);
+    this.stories.unshift(saved);
+    this.render();
+    if (type === 'video') {
+      setTimeout(() => this.openEditModal(0), 500);
+    }
+  }
+
+  async deleteStory(index) {
+    if (!confirm('هل تريد حذف هذه القصة؟')) return;
+    const story = this.stories[index];
+    if (!story) return;
+    await this.dataManager.deleteStory(story.id);
+    this.stories.splice(index, 1);
+    this.render();
+  }
+
+  // ===== تحرير الفيديو =====
+  openEditModal(index) {
+    const story = this.stories[index];
+    if (!story || story.type !== 'video') return alert('يمكن قص الفيديوهات فقط.');
+    // سيتم تنفيذ الواجهة كما هي، مع ربط الأحداث
+    // يمكن تحسينها لاحقاً
+    alert('وظيفة القص قيد التطوير. سيتم إضافتها قريباً.');
+  }
+
+  // ===== تفاعلات وهمية =====
+  like() { alert('❤️ تم الإعجاب بالقصة!'); }
+  view() { alert('👁️ تم مشاهدة القصة!'); }
+  share() { alert('♻️ تم مشاركة القصة!'); }
+  download() { alert('⬇️ يتم تحميل القصة...'); }
+
+  // ===== نوافذ =====
+  openMyStories() {
+    document.getElementById('myStoriesModal').classList.add('open');
+  }
+  closeMyStories() {
+    document.getElementById('myStoriesModal').classList.remove('open');
+  }
+  openGallery() {
+    this.closeMyStories();
+    document.getElementById('galleryModal').classList.add('open');
+  }
+  closeGallery() {
+    document.getElementById('galleryModal').classList.remove('open');
+  }
+
+  // ===== طرق إنشاء القصص من الواجهة =====
+  openCamera() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,video/*';
+    input.capture = 'environment';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const type = file.type.startsWith('video') ? 'video' : 'image';
+      await this.createStory(file, type);
+      this.closeGallery();
+    };
+    input.click();
+  }
+
+  openGalleryPicker() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,video/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const type = file.type.startsWith('video') ? 'video' : 'image';
+      await this.createStory(file, type);
+      this.closeGallery();
+    };
+    input.click();
+  }
+
+  createTextStory() {
+    const text = prompt('أدخل نص القصة:');
+    if (!text) return;
+    this.createStory(null, 'text', text.trim());
+    this.closeGallery();
+  }
+
+  createCelebrationStory() {
+    const celebrations = ['🎉 حفلة رائعة!', '🎂 عيد ميلاد سعيد!', '🥳 سنة جديدة سعيدة!', '🎊 تهانينا!', '💪 إنجاز جديد!'];
+    const text = celebrations[Math.floor(Math.random() * celebrations.length)];
+    this.createStory(null, 'text', text);
+    this.closeGallery();
+  }
+
+  createMusicStory() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      await this.createStory(file, 'music');
+      this.closeGallery();
+    };
+    input.click();
+  }
+}
+
+// ================================================================
+//  5.  PROFILE MODULE
+// ================================================================
+
+class ProfileModule {
+  constructor() {
+    this.profile = DataManager.getProfile();
+    this._renderUI();
+  }
+
+  _renderUI() {
+    document.getElementById('profileName').textContent = this.profile.name;
+    document.getElementById('profileStatus').textContent = this.profile.status;
+    document.getElementById('profilePhone').textContent = this.profile.phone;
+    document.getElementById('profileEmail').textContent = this.profile.email;
+    document.getElementById('avatarPreview').textContent = this.profile.avatar || '👤';
+  }
+
+  edit() {
+    const name = prompt('اسم المستخدم:', this.profile.name);
+    if (name && name.trim()) this.profile.name = Utils.sanitize(name.trim());
+    const status = prompt('الحالة:', this.profile.status);
+    if (status !== null) this.profile.status = Utils.sanitize(status.trim()) || 'متصل الآن';
+    const phone = prompt('رقم الهاتف:', this.profile.phone);
+    if (phone !== null) this.profile.phone = Utils.sanitize(phone.trim());
+    const email = prompt('البريد الإلكتروني:', this.profile.email);
+    if (email !== null) this.profile.email = Utils.sanitize(email.trim());
+    DataManager.saveProfile(this.profile);
+    this._renderUI();
+  }
+
+  changeAvatar() {
+    const emojis = ['👤', '😊', '😎', '👩', '🧑', '👨', '💼', '🌟', '🦊', '🐱', '🐶', '🐼'];
+    const choice = prompt('اختر إيموجي لصورتك (أدخل الرقم):\n' + emojis.map((e, i) => i + 1 + ': ' + e).join('\n'));
+    if (choice && !isNaN(choice) && choice > 0 && choice <= emojis.length) {
+      this.profile.avatar = emojis[choice - 1];
+      DataManager.saveProfile(this.profile);
+      this._renderUI();
+    }
+  }
+
+  toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    if (current === 'dark') {
+      document.documentElement.removeAttribute('data-theme');
+      DataManager.saveTheme('light');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      DataManager.saveTheme('dark');
+    }
+  }
+
+  logout() {
+    if (confirm('هل تريد تسجيل الخروج؟ سيتم مسح بيانات المحادثات.')) {
+      localStorage.removeItem('chats');
+      localStorage.removeItem('profile');
+      alert('تم تسجيل الخروج. تحديث الصفحة...');
+      location.reload();
+    }
+  }
+}
+
+// ================================================================
+//  6.  APP (التطبيق الرئيسي)
+// ================================================================
+
+class App {
+  constructor() {
+    this.dataManager = new DataManager();
+    this.profile = DataManager.getProfile();
+    this.chat = new ChatModule(this.dataManager, this.profile);
+    this.stories = new StoriesModule(this.dataManager, this.profile);
+    this.profileModule = new ProfileModule();
+    this.currentPage = 0;
+    this.pageIds = ['chatPage', 'storiesPage', 'profilePage'];
+    this.lastNotificationTime = 0;
+    this._setupNavigation();
+    this._setupSwipe();
+    this._setupGlobalListeners();
+    this._init();
+  }
+
+  async _init() {
+    // ترقية البيانات القديمة
+    await DataManager.migrateOldData(this.dataManager);
+    // تحميل البيانات
+    await this.chat.renderChatList();
+    await this.stories.loadStories();
+    // استعادة الثيم
+    const theme = DataManager.getTheme();
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    // التنقل للصفحة الأولى
+    this.navigateTo(0);
+    // الإشعارات
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
+    console.log('🚀 التطبيق جاهز!');
+  }
 
-    // ============================================================
-    //  8.  القصص
-    // ============================================================
-    function renderStories() {
-      const feed = document.getElementById('storyFeed');
-      feed.innerHTML = '';
-      if (!stories.length) {
-        feed.innerHTML = `<div style="color:#fff;text-align:center;margin-top:40%;font-size:20px;">📸 لا توجد قصص حالياً</div>`;
-        return;
+  _setupNavigation() {
+    document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+      btn.addEventListener('click', () => this.navigateTo(i));
+    });
+  }
+
+  navigateTo(index) {
+    if (index < 0 || index >= this.pageIds.length) return;
+    this.currentPage = index;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(this.pageIds[index]).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+      btn.classList.toggle('active-nav', i === index);
+    });
+    if (index !== 0) this.chat.closeChat();
+    if (index !== 1) {
+      // إيقاف الفيديوهات والمؤقت
+      if (this.stories.observer) this.stories.observer.disconnect();
+    }
+    if (index === 1) {
+      this.stories.loadStories();
+    }
+    if (index === 2) {
+      this.profileModule._renderUI();
+    }
+  }
+
+  _setupSwipe() {
+    let startX = 0, startY = 0, currentX = 0, isSwiping = false;
+    document.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      currentX = startX;
+      isSwiping = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const diffX = startX - t.clientX;
+      const diffY = startY - t.clientY;
+      if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+        e.preventDefault();
+        isSwiping = true;
+        currentX = t.clientX;
       }
-      stories.forEach((story, index) => {
-        const item = document.createElement('div');
-        item.className = 'story-item';
-        let mediaHTML = '';
-        if (story.type === 'text') {
-          mediaHTML = `
-            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#2d3436,#636e72);padding:40px;">
-              <div style="color:#fff;font-size:32px;text-align:center;font-weight:700;text-shadow:0 4px 20px rgba(0,0,0,0.5);">${sanitize(story.text)}</div>
-            </div>
-          `;
-        } else if (story.type === 'video') {
-          const start = story.startTime || 0;
-          const end = story.endTime || 0;
-          mediaHTML = `
-            <video id="storyVideo-${index}" src="${sanitize(story.url)}" autoplay loop playsinline muted
-                   onloadedmetadata="setupStoryVideo(${index}, ${start}, ${end})"></video>
-            <button class="mute-btn" onclick="toggleStoryMute(${index})">🔇</button>
-            <button class="edit-btn" onclick="openEditModal(${index})">✂️</button>
-          `;
-        } else if (story.type === 'music') {
-          mediaHTML = `
-            <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);padding:40px;">
-              <div style="font-size:80px;margin-bottom:20px;">🎵</div>
-              <div style="color:#fff;font-size:24px;font-weight:700;text-align:center;">${sanitize(story.filename || 'مقطع موسيقي')}</div>
-              <audio controls style="margin-top:20px;width:80%;max-width:400px;" src="${sanitize(story.url)}"></audio>
-            </div>
-          `;
-        } else {
-          mediaHTML = `<img src="${sanitize(story.url)}" alt="قصة" loading="lazy">`;
-        }
+    }, { passive: false });
 
-        item.innerHTML = `
-          ${mediaHTML}
-          <button class="delete-btn" onclick="deleteStory(${index})">✕</button>
-          <div class="story-username">${sanitize(story.username || 'مستخدم')}</div>
-          <div class="story-time">${sanitize(story.time || 'الآن')}</div>
-        `;
-        feed.appendChild(item);
-      });
-
-      // بدء التشغيل التلقائي للفيديوهات المرئية
-      observeStoryVideos();
-      // بدء المؤقت التلقائي للقصص
-      startStorySlideshow();
-    }
-
-    function setupStoryVideo(index, start, end) {
-      const video = document.getElementById(`storyVideo-${index}`);
-      if (!video) return;
-      video.currentTime = start;
-      video.addEventListener('timeupdate', function() {
-        if (end > 0 && video.currentTime >= end) {
-          video.pause();
-          video.currentTime = start;
-          video.play();
-        }
-      });
-    }
-
-    function toggleStoryMute(index) {
-      const video = document.getElementById(`storyVideo-${index}`);
-      if (!video) return;
-      video.muted = !video.muted;
-      const btn = video.parentElement.querySelector('.mute-btn');
-      btn.textContent = video.muted ? '🔇' : '🔊';
-    }
-
-    function deleteStory(index) {
-      if (confirm('هل تريد حذف هذه القصة؟')) {
-        stories.splice(index, 1);
-        saveStories();
-        renderStories();
+    document.addEventListener('touchend', () => {
+      if (!isSwiping) return;
+      const diff = startX - currentX;
+      if (Math.abs(diff) < 40) return;
+      if (diff > 0 && this.currentPage < this.pageIds.length - 1) {
+        this.navigateTo(this.currentPage + 1);
+      } else if (diff < 0 && this.currentPage > 0) {
+        this.navigateTo(this.currentPage - 1);
       }
-    }
+      isSwiping = false;
+    }, { passive: true });
+  }
 
-    function openEditModal(index) {
-      const story = stories[index];
-      if (story.type !== 'video') return alert('يمكن قص الفيديوهات فقط.');
-      currentEditIndex = index;
-      document.getElementById('editModal').classList.add('open');
-      const video = document.getElementById('editVideo');
-      video.src = story.url;
-      video.load();
-      video.onloadedmetadata = function() {
-        const duration = video.duration;
-        document.getElementById('startRange').max = duration;
-        document.getElementById('endRange').max = duration;
-        document.getElementById('startRange').value = story.startTime || 0;
-        document.getElementById('endRange').value = story.endTime || duration;
-        document.getElementById('startLabel').textContent = story.startTime || 0;
-        document.getElementById('endLabel').textContent = story.endTime || duration;
-        video.currentTime = story.startTime || 0;
-      };
-      document.getElementById('startRange').oninput = function() {
-        const val = parseFloat(this.value);
-        document.getElementById('startLabel').textContent = val;
-        video.currentTime = val;
-      };
-      document.getElementById('endRange').oninput = function() {
-        const val = parseFloat(this.value);
-        document.getElementById('endLabel').textContent = val;
-        video.currentTime = val;
-      };
-    }
+  _setupGlobalListeners() {
+    // ربط أزرار القصص
+    window.Stories = this.stories; // مؤقت للربط
+    // ربط الدوال العامة
+    window.navigateTo = (i) => this.navigateTo(i);
+    window.openChat = (name) => this.chat.openChat(name);
+    window.closeChat = () => this.chat.closeChat();
+    window.handleSend = () => this.chat.handleSend();
+    window.addFriend = () => this.chat.addFriend();
+    window.renderStories = () => this.stories.loadStories();
+    window.openMyStories = () => this.stories.openMyStories();
+    window.closeMyStories = () => this.stories.closeMyStories();
+    window.openGallery = () => this.stories.openGallery();
+    window.closeGallery = () => this.stories.closeGallery();
+    window.openCamera = () => this.stories.openCamera();
+    window.openGalleryPicker = () => this.stories.openGalleryPicker();
+    window.createTextStory = () => this.stories.createTextStory();
+    window.createCelebrationStory = () => this.stories.createCelebrationStory();
+    window.createMusicStory = () => this.stories.createMusicStory();
+    window.deleteStory = (i) => this.stories.deleteStory(i);
+    window.openEditModal = (i) => this.stories.openEditModal(i);
+    window.saveEditedStory = () => this.stories.saveEdited();
+    window.closeEditModal = () => this.stories.closeEditModal();
+    window.setupStoryVideo = () => {}; // لم تعد مستخدمة
+    window.toggleStoryMute = () => {};
+    window.likeStory = () => this.stories.like();
+    window.viewStory = () => this.stories.view();
+    window.shareStory = () => this.stories.share();
+    window.downloadStory = () => this.stories.download();
+    window.editProfile = () => this.profileModule.edit();
+    window.changeAvatar = () => this.profileModule.changeAvatar();
+    window.toggleTheme = () => this.profileModule.toggleTheme();
+    window.logout = () => this.profileModule.logout();
+  }
 
-    function saveEditedStory() {
-      if (currentEditIndex === null) return;
-      const start = parseFloat(document.getElementById('startRange').value);
-      const end = parseFloat(document.getElementById('endRange').value);
-      if (start >= end) return alert('يجب أن تكون البداية قبل النهاية.');
-      stories[currentEditIndex].startTime = start;
-      stories[currentEditIndex].endTime = end;
-      saveStories();
-      closeEditModal();
-      renderStories();
-    }
+  static notify(sender, text) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    const now = Date.now();
+    if (now - App._lastNotificationTime < 3000) return;
+    App._lastNotificationTime = now;
+    new Notification(`📩 ${sender}`, { body: text, icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💬</text></svg>' });
+  }
+}
+App._lastNotificationTime = 0;
 
-    function closeEditModal() {
-      document.getElementById('editModal').classList.remove('open');
-      currentEditIndex = null;
-    }
+// ================================================================
+//  7.  تشغيل التطبيق
+// ================================================================
 
-    // مراقبة الفيديوهات المرئية (تشغيل/إيقاف)
-    function observeStoryVideos() {
-      if (!('IntersectionObserver' in window)) return;
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const video = entry.target.querySelector('video');
-          if (!video) return;
-          if (entry.isIntersecting) {
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
-        });
-      }, { threshold: 0.3 });
-      document.querySelectorAll('.story-item').forEach(item => observer.observe(item));
-    }
-
-    function pauseAllVideos() {
-      document.querySelectorAll('#storiesPage video').forEach(v => v.pause());
-    }
-
-    // مؤقت تلقائي للقصص (انتقال كل 5 ثوانٍ)
-    function startStorySlideshow() {
-      if (storyTimer) clearInterval(storyTimer);
-      const items = document.querySelectorAll('.story-item');
-      if (items.length < 2) return;
-      let index = 0;
-      // إخفاء الكل عدا الأول
-      items.forEach((item, i) => { item.style.display = i === 0 ? 'flex' : 'none'; });
-      storyTimer = setInterval(() => {
-        const visible = document.querySelector('.story-item[style*="flex"]');
-        if (!visible) return;
-        const currentIdx = Array.from(items).indexOf(visible);
-        const nextIdx = (currentIdx + 1) % items.length;
-        items.forEach(item => item.style.display = 'none');
-        items[nextIdx].style.display = 'flex';
-        // تشغيل الفيديو إن وجد
-        const video = items[nextIdx].querySelector('video');
-        if (video) video.play().catch(() => {});
-      }, 5000);
-    }
-
-    // ============================================================
-    //  9.  إدارة القصص (إنشاء، معرض، كاميرا...)
-    // ============================================================
-    function openMyStories() {
-      document.getElementById('myStoriesModal').classList.add('open');
-    }
-
-    function closeMyStories() {
-      document.getElementById('myStoriesModal').classList.remove('open');
-    }
-
-    function openGallery() {
-      closeMyStories();
-      document.getElementById('galleryModal').classList.add('open');
-    }
-
-    function closeGallery() {
-      document.getElementById('galleryModal').classList.remove('open');
-    }
-
-    function openCamera() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*,video/*';
-      input.capture = 'environment';
-      input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        processStoryFile(file);
-        closeGallery();
-      };
-      input.click();
-    }
-
-    function openGalleryPicker() {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*,video/*';
-      input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        processStoryFile(file);
-        closeGallery();
-      };
-      input.click();
-    }
-
-    function processStoryFile(file) {
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const data = ev.target.result;
-        let type = 'image';
-        if (file.type.startsWith('video')) type = 'video';
-        else if (file.type.startsWith('audio')) type = 'music';
-        const story = {
-          url: data,
-          type: type,
-          username: profile.name || 'مستخدم',
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          startTime: 0,
-          endTime: 0,
-          filename: file.name
-        };
-        stories.unshift(story);
-        saveStories();
-        renderStories();
-        if (type === 'video') {
-          setTimeout(() => openEditModal(0), 400);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function createTextStory() {
-      closeGallery();
-      const text = prompt('أدخل نص القصة:');
-      if (!text) return;
-      const story = {
-        type: 'text',
-        text: text.trim(),
-        username: profile.name || 'مستخدم',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      stories.unshift(story);
-      saveStories();
-      renderStories();
-    }
-
-    function createCelebrationStory() {
-      closeGallery();
-      const celebrations = ['🎉 حفلة رائعة!', '🎂 عيد ميلاد سعيد!', '🥳 سنة جديدة سعيدة!', '🎊 تهانينا!', '💪 إنجاز جديد!'];
-      const text = celebrations[Math.floor(Math.random() * celebrations.length)];
-      const story = {
-        type: 'text',
-        text: text,
-        username: profile.name || 'مستخدم',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      stories.unshift(story);
-      saveStories();
-      renderStories();
-    }
-
-    function createMusicStory() {
-      closeGallery();
-      // محاكاة رفع ملف صوتي
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'audio/*';
-      input.onchange = function(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          const story = {
-            url: ev.target.result,
-            type: 'music',
-            username: profile.name || 'مستخدم',
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            filename: file.name
-          };
-          stories.unshift(story);
-          saveStories();
-          renderStories();
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    }
-
-    // ============================================================
-    //  10. تفاعلات القصص (أزرار جانبية)
-    // ============================================================
-    function likeStory() { alert('❤️ تم الإعجاب بالقصة!'); }
-    function viewStory() { alert('👁️ تم مشاهدة القصة!'); }
-    function shareStory() { alert('♻️ تم مشاركة القصة!'); }
-    function downloadStory() { alert('⬇️ يتم تحميل القصة...'); }
-
-    // ============================================================
-    //  11. الملف الشخصي
-    // ============================================================
-    function loadProfileUI() {
-      document.getElementById('profileName').textContent = profile.name;
-      document.getElementById('profileStatus').textContent = profile.status;
-      document.getElementById('profilePhone').textContent = profile.phone;
-      document.getElementById('profileEmail').textContent = profile.email;
-      document.getElementById('avatarPreview').textContent = profile.avatar || '👤';
-    }
-
-    function editProfile() {
-      const name = prompt('اسم المستخدم:', profile.name);
-      if (name && name.trim()) profile.name = name.trim();
-      const status = prompt('الحالة:', profile.status);
-      if (status !== null) profile.status = status.trim() || 'متصل الآن';
-      const phone = prompt('رقم الهاتف:', profile.phone);
-      if (phone !== null) profile.phone = phone.trim();
-      const email = prompt('البريد الإلكتروني:', profile.email);
-      if (email !== null) profile.email = email.trim();
-      saveProfile();
-      loadProfileUI();
-    }
-
-    function changeAvatar() {
-      const emojis = ['👤', '😊', '😎', '👩', '🧑', '👨', '💼', '🌟', '🦊', '🐱', '🐶', '🐼'];
-      const choice = prompt('اختر إيموجي لصورتك (أدخل الرقم):\n' + emojis.map((e,i) => i+1+': '+e).join('\n'));
-      if (choice && !isNaN(choice) && choice > 0 && choice <= emojis.length) {
-        profile.avatar = emojis[choice-1];
-        saveProfile();
-        loadProfileUI();
-      }
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      if (current === 'dark') {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
-    }
-
-    // استعادة الثيم
-    if (localStorage.getItem('theme') === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-
-    function logout() {
-      if (confirm('هل تريد تسجيل الخروج؟ سيتم مسح بيانات المحادثات.')) {
-        localStorage.removeItem('chats');
-        chats = {};
-        renderChatList();
-        alert('تم تسجيل الخروج. تحديث الصفحة...');
-        location.reload();
-      }
-    }
-
-    // ============================================================
-    //  12. إضافة صديق (محاكاة)
-    // ============================================================
-    function addFriend() {
-      const name = prompt('أدخل اسم الصديق:');
-      if (name && name.trim()) {
-        const clean = name.trim();
-        if (!chats[clean]) chats[clean] = [];
-        saveChats();
-        renderChatList();
-        alert(`تمت إضافة ${clean} إلى الدردشات.`);
-      }
-    }
-
-    // ============================================================
-    //  13. التهيئة والتشغيل
-    // ============================================================
-    function init() {
-      // تحميل الثيم
-      if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-      // تحديث واجهات
-      renderChatList();
-      loadProfileUI();
-      renderStories();
-      // عرض الصفحة الأولى
-      navigateTo(0);
-      // إشعار ترحيبي
-      console.log('🚀 تطبيق الدردشة جاهز!');
-    }
-
-    // جعل الدوال العامة متاحة للـ HTML
-    window.navigateTo = navigateTo;
-    window.openChat = openChat;
-    window.closeChat = closeChat;
-    window.handleSend = handleSend;
-    window.renderStories = renderStories;
-    window.openMyStories = openMyStories;
-    window.closeMyStories = closeMyStories;
-    window.openGallery = openGallery;
-    window.closeGallery = closeGallery;
-    window.openCamera = openCamera;
-    window.openGalleryPicker = openGalleryPicker;
-    window.createTextStory = createTextStory;
-    window.createCelebrationStory = createCelebrationStory;
-    window.createMusicStory = createMusicStory;
-    window.deleteStory = deleteStory;
-    window.openEditModal = openEditModal;
-    window.saveEditedStory = saveEditedStory;
-    window.closeEditModal = closeEditModal;
-    window.setupStoryVideo = setupStoryVideo;
-    window.toggleStoryMute = toggleStoryMute;
-    window.likeStory = likeStory;
-    window.viewStory = viewStory;
-    window.shareStory = shareStory;
-    window.downloadStory = downloadStory;
-    window.editProfile = editProfile;
-    window.changeAvatar = changeAvatar;
-    window.toggleTheme = toggleTheme;
-    window.logout = logout;
-    window.addFriend = addFriend;
-
-    // بدء التطبيق
-    init();
-
-  })();
+document.addEventListener('DOMContentLoaded', () => {
+  window.app = new App();
+});
 </script>
 </body>
 </html>
