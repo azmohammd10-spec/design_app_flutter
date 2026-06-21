@@ -649,11 +649,50 @@ body {
         <div onclick="shareStory()">♻️</div>
         <div onclick="downloadStory()">⬇️</div>
     </div>
-    <div class="story-create-center">
-        <button onclick="openCreateOptions()">
-            <span>+</span>
+    <!-- زر إنشاء القصة (يظهر دائمًا) -->
+<div class="story-create-center">
+    <button onclick="openCreateOptions()">
+        <span>+</span>
+    </button>
+</div>
+
+<!-- نافذة إنشاء القصة (تظهر عند الضغط على +) -->
+<div id="storyCreator" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); z-index:9999; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+    
+    <!-- العنوان -->
+    <div style="color:#fff; font-size:24px; font-weight:bold; margin-bottom:20px; text-align:center;">
+        إنشاء قصة جديدة
+    </div>
+
+    <!-- خيارات الإنشاء (الكاميرا، النص، الموسيقى) -->
+    <div style="display:flex; gap:20px; justify-content:center; margin-bottom:30px; flex-wrap:wrap;">
+        <button onclick="createCameraStory()" style="display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 30px; color:#fff; cursor:pointer; transition:0.3s; min-width:80px;">
+            <span style="font-size:40px;">📷</span>
+            <span style="font-size:14px; margin-top:8px;">كاميرا</span>
+        </button>
+        <button onclick="createTextStory()" style="display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 30px; color:#fff; cursor:pointer; transition:0.3s; min-width:80px;">
+            <span style="font-size:40px;">📝</span>
+            <span style="font-size:14px; margin-top:8px;">نص</span>
+        </button>
+        <button onclick="createMusicStory()" style="display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 30px; color:#fff; cursor:pointer; transition:0.3s; min-width:80px;">
+            <span style="font-size:40px;">🎵</span>
+            <span style="font-size:14px; margin-top:8px;">موسيقى</span>
+        </button>
+        <button onclick="createMediaStory()" style="display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 30px; color:#fff; cursor:pointer; transition:0.3s; min-width:80px;">
+            <span style="font-size:40px;">📸</span>
+            <span style="font-size:14px; margin-top:8px;">معرض</span>
+        </button>
+        <button onclick="createExampleStory()" style="display:flex; flex-direction:column; align-items:center; background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.2); border-radius:20px; padding:20px 30px; color:#fff; cursor:pointer; transition:0.3s; min-width:80px;">
+            <span style="font-size:40px;">💡</span>
+            <span style="font-size:14px; margin-top:8px;">مثال</span>
         </button>
     </div>
+
+    <!-- زر الإغلاق -->
+    <button onclick="closeCreateOptions()" style="padding:12px 40px; background:#ff4d4d; border:none; border-radius:25px; color:#fff; font-size:16px; cursor:pointer; margin-top:10px;">
+        إلغاء
+    </button>
+</div>
     <div class="story-user-info">
         <div class="user-avatar" id="storyUserAvatar">👤</div>
         <div class="user-name" id="storyUserName">مستخدم</div>
@@ -1127,6 +1166,7 @@ function renderStories() {
         item.className = "story-item";
         
         let mediaHTML = "";
+        
         if (story.type === "text") {
             mediaHTML = `
                 <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #2d3436, #636e72); padding:40px;">
@@ -1144,6 +1184,18 @@ function renderStories() {
                 <button class="mute-btn" onclick="toggleMute(${index})">🔇</button>
                 <button class="edit-btn" onclick="openEditModal(${index})">✂️</button>
             `;
+        } else if (story.type === "music") {
+            mediaHTML = `
+                <div style="width:100%; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); padding:40px;">
+                    <div style="font-size:80px; margin-bottom:20px;">🎵</div>
+                    <div style="color:#fff; font-size:24px; font-weight:bold; text-align:center; text-shadow:0 4px 20px rgba(0,0,0,0.5);">
+                        ${story.filename || "مقطع موسيقي"}
+                    </div>
+                    <audio controls style="margin-top:20px; width:80%; max-width:400px;">
+                        <source src="${story.url}" type="audio/mpeg">
+                    </audio>
+                </div>
+            `;
         } else {
             mediaHTML = `<img src="${story.url}" alt="قصة">`;
         }
@@ -1158,6 +1210,7 @@ function renderStories() {
         feed.appendChild(item);
     });
 }
+        
 
 // إعداد الفيديو (القص)
 function setupVideo(index, start, end) {
@@ -1242,38 +1295,37 @@ function closeEditModal() {
 }
 
 // فتح وإغلاق نافذة الخيارات
-function openCreateOptions() {
-    document.getElementById('createOptions').style.display = 'block';
-}
-
-function closeCreateOptions() {
-    document.getElementById('createOptions').style.display = 'none';
-}
-
-// إنشاء قصة نصية
-function createTextStory() {
-    closeCreateOptions();
-    const text = prompt("📝 اكتب حالتك:");
-    if (text && text.trim() !== '') {
-        const newStory = {
-            type: "text",
-            text: text.trim(),
-            username: profile.name || "مستخدم",
-            time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+setTimeout(() => openEditModal(0), 500);
+            }
         };
-        stories.unshift(newStory);
-        localStorage.setItem("stories", JSON.stringify(stories));
-        renderStories();
-        document.getElementById("storyFeed").scrollTop = 0;
-    }
+        reader.readAsDataURL(file);
+    };
+    input.click();
 }
 
-// إنشاء قصة من المعرض
-function createMediaStory() {
+// تحديث معلومات المستخدم
+// ============================================
+//  إنشاء القصص (كاميرا، نص، موسيقى، معرض، مثال)
+// ============================================
+
+// فتح نافذة إنشاء القصة
+function openCreateOptions() {
+    document.getElementById('storyCreator').style.display = 'flex';
+}
+
+// إغلاق نافذة إنشاء القصة
+function closeCreateOptions() {
+    document.getElementById('storyCreator').style.display = 'none';
+}
+
+// إنشاء قصة من الكاميرا
+function createCameraStory() {
     closeCreateOptions();
+    // فتح الكاميرا باستخدام input capture
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*,video/*";
+    input.capture = "environment";
     input.onchange = function(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1300,19 +1352,58 @@ function createMediaStory() {
     input.click();
 }
 
-// تحديث معلومات المستخدم
-function updateStoryUserInfo() {
-    const avatar = document.getElementById('storyUserAvatar');
-    const name = document.getElementById('storyUserName');
-    if (avatar) avatar.textContent = profile.avatar || '👤';
-    if (name) name.textContent = profile.name || 'مستخدم';
+// إنشاء قصة من الموسيقى (تطبيق بسيط - اختيار ملف صوتي)
+function createMusicStory() {
+    closeCreateOptions();
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "audio/*";
+    input.onchange = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // عرض القصة كصورة مع موسيقى (خلفية ثابتة)
+            const newStory = {
+                type: "music",
+                url: e.target.result,
+                filename: file.name,
+                username: profile.name || "مستخدم",
+                time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+            };
+            stories.unshift(newStory);
+            localStorage.setItem("stories", JSON.stringify(stories));
+            renderStories();
+            document.getElementById("storyFeed").scrollTop = 0;
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
 }
 
-// دوال التفاعل
-function likeStory() { alert("❤️ تم الإعجاب بالقصة!"); }
-function viewStory() { alert("👁️ تم مشاهدة القصة!"); }
-function shareStory() { alert("♻️ تم مشاركة القصة!"); }
-function downloadStory() { alert("⬇️ يتم تحميل القصة..."); }
+// إنشاء قصة مثال (قصة افتراضية)
+function createExampleStory() {
+    closeCreateOptions();
+    const exampleStories = [
+        "🌅 يوم جميل مع الأصدقاء!",
+        "🎉 حفلة رائعة الليلة!",
+        "🏖️ عطلة الصيف قادمة!",
+        "📚 اقرأ كتاباً جديداً اليوم!",
+        "🎨 الفن هو الحياة!"
+    ];
+    const randomText = exampleStories[Math.floor(Math.random() * exampleStories.length)];
+    
+    const newStory = {
+        type: "text",
+        text: randomText,
+        username: profile.name || "مستخدم",
+        time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+    };
+    stories.unshift(newStory);
+    localStorage.setItem("stories", JSON.stringify(stories));
+    renderStories();
+    document.getElementById("storyFeed").scrollTop = 0;
+}
 
 // تحميل القصص وتحديث معلومات المستخدم
 renderStories();
