@@ -1012,7 +1012,7 @@
           <button class="file-btn" onclick="document.getElementById('fileInput').click()" aria-label="رفع ملف">📎</button>
           <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" multiple>
           <button class="emoji-btn" onclick="window.toggleEmojiPicker()" aria-label="إدراج إيموجي">😊</button>
-          <button id="sendButton" onclick="window.handleSend()" aria-label="إرسال">
+          <button id="sendButton" aria-label="إرسال">
             <svg id="sendIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
               <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
               <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
@@ -1515,6 +1515,7 @@
           this.chatStatusEl = document.getElementById('chatStatus');
           this.recognition = null;
           this.isRecording = false;
+          this.isSending = false;
           this._setupListeners();
         }
 
@@ -1690,42 +1691,50 @@
         }
 
         async sendMessage(text, file = null) {
-          if (!this.activeChatId) return;
-          let fileId = null;
-          let mediaType = null;
-          if (file) {
-            const validation = Utils.validateFile(file);
-            if (!validation.valid) {
-              alert(validation.message);
-              return;
-            }
-            fileId = await this.dataManager.saveFile(file);
-            mediaType = file.type.startsWith('image') ? 'image' :
-              file.type.startsWith('video') ? 'video' : 'audio';
-          }
+  // منع الإرسال المتكرر
+  if (this.isSending) return;
+  if (!this.activeChatId) return;
+  
+  this.isSending = true;
+  try {
+    let fileId = null;
+    let mediaType = null;
+    if (file) {
+      const validation = Utils.validateFile(file);
+      if (!validation.valid) {
+        alert(validation.message);
+        return;
+      }
+      fileId = await this.dataManager.saveFile(file);
+      mediaType = file.type.startsWith('image') ? 'image' :
+        file.type.startsWith('video') ? 'video' : 'audio';
+    }
 
-          const msg = {
-            chatId: this.activeChatId,
-            text: Utils.sanitize(text || ''),
-            senderId: this.profile.getUserId(),
-            senderName: this.profile.getUserName(),
-            status: 'sent',
-            fileId: fileId,
-            mediaType: mediaType,
-            createdAt: Date.now()
-          };
-          await this.dataManager.saveMessage(msg);
-          await this.renderMessages(this.activeChatId);
-          await this.renderChatList();
+    const msg = {
+      chatId: this.activeChatId,
+      text: Utils.sanitize(text || ''),
+      senderId: this.profile.getUserId(),
+      senderName: this.profile.getUserName(),
+      status: 'sent',
+      fileId: fileId,
+      mediaType: mediaType,
+      createdAt: Date.now()
+    };
+    await this.dataManager.saveMessage(msg);
+    await this.renderMessages(this.activeChatId);
+    await this.renderChatList();
 
-          setTimeout(async () => {
-            msg.status = 'delivered';
-            await this.dataManager.saveMessage(msg);
-            if (this.activeChatId === msg.chatId) await this.renderMessages(this.activeChatId);
-          }, 1000);
+    setTimeout(async () => {
+      msg.status = 'delivered';
+      await this.dataManager.saveMessage(msg);
+      if (this.activeChatId === msg.chatId) await this.renderMessages(this.activeChatId);
+    }, 1000);
 
-          this._simulateReply(this.activeChatId);
-        }
+    this._simulateReply(this.activeChatId);
+  } finally {
+    this.isSending = false;
+  }
+}
 
         async _simulateReply(chatId) {
           const replies = ['مرحباً!', 'كيف الحال؟', 'شكراً لك', '❤️', 'ممتاز!', 'أنا بخير', '😂', '👍'];
@@ -1815,15 +1824,16 @@
         }
 
         handleSend() {
-          const text = this.messageInput.value.trim();
-          if (text) {
-            this.sendMessage(text);
-            this.messageInput.value = '';
-            this._updateSendIcon();
-          } else {
-            this.startRecording();
-          }
-        }
+  if (this.isSending) return;
+  const text = this.messageInput.value.trim();
+  if (text) {
+    this.sendMessage(text);
+    this.messageInput.value = '';
+    this._updateSendIcon();
+  } else {
+    this.startRecording();
+  }
+}
 
         async addFriend() {
           const name = prompt('أدخل اسم الصديق:');
