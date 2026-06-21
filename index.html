@@ -1311,7 +1311,10 @@ function openCamera() {
     input.capture = "environment";
     input.onchange = function(event) {
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file) {
+            closeGalleryModal();
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             const newStory = {
@@ -1335,7 +1338,6 @@ function openCamera() {
     };
     input.click();
 }
-
 // إنشاء قصة احتفال
 function createCelebrationStory() {
     closeGalleryModal();
@@ -1367,7 +1369,10 @@ function openGalleryPicker() {
     input.accept = "image/*,video/*";
     input.onchange = function(event) {
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file) {
+            closeGalleryModal();
+            return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
             const newStory = {
@@ -1390,7 +1395,7 @@ function openGalleryPicker() {
         reader.readAsDataURL(file);
     };
     input.click();
-} 
+}
 renderStories();
 updateStoryUserInfo();
 showPage(0);
