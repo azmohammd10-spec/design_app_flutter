@@ -587,8 +587,6 @@ body {
 <body>
 
 <div id="app">
-<!-- ===== صفحة الدردشات ===== -->
-<div id="app">
     <!-- ===== صفحة الدردشات ===== -->
     <div id="chatPage" class="page">
         <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid #eee">
@@ -642,8 +640,30 @@ body {
         </div>
     </div>
 
-    <!-- ===== صفحة القصص ===== -->
-    <div id="stories" class="page">
+     <!-- ===== صفحة القصص ===== -->
+<div id="stories" class="page">
+    <!-- شريط تيك توك العلوي -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:15px 20px; position:absolute; top:0; left:0; right:0; z-index:20; background:linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);">
+        <span style="font-size:18px; font-weight:bold; color:#fff;">لك</span>
+        <span style="font-size:18px; font-weight:bold; color:#fff;">قصتي</span>
+    </div>
+
+    <button class="story-back" onclick="closeStories()">←</button>
+    <div id="storyFeed" class="story-feed"></div>
+    <div class="story-actions">
+        <div onclick="likeStory()">❤️</div>
+        <div onclick="viewStory()">👁️</div>
+        <div onclick="shareStory()">♻️</div>
+        <div onclick="downloadStory()">⬇️</div>
+    </div>
+    <div class="story-user-info">
+        <div class="user-avatar" id="storyUserAvatar">👤</div>
+        <div class="user-name" id="storyUserName">مستخدم</div>
+    </div>
+    <div id="editModal" style="display:none; ...">
+        ...
+    </div>
+</div>
         <button class="story-back" onclick="closeStories()">←</button>
         <div id="storyFeed" class="story-feed"></div>
         <div class="story-actions">
