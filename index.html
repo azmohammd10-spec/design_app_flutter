@@ -200,26 +200,55 @@ async function loadUsers(){
     collection(db, "users")
   );
 
-  usersDiv.innerHTML = "";
-
-  snapshot.forEach((userDoc)=>{
-
-    const userData = userDoc.data();
-
-    usersDiv.innerHTML += `
+usersDiv.innerHTML += `
+  <div style="
+    width:90%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px;
+    margin:5px auto;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  ">
+    <div style="display:flex; align-items:center; gap:10px;">
       <div style="
-        padding:10px;
-        margin:5px;
-        background:#fff;
-        border-radius:10px;
-        box-shadow:0 1px 5px rgba(0,0,0,.1);
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        background:#4CAF50;
+        color:#fff;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:bold;
       ">
-        👤 ${userData.name}
+        ${userData.name?.charAt(0).toUpperCase() || "U"}
       </div>
-    `;
-  });
 
-}
+      <div>
+        <div style="font-weight:bold;">
+          ${userData.name}
+        </div>
+        <div style="font-size:12px; opacity:0.6;">
+          مستخدم
+        </div>
+      </div>
+    </div>
+
+    <button style="
+      background:#4CAF50;
+      color:#fff;
+      border:none;
+      padding:6px 10px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      مراسلة
+    </button>
+  </div>
+`;
 // ================== CHAT ==================
 window.openChat = function(){
   document.getElementById("chatBox").style.display = "block";
@@ -290,10 +319,8 @@ onSnapshot(q, (snapshot)=>{
           max-width:75%;
           padding:10px 12px;
           border-radius:18px;
-          background:${isMe ? '#4CAF50' : '#e9e9eb'};
           color:${isMe ? '#fff' : '#000'};
-          font-size:14px;
-        ">
+border-radius:${isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
           <div style="font-size:11px; opacity:0.7;">
             ${name} • ${time}
           </div>
