@@ -116,7 +116,18 @@ window.register = function(){
   let password = document.getElementById("password").value;
 
   createUserWithEmailAndPassword(auth, email, password)
-  .then(()=> alert("تم إنشاء الحساب 🎉"))
+  createUserWithEmailAndPassword(auth, email, password)
+.then(async (userCredential)=>{
+  
+  const user = userCredential.user;
+
+  await setDoc(doc(db, "users", user.uid), {
+    email: user.email,
+    name: email.split("@")[0]
+  });
+
+  alert("تم إنشاء الحساب 🎉");
+});
   .catch(err=> alert(err.message));
 }
 
@@ -171,16 +182,35 @@ window.sendMessage = async function(){
 
 // عرض الرسائل
 const q = query(collection(db, "messages"), orderBy("time"));
-
 onSnapshot(q, (snapshot)=>{
   let messagesDiv = document.getElementById("messages");
   messagesDiv.innerHTML = "";
 
   snapshot.forEach((doc)=>{
     let msg = doc.data();
-    messagesDiv.innerHTML += `<p><b>${msg.user}:</b> ${msg.text}</p>`;
+
+    let isMe = auth.currentUser && msg.user === auth.currentUser.email;
+
+    messagesDiv.innerHTML += `
+      <div style="
+        text-align:${isMe ? 'right' : 'left'};
+        margin:5px;
+      ">
+        <span style="
+          display:inline-block;
+          padding:8px 12px;
+          border-radius:15px;
+          background:${isMe ? '#4CAF50' : '#ddd'};
+          color:${isMe ? 'white' : 'black'};
+          max-width:70%;
+        ">
+          <b>${msg.user.split('@')[0]}:</b> ${msg.text}
+        </span>
+      </div>
+    `;
   });
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
+
 </script>
