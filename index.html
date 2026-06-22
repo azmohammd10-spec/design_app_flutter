@@ -200,53 +200,29 @@ async function loadUsers(){
     collection(db, "users")
   );
 
-usersDiv.innerHTML += `
+messagesDiv.innerHTML += `
   <div style="
-    width:90%;
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:10px;
-    margin:5px auto;
-    background:#fff;
-    border-radius:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    justify-content:${isMe ? 'flex-end' : 'flex-start'};
+    margin:8px 0;
   ">
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div style="
-        width:40px;
-        height:40px;
-        border-radius:50%;
-        background:#4CAF50;
-        color:#fff;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-weight:bold;
-      ">
-        ${userData.name?.charAt(0).toUpperCase() || "U"}
+    <div style="
+      max-width:75%;
+      padding:10px 12px;
+      border-radius:${isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
+      background:${isMe ? 'linear-gradient(135deg,#4CAF50,#45a049)' : '#e9e9eb'};
+      color:${isMe ? '#fff' : '#000'};
+      font-size:14px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    ">
+      <div style="font-size:11px; opacity:0.7; margin-bottom:4px;">
+        ${name} • ${time}
       </div>
 
-      <div>
-        <div style="font-weight:bold;">
-          ${userData.name}
-        </div>
-        <div style="font-size:12px; opacity:0.6;">
-          مستخدم
-        </div>
+      <div style="word-wrap:break-word;">
+        ${msg.text}
       </div>
     </div>
-
-    <button style="
-      background:#4CAF50;
-      color:#fff;
-      border:none;
-      padding:6px 10px;
-      border-radius:8px;
-      cursor:pointer;
-    ">
-      مراسلة
-    </button>
   </div>
 `;
 // ================== CHAT ==================
