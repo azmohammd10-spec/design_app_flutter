@@ -2,1130 +2,151 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>💬 الدردشة</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+  <title>Star Social</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    /* ===== شريط الإدخال ===== */
-    .input-box {
-      background: var(--bg-header);
-      padding: 10px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      border-top: 1px solid rgba(0,0,0,0.05);
-      flex-shrink: 0;
+    body{
+      font-family: Arial;
+      background:#f5f5f5;
+      text-align:center;
+      padding:30px;
     }
 
-    #messageInput {
-      flex: 1;
-      height: 48px;
-      padding: 0 18px;
-      border: 2px solid rgba(0,0,0,0.08);
-      border-radius: var(--radius, 25px);
-      font-size: 15px;
-      background: var(--bubble-received, #ffffff);
-      color: var(--text-primary, #1a1a2e);
-      outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
+    .box{
+      background:#fff;
+      padding:20px;
+      border-radius:12px;
+      width:300px;
+      margin:auto;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
     }
 
-    #messageInput:focus {
-      border-color: var(--primary, #0084ff);
-      box-shadow: 0 0 0 4px rgba(0,132,255,0.12);
+    input{
+      width:90%;
+      padding:10px;
+      margin:8px 0;
+      border:1px solid #ccc;
+      border-radius:8px;
     }
 
-    .input-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
+    button{
+      width:95%;
+      padding:10px;
+      background:#4CAF50;
+      color:#fff;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
     }
 
-    .input-actions button {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--primary, #0084ff);
-      color: #fff;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+    button:hover{
+      background:#45a049;
     }
 
-    .input-actions button:hover { transform: scale(1.05); }
-
-    /* أزرار الملف والإيموجي (بدون خلفية) */
-    .file-btn, .emoji-btn {
-      background: transparent !important;
-      box-shadow: none !important;
-      color: var(--text-secondary, #555) !important;
-      font-size: 24px;
-      width: 40px !important;
-      height: 40px !important;
-    }
-    .file-btn:hover, .emoji-btn:hover { transform: scale(1.1) !important; }
-
-    /* تسجيل صوتي */
-    .input-actions button.recording {
-      background: #ff4d4d;
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255,77,77,0.5); }
-      70% { box-shadow: 0 0 0 12px rgba(255,77,77,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,77,77,0); }
-    }
-
-    /* لوحة الإيموجي */
-    #emojiPicker {
-      display: none;
-      background: var(--bg-header, #f8f9fa);
-      border-radius: 16px;
-      padding: 12px;
-      margin: 0 16px 10px;
-      box-shadow: var(--shadow, 0 2px 12px rgba(0,0,0,0.08));
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-
-    #emojiPicker span {
-      display: inline-block;
-      padding: 4px 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 28px;
-      transition: 0.2s;
-    }
-
-    #emojiPicker span:hover {
-      background: rgba(0,132,255,0.1);
-      transform: scale(1.2);
-    }
-
-    /* ===== الأنماط العامة ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-    }
-    :root {
-      --primary: #0084ff;
-      --secondary: #00c6ff;
-      --bg-app: #f5f7fa;
-      --bg-messages: #e5ddd5;
-      --bg-header: #f8f9fa;
-      --bubble-sent: linear-gradient(135deg, #dcf8c6, #b9e8a0);
-      --bubble-received: #ffffff;
-      --text-primary: #1a1a2e;
-      --text-secondary: #555;
-      --text-light: #888;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
-      --radius: 25px;
-      --nav-height: 65px;
-    }
-    body {
-      background: var(--bg-app);
-      color: var(--text-primary);
-      height: 100dvh;
-      overflow: hidden;
-    }
-
-    /* ===== حاوية الصفحات ===== */
-    #pages {
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      position: relative;
-    }
-    .page {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-      overflow-y: auto;
-      background: var(--bg-app);
-      padding-bottom: calc(var(--nav-height) + 10px);
-    }
-    .page.active {
-      display: flex;
-    }
-
-    /* ===== رأس التطبيق (مشترك) ===== */
-    .app-header {
-      background: var(--bg-header);
-      padding: 12px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      flex-shrink: 0;
-      box-shadow: var(--shadow);
-      z-index: 10;
-    }
-    .app-header h2 { font-size: 20px; }
-    .add-friend-btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .add-friend-btn:hover { transform: scale(1.05); }
-
-    /* ===== قائمة الدردشات ===== */
-    #chatList {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 12px;
-      background: var(--bg-app);
-    }
-    .chat-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 12px;
-      border-bottom: 1px solid rgba(0,0,0,0.04);
-      cursor: pointer;
-      transition: 0.2s;
-      border-radius: 8px;
-    }
-    .chat-item:hover { background: rgba(0,132,255,0.05); }
-    .chat-item .left {
-      display: flex;
-      gap: 14px;
-      align-items: center;
-    }
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: #fff;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
-    }
-    .chat-item .info .name { font-weight: 700; font-size: 16px; }
-    .chat-item .info .last-msg {
-      font-size: 13px;
-      color: var(--text-light);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 160px;
-    }
-    .chat-item .time { font-size: 11px; color: var(--text-light); }
-
-    /* ===== نافذة المحادثة ===== */
-#chatModal {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: var(--nav-height);   /* ← هذا هو التغيير */
-  background: var(--bg-app);
-  z-index: 9998;
-  flex-direction: column;
-  animation: slideUp 0.25s ease;
-}
-    #chatModal.open { display: flex; }
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .modal-header {
-      background: var(--bg-header);
-      padding: 10px 15px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid rgba(0,0,0,0.05);
-      flex-shrink: 0;
-    }
-    .modal-header .back-btn {
-      background: none;
-      border: none;
-      font-size: 26px;
-      cursor: pointer;
-      color: var(--primary);
-    }
-    .modal-header .chat-user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-    }
-    .modal-header .chat-user-info .avatar-sm {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
-      color: #fff;
-    }
-    .modal-header .chat-user-info .user-name { font-weight: 700; font-size: 16px; }
-    .modal-header .chat-user-info .user-status { font-size: 12px; color: #28a745; }
-
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
-      background: var(--bg-messages);
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .msg-wrapper {
-      display: flex;
-      align-items: flex-end;
-      gap: 8px;
-      max-width: 85%;
-      animation: fadeIn 0.2s ease;
-    }
-    .msg-wrapper.sent {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
-    .msg-wrapper.received { align-self: flex-start; }
-    .msg-wrapper .avatar-msg {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      color: #fff;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, var(--secondary), var(--primary));
-    }
-    .msg-wrapper.sent .avatar-msg { display: none; }
-    .bubble {
-      padding: 10px 14px;
-      border-radius: 18px;
-      font-size: 15px;
-      line-height: 1.5;
-      word-wrap: break-word;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    .msg-wrapper.sent .bubble {
-      background: var(--bubble-sent);
-      border-top-right-radius: 4px;
-      border-bottom-right-radius: 18px;
-    }
-    .msg-wrapper.received .bubble {
-      background: var(--bubble-received);
-      border-top-left-radius: 4px;
-      border-bottom-left-radius: 18px;
-    }
-    .bubble .time {
-      display: block;
-      font-size: 10px;
-      color: var(--text-light);
-      margin-top: 4px;
-    }
-    .msg-wrapper.sent .bubble .time { text-align: left; }
-    .msg-wrapper.received .bubble .time { text-align: right; }
-    .bubble img, .bubble video {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-top: 4px;
-      display: block;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    /* ===== شريط الإدخال ===== */
-    .input-box {
-      background: var(--bg-header);
-      padding: 10px 16px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      border-top: 1px solid rgba(0,0,0,0.05);
-      flex-shrink: 0;
-    }
-    #messageInput {
-      flex: 1;
-      height: 48px;
-      padding: 0 18px;
-      border: 2px solid rgba(0,0,0,0.08);
-      border-radius: var(--radius);
-      font-size: 15px;
-      background: var(--bubble-received);
-      color: var(--text-primary);
-      outline: none;
-    }
-    #messageInput:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(0,132,255,0.12);
-    }
-    .input-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .input-actions button {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--primary);
-      color: #fff;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    .input-actions button:hover { transform: scale(1.05); }
-    .input-actions button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-    .input-actions button.recording {
-      background: #ff4d4d;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255,77,77,0.5); }
-      70% { box-shadow: 0 0 0 12px rgba(255,77,77,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,77,77,0); }
-    }
-    .file-btn, .emoji-btn {
-      background: transparent !important;
-      box-shadow: none !important;
-      color: var(--text-secondary) !important;
-      font-size: 24px;
-      width: 40px !important;
-      height: 40px !important;
-    }
-    .file-btn:hover, .emoji-btn:hover { transform: scale(1.1) !important; }
-
-    /* ===== لوحة الإيموجي ===== */
-    #emojiPicker {
-      display: none;
-      background: var(--bg-header);
-      border-radius: 16px;
-      padding: 12px;
-      margin: 0 16px 10px;
-      box-shadow: var(--shadow);
-      max-height: 200px;
-      overflow-y: auto;
-      border: 1px solid rgba(0,0,0,0.05);
-    }
-    #emojiPicker span {
-      display: inline-block;
-      padding: 4px 6px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 28px;
-      transition: 0.2s;
-    }
-    #emojiPicker span:hover {
-      background: rgba(0,132,255,0.1);
-      transform: scale(1.2);
-    }
-
-    /* ===== صفحات القصص والحساب (مؤقت) ===== */
-    .empty-page {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      color: var(--text-light);
-      font-size: 24px;
-      text-align: center;
-      padding: 40px;
-    }
-    .empty-page span {
-      font-size: 16px;
-      margin-top: 8px;
-    }
-
-    /* ===== شريط التنقل السفلي ===== */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: var(--nav-height);
-      background: var(--bg-header);
-      border-top: 1px solid rgba(0,0,0,0.05);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 9999;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-    }
-    .nav-btn {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 12px;
-      cursor: pointer;
-      padding: 6px 0;
-      transition: color 0.3s ease;
-      position: relative;
-    }
-    .nav-btn .nav-icon { font-size: 24px; line-height: 1; }
-    .nav-btn .nav-label { font-size: 11px; font-weight: 500; }
-    .nav-btn.active { color: var(--primary); }
-    .nav-btn.active::after {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 30px;
-      height: 3px;
-      border-radius: 10px;
-      background: var(--primary);
-    }
-    .nav-btn:hover { color: var(--primary); }
-
-    /* ===== استجابة ===== */
-    @media (max-width: 480px) {
-      .bubble { font-size: 14px; padding: 8px 12px; }
-      #emojiPicker span { font-size: 24px; }
+    #home{
+      display:none;
     }
   </style>
 </head>
 <body>
 
-<!-- ========================================================== -->
-<!--  حاوية الصفحات (ثلاث صفحات)                               -->
-<!-- ========================================================== -->
-<div id="pages">
-
-  <!-- ===== صفحة الدردشات ===== -->
-  <div id="pageChat" class="page active">
-    <!-- رأس الصفحة -->
-    <div class="app-header">
-      <h2>💬 الدردشات</h2>
-      <button class="add-friend-btn" onclick="addFriend()">➕ صديق</button>
-    </div>
-    <!-- قائمة الدردشات -->
-    <div id="chatList"></div>
-  </div>
-
-  <!-- ===== صفحة القصص ===== -->
-  <div id="pageStories" class="page">
-    <div class="app-header">
-      <h2>👁️ القصص</h2>
-    </div>
-    <div class="empty-page">
-      📸 لا توجد قصص حالياً<br>
-      <span>سيتم إضافتها قريباً</span>
-    </div>
-  </div>
-
-  <!-- ===== صفحة الملف الشخصي ===== -->
-  <div id="pageProfile" class="page">
-    <div class="app-header">
-      <h2>👤 حسابي</h2>
-    </div>
-    <div class="empty-page">
-      👤 الملف الشخصي<br>
-      <span>سيتم إضافته قريباً</span>
-    </div>
-  </div>
-
+<div class="box" id="login">
+  <h2>تسجيل الدخول</h2>
+  <input type="email" id="email" placeholder="البريد الإلكتروني">
+  <input type="password" id="password" placeholder="كلمة المرور">
+  <button onclick="login()">دخول</button>
+  <button onclick="register()">إنشاء حساب</button>
 </div>
 
-<!-- ===== نافذة المحادثة (منبثقة فوق كل الصفحات) ===== -->
-<div id="chatModal">
-  <div class="modal-header">
-    <button class="back-btn" onclick="closeChat()">←</button>
-    <div class="chat-user-info">
-      <div class="avatar-sm" id="chatAvatar">👤</div>
-      <div>
-        <div class="user-name" id="chatName">محادثة</div>
-        <div class="user-status" id="chatStatus">متصل الآن</div>
-      </div>
-    </div>
-  </div>
-  <div id="messages"></div>
-
-  <!-- شريط الإدخال -->
-  <div class="input-box">
-    <input id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
-    <div class="input-actions">
-      <button class="file-btn" onclick="document.getElementById('fileInput').click()" aria-label="رفع ملف">📎</button>
-      <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" multiple>
-      <button class="emoji-btn" onclick="toggleEmojiPicker()" aria-label="إدراج إيموجي">😊</button>
-      <button id="sendButton">
-        <svg id="sendIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
-          <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-          <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-          <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- لوحة الإيموجي -->
-  <div id="emojiPicker"></div>
+<div class="box" id="home">
+  <h2>مرحبًا 👋</h2>
+  <p id="userInfo"></p>
+  <button onclick="logout()">تسجيل خروج</button>
 </div>
 
-<!-- ===== شريط التنقل السفلي ===== -->
-<nav class="bottom-nav">
-  <button class="nav-btn active" data-page="pageChat" onclick="switchPage('pageChat')">
-    <span class="nav-icon">💬</span>
-    <span class="nav-label">دردشة</span>
-  </button>
-  <button class="nav-btn" data-page="pageStories" onclick="switchPage('pageStories')">
-    <span class="nav-icon">👁️</span>
-    <span class="nav-label">قصص</span>
-  </button>
-  <button class="nav-btn" data-page="pageProfile" onclick="switchPage('pageProfile')">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">حسابي</span>
-  </button>
-</nav>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-<script>
-  (function() {
-    'use strict';
+  const firebaseConfig = {
+    // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-    // ============================================================
-    //  1.  الأدوات المساعدة
-    // ============================================================
-    const Utils = {
-      generateId() {
-        return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-      },
-      sanitize(text) {
-        if (typeof text !== 'string') return '';
-        return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-      },
-      formatTime(timestamp) {
-        return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      },
-      getAvatarEmoji(name) {
-        const map = { 'أحمد': '😎', 'خالد': '🧑‍💻', 'سارة': '👩‍🦰' };
-        return map[name] || '👤';
-      },
-      getRandomStatus() {
-        const statuses = ['متصل الآن', 'آخر ظهور منذ دقيقة', 'يكتب...', 'شوهد منذ 5 دقائق'];
-        return statuses[Math.floor(Math.random() * statuses.length)];
-      },
-      validateFile(file) {
-        const maxSize = 10 * 1024 * 1024;
-        if (file.size > maxSize) return { valid: false, message: 'حجم الملف يتجاوز 10 ميجابايت' };
-        const allowed = ['image/', 'video/', 'audio/'];
-        if (!allowed.some(t => file.type.startsWith(t))) {
-          return { valid: false, message: 'نوع الملف غير مدعوم' };
-        }
-        return { valid: true };
-      },
-      fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }
-    };
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCEuOcQIvg-chEXfwHM8JAxFeYGpaOIoP4",
+  authDomain: "star-social-bdfb2.firebaseapp.com",
+  projectId: "star-social-bdfb2",
+  storageBucket: "star-social-bdfb2.firebasestorage.app",
+  messagingSenderId: "256449419301",
+  appId: "1:256449419301:web:970b4905d6beb86c4087cc",
+  measurementId: "G-JYT3F33K7Y"
+};
 
-    // ============================================================
-    //  2.  إدارة التخزين (localStorage)
-    // ============================================================
-    const Storage = {
-      getProfile() {
-        try {
-          const raw = localStorage.getItem('profile');
-          if (!raw) {
-            const def = { userId: Utils.generateId(), name: 'مستخدم' };
-            this.saveProfile(def);
-            return def;
-          }
-          const data = JSON.parse(raw);
-          if (!data.userId) {
-            data.userId = Utils.generateId();
-            this.saveProfile(data);
-          }
-          return data;
-        } catch {
-          const def = { userId: Utils.generateId(), name: 'مستخدم' };
-          this.saveProfile(def);
-          return def;
-        }
-      },
-      saveProfile(profile) {
-        localStorage.setItem('profile', JSON.stringify(profile));
-      },
-      getChats() {
-        try {
-          const raw = localStorage.getItem('chats');
-          if (!raw) return {};
-          const data = JSON.parse(raw);
-          for (let key in data) {
-            if (!Array.isArray(data[key])) data[key] = [];
-            data[key] = data[key].filter(m => m && typeof m.text === 'string');
-          }
-          return data;
-        } catch { return {}; }
-      },
-      saveChats(chats) {
-        localStorage.setItem('chats', JSON.stringify(chats));
-      }
-    };
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-    // ============================================================
-    //  3.  التطبيق الرئيسي
-    // ============================================================
-    const profile = Storage.getProfile();
-    let chats = Storage.getChats();
-    let activeChat = null;
-    let isSending = false;
-    let recognition = null;
-    let isRecording = false;
-    const defaultChats = ['أحمد', 'خالد', 'سارة'];
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-    // عناصر DOM
-    const chatListEl = document.getElementById('chatList');
-    const modal = document.getElementById('chatModal');
-    const messagesEl = document.getElementById('messages');
-    const chatNameEl = document.getElementById('chatName');
-    const chatAvatarEl = document.getElementById('chatAvatar');
-    const chatStatusEl = document.getElementById('chatStatus');
-    const messageInput = document.getElementById('messageInput');
-    const sendButton = document.getElementById('sendButton');
-    const fileInput = document.getElementById('fileInput');
-    const emojiPicker = document.getElementById('emojiPicker');
+  // إنشاء حساب
+  window.register = function(){
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
-    // التأكد من وجود المحادثات الافتراضية
-    defaultChats.forEach(name => {
-      if (!chats[name]) chats[name] = [];
+    createUserWithEmailAndPassword(auth, email, password)
+    .then(user=>{
+      alert("تم إنشاء الحساب بنجاح 🎉");
+    })
+    .catch(err=>{
+      alert(err.message);
     });
-    Storage.saveChats(chats);
+  }
 
-    // ============================================================
-    //  4.  دوال عرض قائمة الدردشات
-    // ============================================================
-    function renderMessages() {
-  if (!activeChat || !chats[activeChat]) return;
-  const msgs = chats[activeChat];
-  messagesEl.innerHTML = '';
-  const fragment = document.createDocumentFragment();
-  const avatar = Utils.getAvatarEmoji(activeChat);
-  const myUserId = profile.userId;
+  // تسجيل دخول
+  window.login = function(){
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
-  msgs.forEach(m => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'msg-wrapper';
-    const isSent = m.senderId === myUserId;
-    wrapper.classList.add(isSent ? 'sent' : 'received');
+    signInWithEmailAndPassword(auth, email, password)
+    .then(user=>{
+      alert("تم تسجيل الدخول ✔");
+    })
+    .catch(err=>{
+      alert(err.message);
+    });
+  }
 
-    const avatarDiv = document.createElement('div');
-    avatarDiv.className = 'avatar-msg';
-    avatarDiv.textContent = avatar;
-    if (isSent) avatarDiv.style.display = 'none';
+  // تسجيل خروج
+  window.logout = function(){
+    signOut(auth);
+  }
 
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    const textSpan = document.createElement('span');
-    textSpan.textContent = m.text || '';
-    bubble.appendChild(textSpan);
-
-    // عرض الملفات
-    if (m.media) {
-      if (m.mediaType === 'image') {
-        const img = document.createElement('img');
-        img.src = m.media;
-        img.alt = 'صورة';
-        img.style.cssText = 'max-width:100%;border-radius:10px;margin-top:6px;';
-        bubble.appendChild(img);
-      } else if (m.mediaType === 'video') {
-        const vid = document.createElement('video');
-        vid.src = m.media;
-        vid.controls = true;
-        vid.style.cssText = 'max-width:100%;border-radius:10px;margin-top:6px;';
-        bubble.appendChild(vid);
-      } else if (m.mediaType === 'audio') {
-        const aud = document.createElement('audio');
-        aud.src = m.media;
-        aud.controls = true;
-        aud.style.cssText = 'width:100%;margin-top:6px;';
-        bubble.appendChild(aud);
-      }
+  // حالة المستخدم
+  onAuthStateChanged(auth, (user)=>{
+    if(user){
+      document.getElementById("login").style.display="none";
+      document.getElementById("home").style.display="block";
+      document.getElementById("userInfo").innerText = user.email;
+    }else{
+      document.getElementById("login").style.display="block";
+      document.getElementById("home").style.display="none";
     }
-
-    // ===== الوقت + علامة الحالة =====
-    const statusSpan = document.createElement('span');
-    statusSpan.className = 'time';
-
-    // الوقت
-    const timeText = document.createTextNode(Utils.formatTime(m.createdAt) + ' ');
-
-    if (isSent) {
-      const statusIcon = document.createElement('span');
-      statusIcon.className = 'status-icon';
-
-      if (m.status === 'sent') {
-        // حالة الإرسال: علامة واحدة رمادية (اختياري)
-        statusIcon.textContent = '✓';
-        statusIcon.style.color = '#888';
-      } else if (m.status === 'delivered') {
-        // حالة الوصول: علامة واحدة رمادية
-        statusIcon.textContent = '✓';
-        statusIcon.style.color = '#888';
-      } else if (m.status === 'read') {
-        // حالة القراءة: علامتين زرقاوين
-        statusIcon.textContent = '✓✓';
-        statusIcon.style.color = '#34b7f1'; // اللون الأزرق مثل واتساب
-      }
-
-      statusSpan.appendChild(timeText);
-      statusSpan.appendChild(statusIcon);
-    } else {
-      // للرسائل المستقبلة: وقت فقط
-      statusSpan.textContent = Utils.formatTime(m.createdAt);
-    }
-
-    bubble.appendChild(statusSpan);
-
-    wrapper.appendChild(avatarDiv);
-    wrapper.appendChild(bubble);
-    fragment.appendChild(wrapper);
   });
-  messagesEl.appendChild(fragment);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-}
 
-    // ============================================================
-    //  5.  دوال فتح وإغلاق المحادثة
-    // ============================================================
-    function openChat(name) {
-      if (activeChat === name && modal.classList.contains('open')) return;
-      activeChat = name;
-      modal.classList.add('open');
-      chatNameEl.textContent = name;
-      chatAvatarEl.textContent = Utils.getAvatarEmoji(name);
-      chatStatusEl.textContent = Utils.getRandomStatus();
-      renderMessages();
-      messageInput.focus();
-    }
-
-    function closeChat() {
-      modal.classList.remove('open');
-      activeChat = null;
-      if (recognition && recognition.listening) recognition.stop();
-      sendButton.classList.remove('recording');
-      updateSendIcon(false);
-    }
-
-    
-    // ============================================================
-    //  7.  إرسال الرسائل (مع منع التكرار)
-    // ============================================================
-    function sendMessage(text, file = null) {
-      if (isSending) return;
-      if (!activeChat) return;
-      isSending = true;
-      sendButton.disabled = true;
-      sendButton.style.opacity = '0.5';
-
-      (async () => {
-        try {
-          let media = null;
-          let mediaType = null;
-          if (file) {
-            const validation = Utils.validateFile(file);
-            if (!validation.valid) {
-              alert(validation.message);
-              return;
-            }
-            media = await Utils.fileToBase64(file);
-            mediaType = file.type.startsWith('image') ? 'image' :
-                        file.type.startsWith('video') ? 'video' : 'audio';
-          }
-
-          const msg = {
-            text: Utils.sanitize(text || ''),
-            senderId: profile.userId,
-            senderName: profile.name,
-            status: 'sent',
-            createdAt: Date.now(),
-            media: media,
-            mediaType: mediaType
-          };
-          chats[activeChat].push(msg);
-          Storage.saveChats(chats);
-          renderMessages();
-          renderChatList();
-
-          // محاكاة تسليم الرسالة
-          setTimeout(() => {
-            msg.status = 'delivered';
-            Storage.saveChats(chats);
-            if (activeChat) renderMessages();
-          }, 1000);
-
-          // محاكاة رد من الطرف الآخر
-          simulateReply(activeChat);
-
-        } finally {
-          isSending = false;
-          sendButton.disabled = false;
-          sendButton.style.opacity = '1';
-        }
-      })();
-    }
-
-    // ============================================================
-    //  8.  محاكاة الردود
-    // ============================================================
-    function simulateReply(chatId) {
-      const replies = ['مرحباً!', 'كيف الحال؟', 'شكراً لك', '❤️', 'ممتاز!', 'أنا بخير', '😂', '👍'];
-      const delay = 1500 + Math.random() * 2000;
-      setTimeout(() => {
-        if (!chats[chatId]) return;
-        const reply = replies[Math.floor(Math.random() * replies.length)];
-        const msg = {
-          text: reply,
-          senderId: 'other_' + chatId,
-          senderName: chatId,
-          status: 'delivered',
-          createdAt: Date.now()
-        };
-        chats[chatId].push(msg);
-        Storage.saveChats(chats);
-        if (activeChat === chatId) {
-          renderMessages();
-          // محاكاة قراءة الرسالة
-          setTimeout(() => {
-            msg.status = 'read';
-            Storage.saveChats(chats);
-            if (activeChat === chatId) renderMessages();
-          }, 1000);
-        }
-        renderChatList();
-      }, delay);
-    }
-
-    // ============================================================
-    //  9.  رفع الملفات
-    // ============================================================
-    fileInput.addEventListener('change', function(e) {
-      if (!this.files || !this.files.length) return;
-      const file = this.files[0];
-      sendMessage('', file);
-      this.value = '';
-    });
-
-    // ============================================================
-    //  10. ميكروفون (تعرف على الصوت)
-    // ============================================================
-    function startRecording() {
-      if (isRecording) return;
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        alert('المتصفح لا يدعم التعرف على الصوت.');
-        return;
-      }
-      recognition = new SpeechRecognition();
-      recognition.lang = 'ar-AR';
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      sendButton.classList.add('recording');
-      isRecording = true;
-
-      recognition.onresult = function(event) {
-        const transcript = event.results[0][0].transcript;
-        messageInput.value = transcript;
-        sendMessage(transcript);
-        messageInput.value = '';
-        updateSendIcon(false);
-      };
-      recognition.onerror = function(event) {
-        console.error('خطأ:', event.error);
-        alert('خطأ في التسجيل: ' + event.error);
-        stopRecordingUI();
-      };
-      recognition.onend = stopRecordingUI;
-      recognition.start();
-    }
-
-    function stopRecordingUI() {
-      isRecording = false;
-      sendButton.classList.remove('recording');
-      updateSendIcon(messageInput.value.trim().length > 0);
-    }
-
-    // ============================================================
-    //  11. أيقونة الإرسال
-    // ============================================================
-    function updateSendIcon(hasText) {
-      const icon = document.getElementById('sendIcon');
-      if (hasText) {
-        icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
-      } else {
-        icon.innerHTML = `
-          <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-          <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-          <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        `;
-      }
-    }
-
-    // ============================================================
-    //  12. معالج الإرسال (زر + Enter)
-    // ============================================================
-    function handleSend() {
-      if (isSending) return;
-      const text = messageInput.value.trim();
-      if (text) {
-        sendMessage(text);
-        messageInput.value = '';
-        updateSendIcon(false);
-      } else {
-        startRecording();
-      }
-    }
-
-    messageInput.addEventListener('input', function() {
-      updateSendIcon(this.value.trim().length > 0);
-    });
-
-    messageInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        handleSend();
-      }
-    });
-
-    sendButton.addEventListener('click', function(e) {
-      e.preventDefault();
-      handleSend();
-    });
-
-    // ============================================================
-    //  13. لوحة الإيموجي
-    // ============================================================
-    function toggleEmojiPicker() {
-      if (emojiPicker.style.display === 'block') {
-        emojiPicker.style.display = 'none';
-        return;
-      }
-      renderEmojis();
-      emojiPicker.style.display = 'block';
-    }
-
-    function renderEmojis() {
-      const emojis = [
-        '😊','😂','🤣','😍','😘','🥰','😁','😄','😆','😅','🤩','😎','🤔','🤗','😇',
-        '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯',
-        '🍕','🍔','🍟','🌭','🍿','🧁','🍰','🎂','🍪','🍩',
-        '⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🎮','🎯','🎨','🎭','🎪','🎢','🎠',
-        '❤️','🔥','👍','👎','🙏','💯','✨','🌟','⭐','🌈','☀️','🌙','⭐','🌊','🎉'
-      ];
-      emojiPicker.innerHTML = '';
-      const row = document.createElement('div');
-      row.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
-      emojis.forEach(emoji => {
-        const span = document.createElement('span');
-        span.textContent = emoji;
-        span.onclick = () => {
-          messageInput.value += emoji;
-          messageInput.focus();
-          emojiPicker.style.display = 'none';
-          updateSendIcon(true);
-        };
-        row.appendChild(span);
-      });
-      emojiPicker.appendChild(row);
-    }
-
-    // إغلاق الإيموجي عند الضغط خارجها
-    document.addEventListener('click', function(e) {
-      const btn = document.querySelector('.emoji-btn');
-      if (emojiPicker.style.display === 'block' &&
-          !emojiPicker.contains(e.target) &&
-          !btn.contains(e.target)) {
-        emojiPicker.style.display = 'none';
-      }
-    });
-
-    // ============================================================
-    //  14. إضافة صديق جديد
-    // ============================================================
-    window.addFriend = function() {
-      const name = prompt('أدخل اسم الصديق:');
-      if (name && name.trim()) {
-        const clean = Utils.sanitize(name.trim());
-        if (!chats[clean]) {
-          chats[clean] = [];
-          Storage.saveChats(chats);
-          renderChatList();
-          alert(`تمت إضافة ${clean} إلى الدردشات.`);
-        } else {
-          alert('هذه المحادثة موجودة بالفعل.');
-        }
-      }
-    };
-
-    // ============================================================
-    //  15. ربط الدوال العامة لـ HTML
-    // ============================================================
-    window.openChat = openChat;
-    window.closeChat = closeChat;
-    window.handleSend = handleSend;
-    window.toggleEmojiPicker = toggleEmojiPicker;
-
-    // ============================================================
-    //  16. دوال التنقل بين الصفحات
-    // ============================================================
-    window.switchPage = function(pageId) {
-      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      const target = document.getElementById(pageId);
-      if (target) target.classList.add('active');
-
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.page === pageId) {
-          btn.classList.add('active');
-        }
-      });
-    };
-
-    // ============================================================
-    //  17. بدء التطبيق
-    // ============================================================
-    renderChatList();
-    console.log('💬 نظام الدردشة جاهز!');
-
-  })();
 </script>
+
 </body>
 </html>
