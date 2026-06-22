@@ -213,7 +213,7 @@ onSnapshot(q, (snapshot)=>{
 
     let name = msg.user ? msg.user.split("@")[0] : "user";
 
-    messagesDiv.innerHTML += `
+   messagesDiv.innerHTML += `
 <div style="
   display:flex;
   justify-content:${isMe ? 'flex-end' : 'flex-start'};
@@ -236,4 +236,7 @@ onSnapshot(q, (snapshot)=>{
     </div>
   </div>
 </div>
+`;
+});
 
+messagesDiv.scrollTop = messagesDiv.scrollHeight; 
