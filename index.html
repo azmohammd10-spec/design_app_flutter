@@ -228,15 +228,18 @@
     .chat-item .time { font-size: 11px; color: var(--text-light); }
 
     /* ===== نافذة المحادثة ===== */
-    #chatModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: var(--bg-app);
-      z-index: 9998;
-      flex-direction: column;
-      animation: slideUp 0.25s ease;
-    }
+#chatModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: var(--nav-height);   /* ← هذا هو التغيير */
+  background: var(--bg-app);
+  z-index: 9998;
+  flex-direction: column;
+  animation: slideUp 0.25s ease;
+}
     #chatModal.open { display: flex; }
     @keyframes slideUp {
       from { transform: translateY(20px); opacity: 0; }
