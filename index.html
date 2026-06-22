@@ -6,6 +6,106 @@
   <title>💬 الدردشة</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
   <style>
+    /* ===== شريط الإدخال ===== */
+.input-box {
+  background: var(--bg-header);
+  padding: 10px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  flex-shrink: 0;
+}
+
+#messageInput {
+  flex: 1;
+  height: 48px;
+  padding: 0 18px;
+  border: 2px solid rgba(0,0,0,0.08);
+  border-radius: var(--radius, 25px);
+  font-size: 15px;
+  background: var(--bubble-received, #ffffff);
+  color: var(--text-primary, #1a1a2e);
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#messageInput:focus {
+  border-color: var(--primary, #0084ff);
+  box-shadow: 0 0 0 4px rgba(0,132,255,0.12);
+}
+
+.input-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.input-actions button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary, #0084ff);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.input-actions button:hover { transform: scale(1.05); }
+
+/* أزرار الملف والإيموجي (بدون خلفية) */
+.file-btn, .emoji-btn {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-secondary, #555) !important;
+  font-size: 24px;
+  width: 40px !important;
+  height: 40px !important;
+}
+.file-btn:hover, .emoji-btn:hover { transform: scale(1.1) !important; }
+
+/* تسجيل صوتي */
+.input-actions button.recording {
+  background: #ff4d4d;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255,77,77,0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(255,77,77,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,77,77,0); }
+}
+
+/* لوحة الإيموجي */
+#emojiPicker {
+  display: none;
+  background: var(--bg-header, #f8f9fa);
+  border-radius: 16px;
+  padding: 12px;
+  margin: 0 16px 10px;
+  box-shadow: var(--shadow, 0 2px 12px rgba(0,0,0,0.08));
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+#emojiPicker span {
+  display: inline-block;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 28px;
+  transition: 0.2s;
+}
+
+#emojiPicker span:hover {
+  background: rgba(0,132,255,0.1);
+  transform: scale(1.2);
+}
     /* ===== الأنماط العامة ===== */
     * {
       margin: 0;
@@ -469,23 +569,30 @@
     </div>
   </div>
   <div id="messages"></div>
-  <div class="input-box">
-    <input id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
-    <div class="input-actions">
-      <button class="file-btn" onclick="document.getElementById('fileInput').click()" aria-label="رفع ملف">📎</button>
-      <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" multiple>
-      <button class="emoji-btn" onclick="toggleEmojiPicker()" aria-label="إدراج إيموجي">😊</button>
-      <button id="sendButton">
-        <svg id="sendIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
-          <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
-          <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
-          <path d="M12 18v3" stroke="white" stroke-width="2"/>
-        </svg>
-      </button>
-    </div>
+  <!-- شريط الإدخال -->
+<div class="input-box">
+  <input id="messageInput" placeholder="اكتب رسالة..." autocomplete="off">
+  <div class="input-actions">
+    <!-- زر رفع ملف -->
+    <button class="file-btn" onclick="document.getElementById('fileInput').click()" aria-label="رفع ملف">📎</button>
+    <input type="file" id="fileInput" accept="image/*,video/*,audio/*" style="display:none" multiple>
+
+    <!-- زر الإيموجي -->
+    <button class="emoji-btn" onclick="toggleEmojiPicker()" aria-label="إدراج إيموجي">😊</button>
+
+    <!-- زر الإرسال (يتحول إلى ميكروفون عند عدم وجود نص) -->
+    <button id="sendButton">
+      <svg id="sendIcon" viewBox="0 0 24 24" width="22" height="22" fill="none">
+        <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+        <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+        <path d="M12 18v3" stroke="white" stroke-width="2"/>
+      </svg>
+    </button>
   </div>
-  <div id="emojiPicker"></div>
 </div>
+
+<!-- لوحة الإيموجي (تظهر عند الضغط على زر الإيموجي) -->
+<div id="emojiPicker"></div>
 
 <!-- ===== شريط التنقل السفلي ===== -->
 <nav class="bottom-nav">
@@ -1024,6 +1131,157 @@
     renderChatList();
     console.log('💬 نظام الدردشة جاهز!');
   })();
+  // ===== عناصر DOM =====
+const messageInput = document.getElementById('messageInput');
+const sendButton = document.getElementById('sendButton');
+const fileInput = document.getElementById('fileInput');
+const emojiPicker = document.getElementById('emojiPicker');
+
+// ===== متغيرات الحالة =====
+let isSending = false;
+let isRecording = false;
+let recognition = null;
+
+// ===== تحديث أيقونة الإرسال =====
+function updateSendIcon(hasText) {
+  const icon = document.getElementById('sendIcon');
+  if (hasText) {
+    // أيقونة السهم (إرسال)
+    icon.innerHTML = `<path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="white"/>`;
+  } else {
+    // أيقونة الميكروفون (تسجيل)
+    icon.innerHTML = `
+      <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3Z" stroke="white" stroke-width="2"/>
+      <path d="M19 11a7 7 0 0 1-14 0" stroke="white" stroke-width="2"/>
+      <path d="M12 18v3" stroke="white" stroke-width="2"/>
+    `;
+  }
+}
+
+// ===== معالج الإرسال =====
+function handleSend() {
+  if (isSending) return;
+  const text = messageInput.value.trim();
+  if (text) {
+    // إرسال النص
+    sendMessage(text);  // هذه الدالة موجودة في نظام الدردشة
+    messageInput.value = '';
+    updateSendIcon(false);
+  } else {
+    // بدء التسجيل الصوتي
+    startRecording();
+  }
+}
+
+// ===== التسجيل الصوتي =====
+function startRecording() {
+  if (isRecording) return;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    alert('المتصفح لا يدعم التعرف على الصوت.');
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'ar-AR';
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  sendButton.classList.add('recording');
+  isRecording = true;
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    messageInput.value = transcript;
+    sendMessage(transcript);  // إرسال النص المُستمع
+    messageInput.value = '';
+    updateSendIcon(false);
+  };
+
+  recognition.onerror = function(event) {
+    console.error('خطأ:', event.error);
+    alert('خطأ في التسجيل: ' + event.error);
+    stopRecordingUI();
+  };
+
+  recognition.onend = stopRecordingUI;
+  recognition.start();
+}
+
+function stopRecordingUI() {
+  isRecording = false;
+  sendButton.classList.remove('recording');
+  updateSendIcon(messageInput.value.trim().length > 0);
+}
+
+// ===== رفع الملفات =====
+fileInput.addEventListener('change', function(e) {
+  if (!this.files || !this.files.length) return;
+  const file = this.files[0];
+  sendMessage('', file);  // إرسال الملف (بدون نص)
+  this.value = '';
+});
+
+// ===== لوحة الإيموجي =====
+function toggleEmojiPicker() {
+  if (emojiPicker.style.display === 'block') {
+    emojiPicker.style.display = 'none';
+    return;
+  }
+  renderEmojis();
+  emojiPicker.style.display = 'block';
+}
+
+function renderEmojis() {
+  const emojis = [
+    '😊','😂','🤣','😍','😘','🥰','😁','😄','😆','😅','🤩','😎','🤔','🤗','😇',
+    '🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯',
+    '🍕','🍔','🍟','🌭','🍿','🧁','🍰','🎂','🍪','🍩',
+    '⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🎮','🎯','🎨','🎭','🎪','🎢','🎠',
+    '❤️','🔥','👍','👎','🙏','💯','✨','🌟','⭐','🌈','☀️','🌙','⭐','🌊','🎉'
+  ];
+  emojiPicker.innerHTML = '';
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;';
+  emojis.forEach(emoji => {
+    const span = document.createElement('span');
+    span.textContent = emoji;
+    span.onclick = () => {
+      messageInput.value += emoji;
+      messageInput.focus();
+      emojiPicker.style.display = 'none';
+      updateSendIcon(true);
+    };
+    row.appendChild(span);
+  });
+  emojiPicker.appendChild(row);
+}
+
+// ===== ربط الأحداث =====
+messageInput.addEventListener('input', function() {
+  updateSendIcon(this.value.trim().length > 0);
+});
+
+messageInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+sendButton.addEventListener('click', function(e) {
+  e.preventDefault();
+  handleSend();
+});
+
+// إغلاق الإيموجي بالنقر خارجها
+document.addEventListener('click', function(e) {
+  const btn = document.querySelector('.emoji-btn');
+  if (emojiPicker.style.display === 'block' &&
+      !emojiPicker.contains(e.target) &&
+      !btn.contains(e.target)) {
+    emojiPicker.style.display = 'none';
+  }
+});
 </script>
 </body>
 </html>
