@@ -50,6 +50,11 @@
   </style>
 </head>
 <body>
+  <div id="home" style="display:none;">
+  <h2>أهلاً بك: <span id="userInfo"></span></h2>
+  <button onclick="logout()">تسجيل الخروج</button>
+</div>
+
 <div id="chatBox" style="display:none; width:300px; margin:auto;">
   <h3>💬 الدردشة</h3>
 
@@ -202,37 +207,13 @@ window.sendMessage = async function(){
 
 // عرض الرسائل
 const q = query(collection(db, "messages"), orderBy("time"));
-onSnapshot(q, (snapshot)=>{
-  let messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = "";
-
-  snapshot.forEach((doc)=>{
-    let msg = doc.data();
-
-    let isMe = auth.currentUser && msg.user === auth.currentUser.email;
-
-    let name = msg.user ? msg.user.split("@")[0] : "user";
-
-   const q = query(collection(db, "messages"), orderBy("time"));
 
 onSnapshot(q, (snapshot)=>{
   let messagesDiv = document.getElementById("messages");
   messagesDiv.innerHTML = "";
 
-  snapshot.forEach((doc)=>{
-    let msg = doc.data();
-
-    let isMe = auth.currentUser && msg.user === auth.currentUser.email;
-
-    let name = msg.user ? msg.user.split("@")[0] : "user";
-const q = query(collection(db, "messages"), orderBy("time"));
-
-onSnapshot(q, (snapshot)=>{
-  let messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = "";
-
-  snapshot.forEach((doc)=>{
-    let msg = doc.data();
+  snapshot.forEach((docSnap)=>{
+    let msg = docSnap.data();
 
     let isMe = auth.currentUser && msg.user === auth.currentUser.email;
 
@@ -266,4 +247,3 @@ onSnapshot(q, (snapshot)=>{
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
-    
