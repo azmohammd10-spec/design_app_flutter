@@ -50,18 +50,7 @@
    #messages{
   scroll-behavior:smooth;
 } 
-  usersDiv.innerHTML += `
-  <div style="
-    width:90%;
-    background:#fff;
-    padding:10px;
-    border-radius:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    text-align:right;
-  ">
-    👤 ${userData.name || "بدون اسم"}
-  </div>
-`;  
+  
   </style>
 </head>
 <body>
@@ -75,11 +64,6 @@
 <div id="chatBox" style="display:none; width:300px; margin:auto;">
   <h3>💬 الدردشة</h3>
 
-  <div id="messages" style="height:300px; overflow-y:auto; background:#eee; padding:10px; border-radius:10px;"></div>
-
-  <div id="chatBox" style="display:none; width:300px; margin:auto;">
-  <h3>💬 الدردشة</h3>
-
   <div id="messages" style="
     height:300px;
     overflow-y:auto;
@@ -89,31 +73,17 @@
     margin-bottom:10px;
   "></div>
 
-  <!-- مربع الكتابة + زر الإرسال (محسن) -->
   <div style="display:flex; gap:6px;">
     <input type="text" id="msg" placeholder="اكتب رسالة..."
-      style="
-        flex:1;
-        padding:10px;
-        border-radius:20px;
-        border:1px solid #ccc;
-        outline:none;
-      ">
+      style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc;">
 
     <button onclick="sendMessage()"
-      style="
-        width:50px;
-        border-radius:50%;
-        border:none;
-        background:#4CAF50;
-        color:#fff;
-        font-size:18px;
-        cursor:pointer;
-      ">
+      style="width:50px; border-radius:50%; border:none; background:#4CAF50; color:#fff;">
       ➤
     </button>
   </div>
 </div>
+
 
 <button onclick="openChat()">فتح الدردشة</button>
 
@@ -294,16 +264,6 @@ window.sendMessage = async function(){
 const q = query(collection(db, "messages"), orderBy("time"));
 
 onSnapshot(q, (snapshot)=>{
-  let messagesDiv = document.getElementById("messages");
-  messagesDiv.innerHTML = "";
-
-  snapshot.forEach((docSnap)=>{
-    let msg = docSnap.data();
-
-    let isMe = auth.currentUser && msg.user === auth.currentUser.email;
-
-    let name = msg.user ? msg.user.split("@")[0] : "user";
-onSnapshot(q, (snapshot)=>{
   const messagesDiv = document.getElementById("messages");
   messagesDiv.innerHTML = "";
 
@@ -313,7 +273,6 @@ onSnapshot(q, (snapshot)=>{
     const isMe = auth.currentUser && msg.user === auth.currentUser.email;
     const name = msg.name || "user";
 
-    // وقت الرسالة
     let time = "";
     if(msg.time?.toDate){
       const d = msg.time.toDate();
@@ -334,14 +293,11 @@ onSnapshot(q, (snapshot)=>{
           background:${isMe ? '#4CAF50' : '#e9e9eb'};
           color:${isMe ? '#fff' : '#000'};
           font-size:14px;
-          box-shadow:0 2px 6px rgba(0,0,0,0.08);
         ">
-          <div style="font-size:11px; opacity:0.7; margin-bottom:3px;">
+          <div style="font-size:11px; opacity:0.7;">
             ${name} • ${time}
           </div>
-          <div style="word-wrap:break-word;">
-            ${msg.text}
-          </div>
+          <div>${msg.text}</div>
         </div>
       </div>
     `;
@@ -349,7 +305,6 @@ onSnapshot(q, (snapshot)=>{
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 });
-    
 </script>
 </body>
 </html>  
