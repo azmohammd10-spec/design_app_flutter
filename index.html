@@ -90,9 +90,10 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
 // Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCEuOcQIvg-chEXfwHM8JAxFeYGpaOIoP4",
@@ -110,6 +111,7 @@ getAnalytics(app);
 
 const auth = getAuth(app);
 const db = getFirestore(app);
+setPersistence(auth, browserLocalPersistence);  
 
 // ================== AUTH ==================
 
@@ -212,29 +214,26 @@ onSnapshot(q, (snapshot)=>{
     let name = msg.user ? msg.user.split("@")[0] : "user";
 
     messagesDiv.innerHTML += `
-      <div style="
-        display:flex;
-        justify-content:${isMe ? 'flex-end' : 'flex-start'};
-        margin:6px 0;
-      ">
-        <div style="
-          max-width:70%;
-          padding:10px 12px;
-          border-radius:18px;
-          background:${isMe ? '#4CAF50' : '#e5e5e5'};
-          color:${isMe ? 'white' : 'black'};
-          font-size:14px;
-        ">
-          <div style="font-weight:bold; font-size:12px; opacity:0.7;">
-            ${name}
-          </div>
-          <div>${msg.text}</div>
-        </div>
-      </div>
-    `;
-  });
-
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-});
-
+<div style="
+  display:flex;
+  justify-content:${isMe ? 'flex-end' : 'flex-start'};
+  margin:6px 0;
+">
+  <div style="
+    max-width:70%;
+    padding:10px 12px;
+    border-radius:18px;
+    background:${isMe ? '#4CAF50' : '#e5e5e5'};
+    color:${isMe ? 'white' : 'black'};
+    font-size:14px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+  ">
+    <div style="font-weight:bold; font-size:12px; opacity:0.7;">
+      ${name}
+    </div>
+    <div style="margin-top:4px;">
+      ${msg.text}
+    </div>
+  </div>
+</div>
 </script>
