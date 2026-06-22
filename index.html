@@ -844,75 +844,7 @@
       updateSendIcon(false);
     }
 
-    // ============================================================
-    //  6.  عرض الرسائل
-    // ============================================================
-    function renderMessages() {
-      if (!activeChat || !chats[activeChat]) return;
-      const msgs = chats[activeChat];
-      messagesEl.innerHTML = '';
-      const fragment = document.createDocumentFragment();
-      const avatar = Utils.getAvatarEmoji(activeChat);
-      const myUserId = profile.userId;
-
-      msgs.forEach(m => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'msg-wrapper';
-        const isSent = m.senderId === myUserId;
-        wrapper.classList.add(isSent ? 'sent' : 'received');
-
-        const avatarDiv = document.createElement('div');
-        avatarDiv.className = 'avatar-msg';
-        avatarDiv.textContent = avatar;
-        if (isSent) avatarDiv.style.display = 'none';
-
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        const textSpan = document.createElement('span');
-        textSpan.textContent = m.text || '';
-        bubble.appendChild(textSpan);
-
-        if (m.media) {
-          if (m.mediaType === 'image') {
-            const img = document.createElement('img');
-            img.src = m.media;
-            img.alt = 'صورة';
-            img.style.cssText = 'max-width:100%;border-radius:10px;margin-top:6px;';
-            bubble.appendChild(img);
-          } else if (m.mediaType === 'video') {
-            const vid = document.createElement('video');
-            vid.src = m.media;
-            vid.controls = true;
-            vid.style.cssText = 'max-width:100%;border-radius:10px;margin-top:6px;';
-            bubble.appendChild(vid);
-          } else if (m.mediaType === 'audio') {
-            const aud = document.createElement('audio');
-            aud.src = m.media;
-            aud.controls = true;
-            aud.style.cssText = 'width:100%;margin-top:6px;';
-            bubble.appendChild(aud);
-          }
-        }
-
-        const statusSpan = document.createElement('span');
-        statusSpan.className = 'time';
-        let statusIcon = '';
-        if (isSent) {
-          if (m.status === 'sent') statusIcon = '✓';
-          else if (m.status === 'delivered') statusIcon = '✓✓';
-          else if (m.status === 'read') statusIcon = '✓✓✓';
-        }
-        statusSpan.textContent = `${Utils.formatTime(m.createdAt)} ${statusIcon}`;
-        bubble.appendChild(statusSpan);
-
-        wrapper.appendChild(avatarDiv);
-        wrapper.appendChild(bubble);
-        fragment.appendChild(wrapper);
-      });
-      messagesEl.appendChild(fragment);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
+    
     // ============================================================
     //  7.  إرسال الرسائل (مع منع التكرار)
     // ============================================================
