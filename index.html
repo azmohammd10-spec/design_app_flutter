@@ -98,7 +98,8 @@
   <button onclick="register()">إنشاء حساب</button>
 </div>
 
-<script type="module">
+<script 
+  type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js";
 
@@ -146,7 +147,26 @@ getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
 setPersistence(auth, browserLocalPersistence);  
+window.openChat = function () {
 
+  const chatBox = document.getElementById("chatBox");
+
+  if (!auth.currentUser) {
+    alert("يجب تسجيل الدخول أولاً");
+    return;
+  }
+
+  if (!currentChatId) {
+    alert("اختر مستخدم أولاً لبدء الدردشة");
+    return;
+  }
+
+  chatBox.style.display = "block";
+
+  setTimeout(() => {
+    document.getElementById("msg").focus();
+  }, 200);
+};
 // ================== AUTH ==================
 
 window.login = function () {
@@ -310,16 +330,10 @@ async function loadUsers() {
   
 // ================== CHAT ==================
 
-window.openPrivateChat = function(userId, userName) {
-
-  if (!auth.currentUser) {
-    alert("يجب تسجيل الدخول أولاً");
-    return;
-  }
+window.openPrivateChat = function (userId, userName) {
 
   const myId = auth.currentUser.uid;
 
-  // إنشاء chatId ثابت بين شخصين
   currentChatId =
     myId < userId
       ? myId + "_" + userId
@@ -336,24 +350,65 @@ window.openPrivateChat = function(userId, userName) {
   }, 200);
 };
 
-    
-} catch (error) {
-console.error("Send Error:", error);
-alert("حدث خطأ أثناء إرسال الرسالة");
-}
+
+// ================= SEND MESSAGE (FIXED) =================
+window.sendMessage = async function () {
+
+  const input = document.getElementById("msg");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  if (!auth.currentUser) {
+    alert("يجب تسجيل الدخول أولاً");
+    return;
+  }
+
+  if (!currentChatId) {
+    alert("اختر مستخدم أولاً");
+    return;
+  }
+
+  try {
+    await addDoc(
+      collection(db, "chats", currentChatId, "messages"),
+      {
+        text,
+        user: auth.currentUser.email,
+        name: auth.currentUser.email.split("@")[0],
+        time: serverTimestamp()
+      }
+    );
+
+    input.value = "";
+    input.focus();
+
+  } catch (error) {
+    console.error("Send Error:", error);
+    alert("حدث خطأ أثناء إرسال الرسالة");
+  }
 };
 
 // عرض الرسائل
+let unsubscribeMessages = null;
+
 function listenPrivateMessages(chatId) {
+
+  // ❌ إغلاق أي listener قديم قبل فتح جديد
+  if (unsubscribeMessages) {
+    unsubscribeMessages();
+    unsubscribeMessages = null;
+  }
 
   const q = query(
     collection(db, "chats", chatId, "messages"),
     orderBy("time")
   );
 
-  onSnapshot(q, (snapshot) => {
+  unsubscribeMessages = onSnapshot(q, (snapshot) => {
 
     const messagesDiv = document.getElementById("messages");
+
     messagesDiv.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
@@ -372,6 +427,34 @@ function listenPrivateMessages(chatId) {
           ":" +
           d.getMinutes().toString().padStart(2, "0");
       }
+
+      messagesDiv.innerHTML += `
+        <div style="
+          display:flex;
+          justify-content:${isMe ? "flex-end" : "flex-start"};
+          margin:8px 0;
+        ">
+          <div style="
+            max-width:75%;
+            padding:10px 12px;
+            border-radius:${isMe ? "18px 18px 4px 18px" : "18px 18px 18px 4px"};
+            background:${isMe ? "linear-gradient(135deg,#4CAF50,#45a049)" : "#e9e9eb"};
+            color:${isMe ? "#fff" : "#000"};
+            font-size:14px;
+          ">
+            <div style="font-size:11px;opacity:.7;margin-bottom:4px;">
+              ${msg.name} • ${time}
+            </div>
+
+            <div>${msg.text}</div>
+          </div>
+        </div>
+      `;
+    });
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  });
+}
 
      messagesDiv.innerHTML += `
   <div style="
@@ -394,7 +477,43 @@ function listenPrivateMessages(chatId) {
       <div>${msg.text}</div>
     </div>
   </div>
-`;      
+`;  
+ window.sendMessage = async function () {
+
+  const input = document.getElementById("msg");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  if (!auth.currentUser) {
+    alert("يجب تسجيل الدخول أولاً");
+    return;
+  }
+
+  if (!currentChatId) {
+    alert("اختر مستخدم أولاً");
+    return;
+  }
+
+  try {
+    await addDoc(
+      collection(db, "chats", currentChatId, "messages"),
+      {
+        text,
+        user: auth.currentUser.email,
+        name: auth.currentUser.email.split("@")[0],
+        time: serverTimestamp()
+      }
+    );
+
+    input.value = "";
+    input.focus();
+
+  } catch (error) {
+    console.error("Send Error:", error);
+    alert("حدث خطأ أثناء إرسال الرسالة");
+  }
+};     
 </script>
 </body>
 </html>  
