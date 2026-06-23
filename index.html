@@ -310,50 +310,66 @@ alert("حدث خطأ أثناء إرسال الرسالة");
 // عرض الرسائل
 const q = query(collection(db, "messages"), orderBy("time"));
 
-onSnapshot(q, (snapshot)=>{
+onSnapshot(q, (snapshot) => {
+
   const messagesDiv = document.getElementById("messages");
   messagesDiv.innerHTML = "";
 
-  snapshot.forEach((docSnap)=>{
+  snapshot.forEach((docSnap) => {
+
     const msg = docSnap.data();
 
-    const isMe = auth.currentUser && msg.user === auth.currentUser.email;
+    const isMe =
+      auth.currentUser &&
+      msg.user === auth.currentUser.email;
+
     const name = msg.name || "user";
 
     let time = "";
-    if(msg.time?.toDate){
+
+    if (msg.time?.toDate) {
       const d = msg.time.toDate();
-      time = d.getHours().toString().padStart(2,'0') + ":" +
-             d.getMinutes().toString().padStart(2,'0');
+
+      time =
+        d.getHours().toString().padStart(2, "0") +
+        ":" +
+        d.getMinutes().toString().padStart(2, "0");
     }
 
     messagesDiv.innerHTML += `
-  <div style="
-    display:flex;
-    justify-content:${isMe ? 'flex-end' : 'flex-start'};
-    margin:8px 0;
-  ">
-    <div style="
-      max-width:75%;
-      padding:10px 12px;
-      border-radius:${isMe ? '18px 18px 4px 18px' : '18px 18px 18px 4px'};
-      background:${isMe ? 'linear-gradient(135deg,#4CAF50,#45a049)' : '#e9e9eb'};
-      color:${isMe ? '#fff' : '#000'};
-      font-size:14px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.08);
-    ">
-      <div style="font-size:11px; opacity:0.7; margin-bottom:4px;">
-        ${name} • ${time}
-      </div>
+      <div style="
+        display:flex;
+        justify-content:${isMe ? "flex-end" : "flex-start"};
+        margin:8px 0;
+      ">
+        <div style="
+          max-width:75%;
+          padding:10px 12px;
+          border-radius:${isMe ? "18px 18px 4px 18px" : "18px 18px 18px 4px"};
+          background:${isMe ? "linear-gradient(135deg,#4CAF50,#45a049)" : "#e9e9eb"};
+          color:${isMe ? "#fff" : "#000"};
+          font-size:14px;
+          box-shadow:0 2px 6px rgba(0,0,0,0.08);
+        ">
+          <div style="
+            font-size:11px;
+            opacity:0.7;
+            margin-bottom:4px;
+          ">
+            ${name} • ${time}
+          </div>
 
-      <div style="word-wrap:break-word;">
-        ${msg.text}
+          <div style="word-wrap:break-word;">
+            ${msg.text}
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-`;
+    `;
+
+  });
 
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
 });
 </script>
 </body>
