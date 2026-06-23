@@ -200,21 +200,7 @@ async function loadUsers(){
     collection(db, "users")
   );
 
-  usersDiv.innerHTML = "";
-
-  snapshot.forEach((userDoc)=>{
-
-    const userData = userDoc.data();
-
-    usersDiv.innerHTML += `
-      <div>
-        ${userData.name}
-      </div>
-    `;
-
-  });
-
-}
+  usersDiv.innerHTML += `
   <div style="
     width:90%;
     display:flex;
@@ -254,7 +240,6 @@ async function loadUsers(){
     </div>
 
     <button style="
-      width:auto;
       padding:6px 10px;
       background:#4CAF50;
       color:#fff;
@@ -265,10 +250,6 @@ async function loadUsers(){
     </button>
   </div>
 `;
-
-});
-
-}
 // ================== CHAT ==================
 
 window.openChat = function() {
