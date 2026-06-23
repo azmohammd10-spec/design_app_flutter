@@ -85,7 +85,6 @@
 </div>
 
 
-<button onclick="openChat()">فتح الدردشة</button>
 
 <!-- تسجيل الدخول -->
 <div class="box" id="login">
@@ -460,6 +459,7 @@ const senderEmail =
   (msg?.user && msg.user.trim())
     ? msg.user.trim()
     : "";
+     const messageText = msg.text || ""; 
       messagesDiv.innerHTML += `
   <div style="
     display:flex;
@@ -502,7 +502,7 @@ if (msgInput) {
 
   });
 }
-document.addEventListener("DOMContentLoaded", () => {
+
   const msgInput = document.getElementById("msg");
   if (msgInput) {
     msgInput.addEventListener("keydown", (e) => {
