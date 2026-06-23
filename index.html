@@ -200,49 +200,63 @@ async function loadUsers() {
   const usersDiv = document.getElementById("usersList");
 
   const snapshot = await getDocs(collection(db, "users"));
-snapshot.forEach((userDoc) => {
 
-  const userData = userDoc.data();
+  usersDiv.innerHTML = "";
 
-  usersDiv.innerHTML += `
-    <div style="
-      width:90%;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px;
-      margin:5px auto;
-      background:#fff;
-      border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-    ">
+  snapshot.forEach((userDoc) => {
+    const userData = userDoc.data();
 
-      <div style="display:flex;align-items:center;gap:10px;">
+    usersDiv.innerHTML += `
+      <div style="
+        width:90%;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:10px;
+        margin:5px auto;
+        background:#fff;
+        border-radius:12px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      ">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="
+            width:40px;
+            height:40px;
+            border-radius:50%;
+            background:#4CAF50;
+            color:#fff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-weight:bold;
+          ">
+            ${(userData.name || "U").charAt(0).toUpperCase()}
+          </div>
 
-        <div style="
-          width:40px;
-          height:40px;
-          border-radius:50%;
-          background:#4CAF50;
-          color:#fff;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-weight:bold;
-        ">
-          ${(userData.name || "U").charAt(0).toUpperCase()}
+          <div>
+            <div style="font-weight:bold;">
+              ${userData.name || "User"}
+            </div>
+            <div style="font-size:12px;opacity:.6;">
+              مستخدم
+            </div>
+          </div>
         </div>
 
-        <div>
-          <div style="font-weight:bold;">
-            ${userData.name}
-          </div>
-          <div style="font-size:12px;opacity:.6;">
-            مستخدم
-          </div>
-        </div>
-
+        <button onclick="openPrivateChat('${userDoc.id}', '${userData.name}')"
+          style="
+            padding:6px 10px;
+            background:#4CAF50;
+            color:#fff;
+            border:none;
+            border-radius:8px;
+          ">
+          مراسلة
+        </button>
       </div>
+    `;
+  });
+}
 
       <!-- 👇 هذا هو المكان الصحيح للزر -->
       <button onclick="openPrivateChat('${userDoc.id}', '${userData.name}')"
