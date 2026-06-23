@@ -149,50 +149,93 @@ setPersistence(auth, browserLocalPersistence);
 
 // ================== AUTH ==================
 
+window.login = function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-window.login = function(){
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+  if (!email || !password) {
+    alert("الرجاء إدخال البريد وكلمة المرور");
+    return;
+  }
 
   signInWithEmailAndPassword(auth, email, password)
-  .then(()=> alert("تم تسجيل الدخول ✔"))
-  .catch(err=> alert(err.message));
-}
+    .then((userCredential) => {
+      console.log("Logged in:", userCredential.user.email);
+      alert("تم تسجيل الدخول ✔");
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("خطأ في تسجيل الدخول: " + err.message);
+    });
+};
 
-window.logout = function(){
-  signOut(auth);
-}
-window.register = function(){
-  let email = document.getElementById("email").value;
-  let password = document.getElementById("password").value;
+
+window.logout = function () {
+  signOut(auth)
+    .then(() => {
+      alert("تم تسجيل الخروج");
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+
+window.register = function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !password) {
+    alert("الرجاء إدخال البريد وكلمة المرور");
+    return;
+  }
 
   createUserWithEmailAndPassword(auth, email, password)
-  .then(async (userCredential)=>{
+    .then(async (userCredential) => {
+      const user = userCredential.user;
 
-    const user = userCredential.user;
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        name: email.split("@")[0]
+      });
 
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      name: email.split("@")[0]
+      alert("تم إنشاء الحساب 🎉");
+    })
+    .catch((err) => {
+      console.error(err);
+      alert("خطأ في إنشاء الحساب: " + err.message);
     });
-
-    alert("تم إنشاء الحساب 🎉");
-  })
-  .catch(err=>{
-    alert(err.message);
-  });
-}
+};
 // ================== USER STATE ==================
-onAuthStateChanged(auth, (user)=>{
-  if(user){
-    document.getElementById("login").style.display = "none";
-    document.getElementById("home").style.display = "block";
-    document.getElementById("userInfo").innerText = user.email;
+onAuthStateChanged(auth, (user) => {
+  const loginBox = document.getElementById("login");
+  const homeBox = document.getElementById("home");
+  const userInfo = document.getElementById("userInfo");
 
-    loadUsers(); // هنا
-  }else{
-    document.getElementById("login").style.display = "block";
-    document.getElementById("home").style.display = "none";
+  if (user) {
+    loginBox.style.display = "none";
+    homeBox.style.display = "block";
+
+    if (userInfo) {
+      userInfo.innerText = user.email;
+    }
+
+    // منع إعادة تحميل المستخدمين أكثر من مرة (تحسين مهم)
+    if (typeof window.usersLoaded === "undefined") {
+      window.usersLoaded = true;
+      loadUsers();
+    }
+
+  } else {
+    loginBox.style.display = "block";
+    homeBox.style.display = "none";
+
+    if (userInfo) {
+      userInfo.innerText = "";
+    }
+
+    // إعادة السماح بالتحميل عند تسجيل دخول جديد
+    window.usersLoaded = false;
   }
 });
   
@@ -206,6 +249,9 @@ async function loadUsers() {
   snapshot.forEach((userDoc) => {
     const userData = userDoc.data();
 
+    const name = userData.name || "User";
+    const firstChar = name.charAt(0).toUpperCase();
+
     usersDiv.innerHTML += `
       <div style="
         width:90%;
@@ -218,7 +264,9 @@ async function loadUsers() {
         border-radius:12px;
         box-shadow:0 2px 6px rgba(0,0,0,0.1);
       ">
+
         <div style="display:flex;align-items:center;gap:10px;">
+
           <div style="
             width:40px;
             height:40px;
@@ -230,20 +278,22 @@ async function loadUsers() {
             justify-content:center;
             font-weight:bold;
           ">
-            ${(userData.name || "U").charAt(0).toUpperCase()}
+            ${firstChar}
           </div>
 
           <div>
             <div style="font-weight:bold;">
-              ${userData.name || "User"}
+              ${name}
             </div>
             <div style="font-size:12px;opacity:.6;">
               مستخدم
             </div>
           </div>
+
         </div>
 
-        <button onclick="openPrivateChat('${userDoc.id}', '${userData.name}')"
+        <button
+          onclick="openPrivateChat('${userDoc.id}', \`${name}\`)"
           style="
             padding:6px 10px;
             background:#4CAF50;
@@ -253,26 +303,13 @@ async function loadUsers() {
           ">
           مراسلة
         </button>
+
       </div>
     `;
   });
 }
 
-      <!-- 👇 هذا هو المكان الصحيح للزر -->
-      <button onclick="openPrivateChat('${userDoc.id}', '${userData.name}')"
-        style="
-          padding:6px 10px;
-          background:#4CAF50;
-          color:#fff;
-          border:none;
-          border-radius:8px;
-        ">
-        مراسلة
-      </button>
-
-    </div>
-  `;
-});
+  
   
 // ================== CHAT ==================
 
@@ -399,38 +436,57 @@ function listenPrivateMessages(chatId) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 }
-    messagesDiv.innerHTML += `
+ messagesDiv.innerHTML += `
+  <div style="
+    display:flex;
+    justify-content:${isMe ? "flex-end" : "flex-start"};
+    margin:8px 0;
+  ">
+
+    <div style="
+      max-width:75%;
+      padding:10px 12px;
+      border-radius:${isMe ? "18px 18px 4px 18px" : "18px 18px 18px 4px"};
+      background:${isMe ? "linear-gradient(135deg,#4CAF50,#45a049)" : "#e9e9eb"};
+      color:${isMe ? "#fff" : "#000"};
+      font-size:14px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    ">
+
       <div style="
+        font-size:11px;
+        opacity:0.7;
+        margin-bottom:4px;
         display:flex;
-        justify-content:${isMe ? "flex-end" : "flex-start"};
-        margin:8px 0;
+        justify-content:space-between;
+        align-items:center;
+        gap:10px;
       ">
-        <div style="
-          max-width:75%;
-          padding:10px 12px;
-          border-radius:${isMe ? "18px 18px 4px 18px" : "18px 18px 18px 4px"};
-          background:${isMe ? "linear-gradient(135deg,#4CAF50,#45a049)" : "#e9e9eb"};
-          color:${isMe ? "#fff" : "#000"};
-          font-size:14px;
-          box-shadow:0 2px 6px rgba(0,0,0,0.08);
-        ">
-          <div style="
-            font-size:11px;
-            opacity:0.7;
-            margin-bottom:4px;
+
+        <span>${name} • ${time}</span>
+
+        <!-- 👇 زر داخل الرسالة (اختياري) -->
+        <button onclick="openPrivateChatFromMessage('${msg.user}')"
+          style="
+            padding:3px 8px;
+            font-size:10px;
+            background:#fff;
+            color:#4CAF50;
+            border:none;
+            border-radius:6px;
           ">
-            ${name} • ${time}
-          </div>
+          دردشة
+        </button>
 
-          <div style="word-wrap:break-word;">
-            ${msg.text}
-          </div>
-        </div>
       </div>
-    `;
 
-  });
+      <div style="word-wrap:break-word;">
+        ${msg.text}
+      </div>
 
+    </div>
+  </div>
+`;   
   messagesDiv.scrollTop = messagesDiv.scrollHeight;
 
 });
