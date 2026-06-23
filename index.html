@@ -226,44 +226,50 @@ messagesDiv.innerHTML += `
   </div>
 `;
 // ================== CHAT ==================
-window.openChat = function(){
-  document.getElementById("chatBox").style.display = "block";
 
-  // تركيز على مربع الكتابة مباشرة
-  setTimeout(()=>{
-    document.getElementById("msg").focus();
-  }, 200);
+window.openChat = function() {
+const chatBox = document.getElementById("chatBox");
+
+chatBox.style.display = "block";
+
+// تركيز تلقائي على مربع الكتابة
+setTimeout(() => {
+document.getElementById("msg").focus();
+}, 200);
+};
+
+window.sendMessage = async function() {
+
+const input = document.getElementById("msg");
+const text = input.value.trim();
+
+// منع إرسال رسالة فارغة
+if (!text) return;
+
+// التأكد من تسجيل الدخول
+if (!auth.currentUser) {
+alert("يجب تسجيل الدخول أولاً");
+return;
 }
 
-window.sendMessage = async function(){
+try {
 
-  let input = document.getElementById("msg");
-  let text = input.value;
+await addDoc(collection(db, "messages"), {
+  text,
+  user: auth.currentUser.email,
+  name: auth.currentUser.email.split("@")[0],
+  time: serverTimestamp()
+});
 
-  if(text.trim() === "") return;
+// تنظيف الحقل بعد الإرسال
+input.value = "";
+input.focus();
 
-  if(!auth.currentUser){
-    alert("يجب تسجيل الدخول أولاً");
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "messages"), {
-      text: text,
-      user: auth.currentUser.email,
-      name: auth.currentUser.email.split("@")[0],
-      time: serverTimestamp()
-    });
-
-    // تنظيف الحقل بعد الإرسال
-    input.value = "";
-    input.focus();
-
-  } catch (error) {
-    console.log(error);
-    alert("حدث خطأ أثناء إرسال الرسالة");
-  }
+} catch (error) {
+console.error("Send Error:", error);
+alert("حدث خطأ أثناء إرسال الرسالة");
 }
+};
 
 // عرض الرسائل
 const q = query(collection(db, "messages"), orderBy("time"));
