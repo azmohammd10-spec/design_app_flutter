@@ -292,8 +292,7 @@ async function loadUsers() {
 
         </div>
 
-        <button
-          onclick="openPrivateChat('${userDoc.id}', \`${name}\`)"
+        <button onclick="openPrivateChat('${userDoc.id}', \`${name}\`)"
           style="
             padding:6px 10px;
             background:#4CAF50;
@@ -308,16 +307,19 @@ async function loadUsers() {
     `;
   });
 }
-
-  
   
 // ================== CHAT ==================
 
 window.openPrivateChat = function(userId, userName) {
 
+  if (!auth.currentUser) {
+    alert("يجب تسجيل الدخول أولاً");
+    return;
+  }
+
   const myId = auth.currentUser.uid;
 
-  // إنشاء chatId ثابت بين شخصين (ترتيب ثابت)
+  // إنشاء chatId ثابت بين شخصين
   currentChatId =
     myId < userId
       ? myId + "_" + userId
@@ -328,51 +330,13 @@ window.openPrivateChat = function(userId, userName) {
   document.getElementById("chatBox").style.display = "block";
 
   listenPrivateMessages(currentChatId);
-  window.sendMessage = async function () {
-
-  const input = document.getElementById("msg");
-  const text = input.value.trim();
-
-  if (!text) return;
-
-  if (!auth.currentUser) {
-    alert("يجب تسجيل الدخول أولاً");
-    return;
-  }
-
-  if (!currentChatId) {
-    alert("اختر مستخدم أولاً");
-    return;
-  }
-
-  try {
-    await addDoc(
-      collection(db, "chats", currentChatId, "messages"),
-      {
-        text,
-        user: auth.currentUser.email,
-        name: auth.currentUser.email.split("@")[0],
-        time: serverTimestamp()
-      }
-    );
-
-    input.value = "";
-    input.focus();
-
-  } catch (error) {
-    console.error(error);
-    alert("حدث خطأ أثناء الإرسال");
-  }
-};
 
   setTimeout(() => {
     document.getElementById("msg").focus();
   }, 200);
 };
-// تنظيف الحقل بعد الإرسال
-input.value = "";
-input.focus();
 
+    
 } catch (error) {
 console.error("Send Error:", error);
 alert("حدث خطأ أثناء إرسال الرسالة");
@@ -430,8 +394,7 @@ function listenPrivateMessages(chatId) {
       <div>${msg.text}</div>
     </div>
   </div>
-`;
-messagesDiv.scrollTop = messagesDiv.scrollHeight;      
+`;      
 </script>
 </body>
 </html>  
