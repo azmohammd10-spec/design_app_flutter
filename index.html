@@ -235,7 +235,13 @@ onAuthStateChanged(auth, (user) => {
     if (userInfo) {
       userInfo.innerText = user.email;
     }
+if (!window.usersLoaded) {
+  window.usersLoaded = true;
 
+  loadUsers().catch((error) => {
+    console.error("Load Users Error:", error);
+  });
+}
     // منع إعادة تحميل المستخدمين أكثر من مرة (تحسين مهم)
     if (typeof window.usersLoaded === "undefined") {
       window.usersLoaded = true;
@@ -417,7 +423,25 @@ function listenPrivateMessages(chatId) {
 
     const messagesDiv = document.getElementById("messages");
     messagesDiv.innerHTML = "";
+if (typeof unsubscribeMessages === "function") {
 
+  try {
+    unsubscribeMessages();
+
+  } catch (error) {
+
+    console.error(
+      "Unsubscribe Error:",
+      error
+    );
+
+  } finally {
+
+    unsubscribeMessages = null;
+
+  }
+
+}
     snapshot.forEach((docSnap) => {
 
       const msg = docSnap.data();
@@ -434,7 +458,15 @@ function listenPrivateMessages(chatId) {
           ":" +
           d.getMinutes().toString().padStart(2, "0");
       }
+const senderName =
+  (msg?.name && msg.name.trim())
+    ? msg.name.trim()
+    : "مستخدم";
 
+const senderEmail =
+  (msg?.user && msg.user.trim())
+    ? msg.user.trim()
+    : "";
       messagesDiv.innerHTML += `
         <div style="
           display:flex;
@@ -462,7 +494,21 @@ function listenPrivateMessages(chatId) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 }
+const msgInput = document.getElementById("msg");
 
+if (msgInput) {
+  msgInput.addEventListener("keydown", (e) => {
+
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      if (typeof window.sendMessage === "function") {
+        window.sendMessage();
+      }
+    }
+
+  });
+}
 </script>
 </body>
 </html>  
