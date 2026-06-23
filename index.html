@@ -489,16 +489,19 @@ if (msgInput) {
     }
   });
 }
-  const msgInput = document.getElementById("msg");
-  if (msgInput) {
-    msgInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
+ const msgInput = document.getElementById("msg");
+
+if (msgInput) {
+  msgInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
+      if (typeof window.sendMessage === "function") {
         window.sendMessage();
       }
-    });
-  }
-});  
+    }
+  });
+} 
 </script>
 </body>
 </html>  
