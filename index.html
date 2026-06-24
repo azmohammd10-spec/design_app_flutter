@@ -193,21 +193,21 @@ onAuthStateChanged(auth, (user) => {
   const homeBox = document.getElementById("home");
 
   if (user) {
-    loginBox.style.display = "none";
-    homeBox.style.display = "block";
-    document.getElementById("userInfo").innerText = user.email;
+  loginBox.style.display = "none";
+  homeBox.style.display = "block";
+  document.getElementById("userInfo").innerText = user.email;
 
-  
-setDoc(doc(db, "users", user.uid), {
-  online: true,
-  lastSeen: serverTimestamp()
-}, { merge: true });
-  } else {
-    loginBox.style.display = "block";
-    homeBox.style.display = "none";
-    window.usersLoaded = false;
-  }
-});
+  setDoc(doc(db, "users", user.uid), {
+    online: true,
+    lastSeen: serverTimestamp()
+  }, { merge: true });
+
+  loadUsers(); // 🔥 هذا هو المفتاح
+} else {
+  loginBox.style.display = "block";
+  homeBox.style.display = "none";
+  window.usersLoaded = false;
+}
 
 // ================== USERS ==================
 async function loadUsers() {
@@ -248,7 +248,8 @@ window.openPrivateChat = function (userId, userName) {
     auth.currentUser.uid < userId
       ? auth.currentUser.uid + "_" + userId
       : userId + "_" + auth.currentUser.uid;
-
+document.getElementById("messages").innerHTML = "";
+document.getElementById("typing").textContent = "";
   document.getElementById("chatBox").style.display = "block";
 
   listenMessages(currentChatId);
