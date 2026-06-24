@@ -71,8 +71,9 @@
     padding:10px;
     border-radius:10px;
     margin-bottom:10px;
+    
   "></div>
-
+<div id="typing" style="font-size:12px;color:gray;height:20px;margin-bottom:5px;"></div>
   <div style="display:flex; gap:6px;">
     <input type="text" id="msg" placeholder="اكتب رسالة..."
       style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc;">
@@ -171,8 +172,14 @@ window.register = function () {
     .catch(err => alert(err.message));
 };
 
-window.logout = function () {
+window.logout = async function () {
   if (unsubscribeMessages) unsubscribeMessages();
+
+  await setDoc(doc(db, "users", auth.currentUser.uid), {
+    online: false,
+    lastSeen: serverTimestamp()
+  }, { merge: true });
+
   signOut(auth);
 };
 
@@ -191,7 +198,10 @@ onAuthStateChanged(auth, (user) => {
       window.usersLoaded = true;
       loadUsers();
     }
-
+setDoc(doc(db, "users", user.uid), {
+  online: true,
+  lastSeen: serverTimestamp()
+}, { merge: true });
   } else {
     loginBox.style.display = "block";
     homeBox.style.display = "none";
@@ -202,30 +212,40 @@ onAuthStateChanged(auth, (user) => {
 // ================== USERS ==================
 async function loadUsers() {
   const usersDiv = document.getElementById("usersList");
+  usersDiv.innerHTML = ""; // مهم جداً
 
   const snap = await getDocs(collection(db, "users"));
 
- snap.forEach(docu => {
+  snap.forEach(docu => {
+    if (docu.id === auth.currentUser.uid) return;
 
-  // لا تعرض المستخدم الحالي
-  if (docu.id === auth.currentUser.uid) {
-    return;
-  }
-
-  const u = docu.data();
-  const name = u.name || "User";
-
-  usersDiv.innerHTML += `
-    <div style="margin:10px;padding:10px;background:#fff;border-radius:10px">
-      <b>${name}</b>
-      <button onclick="openPrivateChat('${docu.id}','${name}')">
-        مراسلة
-      </button>
+    const u = docu.data();
+    const name = u.name || "User";
+const status = u.online ? "🟢 متصل" : "⚪ غير متصل";
+    usersDiv.innerHTML += `
+      <div style="margin:10px;padding:10px;background:#fff;border-radius:10px">
+        usersDiv.innerHTML += `
+  <div style="margin:10px;padding:10px;background:#fff;border-radius:10px">
+    
+    <div>
+      <b>${name}</b><br>
+      <small>${status}</small>
     </div>
-  `;
-}); 
+
+    <button onclick="openPrivateChat('${docu.id}','${name}')">
+      مراسلة
+    </button>
+
+  </div>
+`;
+        <button onclick="openPrivateChat('${docu.id}','${name}')">
+          مراسلة
+        </button>
+      </div>
+    `;
+  });
 }
-// ================== OPEN CHAT ==================
+  // ================== OPEN CHAT ==================
 window.openPrivateChat = function (userId, userName) {
 
   if (!auth.currentUser) return alert("سجل دخول");
@@ -265,16 +285,23 @@ window.sendMessage = async function () {
     alert(e.message);
   }
 };
+document.getElementById("msg").addEventListener("input", async (e) => {
+  if (!currentChatId) return;
 
+  await setDoc(doc(db, "chats", currentChatId), {
+    typing: e.target.value.length > 0,
+    typingUser: auth.currentUser.email
+  }, { merge: true });
+});
 // ================== LISTEN MESSAGES ==================
 function listenMessages(chatId) {
 
   if (unsubscribeMessages) unsubscribeMessages();
 
   const q = query(
-    collection(db, "chats", chatId, "messages"),
-    orderBy("time")
-  );
+  collection(db, "chats", chatId, "messages"),
+  orderBy("time", "asc")
+);
 
   unsubscribeMessages = onSnapshot(q, (snap) => {
 
@@ -282,27 +309,46 @@ function listenMessages(chatId) {
     box.innerHTML = "";
 
     snap.forEach(d => {
-      const m = d.data();
-      const me = m.user === auth.currentUser.email;
+  const m = d.data();
+  const me = m.user === auth.currentUser.email;
 
-      box.innerHTML += `
-        <div style="text-align:${me ? "right" : "left"};margin:5px">
-          <div style="display:inline-block;padding:8px;background:${me ? "#4CAF50" : "#eee"};color:${me ? "#fff" : "#000"};border-radius:10px">
-            ${m.text}
-          </div>
-        </div>
-      `;
-    });
+  const div = document.createElement("div");
+  div.style.textAlign = me ? "right" : "left";
+  div.style.margin = "5px";
 
+  const bubble = document.createElement("div");
+  bubble.style.display = "inline-block";
+  bubble.style.padding = "8px";
+  bubble.style.borderRadius = "10px";
+  bubble.style.background = me ? "#4CAF50" : "#eee";
+  bubble.style.color = me ? "#fff" : "#000";
+
+  bubble.textContent = m.text; // آمن
+
+  div.appendChild(bubble);
+  box.appendChild(div);
+});
     box.scrollTop = box.scrollHeight;
   });
 }
+onSnapshot(doc(db, "chats", chatId), (snap) => {
+  const data = snap.data();
 
+  const typingDiv = document.getElementById("typing");
+
+  if (data?.typing && data?.typingUser !== auth.currentUser.email) {
+    typingDiv.textContent = "✍️ المستخدم يكتب الآن...";
+  } else {
+    typingDiv.textContent = "";
+  }
+});
 // ================== HELPERS ==================
 function emailEl(){ return document.getElementById("email"); }
 function passEl(){ return document.getElementById("password"); }
 
-
+document.getElementById("msg").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") sendMessage();
+});
 </script>
 </body>
 </html>  
