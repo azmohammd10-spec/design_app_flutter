@@ -174,18 +174,21 @@ window.register = function () {
 
 window.logout = async function () {
 
-  if (!auth.currentUser) return;
+window.openPrivateChat = function (userId, userName) {
 
-  if (unsubscribeMessages) unsubscribeMessages();
+  if (!auth.currentUser) return alert("سجل دخول");
 
-  await setDoc(doc(db, "users", auth.currentUser.uid), {
-    online: false,
-    lastSeen: serverTimestamp()
-  }, { merge: true });
+  currentChatId =
+    auth.currentUser.uid < userId
+      ? auth.currentUser.uid + "_" + userId
+      : userId + "_" + auth.currentUser.uid;
 
-  await signOut(auth);
-};
+  document.getElementById("chatBox").style.display = "block";
+  document.getElementById("messages").innerHTML = "";
+  document.getElementById("typing").textContent = "";
 
+  listenMessages(currentChatId);
+};  
 // ================== AUTH STATE ==================
 onAuthStateChanged(auth, (user) => {
 
@@ -193,6 +196,7 @@ onAuthStateChanged(auth, (user) => {
   const homeBox = document.getElementById("home");
 
   if (user) {
+
     loginBox.style.display = "none";
     homeBox.style.display = "block";
     document.getElementById("userInfo").innerText = user.email;
@@ -203,23 +207,24 @@ onAuthStateChanged(auth, (user) => {
     }, { merge: true });
 
     loadUsers();
+
   } else {
+
     loginBox.style.display = "block";
     homeBox.style.display = "none";
-    window.usersLoaded = false;
   }
-
-}); // 🔥 هذا القوس مهم جداً
-
+});
 // ================== USERS ==================
 async function loadUsers() {
+
   const usersDiv = document.getElementById("usersList");
   usersDiv.innerHTML = "";
 
   const snap = await getDocs(collection(db, "users"));
 
   snap.forEach(docu => {
-    if (docu.id === auth.currentUser.uid) return;
+
+    if (!auth.currentUser || docu.id === auth.currentUser.uid) return;
 
     const u = docu.data();
     const name = u.name || "User";
@@ -227,7 +232,7 @@ async function loadUsers() {
 
     usersDiv.innerHTML += `
       <div style="margin:10px;padding:10px;background:#fff;border-radius:10px">
-        
+
         <div>
           <b>${name}</b><br>
           <small>${status}</small>
@@ -271,25 +276,19 @@ window.sendMessage = async function () {
       collection(db, "chats", currentChatId, "messages"),
       {
         text,
-        user: auth.currentUser.email,
+        user: auth.currentUser.uid,
         name: auth.currentUser.email.split("@")[0],
         time: serverTimestamp()
       }
     );
 
     input.value = "";
+    input.focus();
+
   } catch (e) {
     alert(e.message);
   }
 };
-document.getElementById("msg").addEventListener("input", async (e) => {
-  if (!currentChatId) return;
-
-  await setDoc(doc(db, "chats", currentChatId), {
-    typing: e.target.value.length > 0,
-    typingUser: auth.currentUser.email
-  }, { merge: true });
-});
 // ================== LISTEN MESSAGES ==================
 function listenMessages(chatId) {
 
@@ -310,16 +309,19 @@ function listenMessages(chatId) {
 
     snap.forEach(d => {
       const m = d.data();
-      const me = m.user === auth.currentUser.email;
+      const me = m.user === auth.currentUser.uid;
 
       const div = document.createElement("div");
-      div.style.textAlign = me ? "right" : "left";
+      div.style.display = "flex";
+      div.style.justifyContent = me ? "flex-end" : "flex-start";
       div.style.margin = "5px";
 
       const bubble = document.createElement("div");
-      bubble.style.display = "inline-block";
-      bubble.style.padding = "8px";
-      bubble.style.borderRadius = "10px";
+      bubble.style.maxWidth = "70%";
+      bubble.style.padding = "10px";
+      bubble.style.borderRadius = "12px";
+      bubble.style.fontSize = "14px";
+      bubble.style.wordBreak = "break-word";
       bubble.style.background = me ? "#4CAF50" : "#eee";
       bubble.style.color = me ? "#fff" : "#000";
 
@@ -332,7 +334,7 @@ function listenMessages(chatId) {
     box.scrollTop = box.scrollHeight;
   });
 
-  // ✅ typing indicator (داخل نفس الدالة)
+  // typing indicator
   const typingRef = doc(db, "chats", chatId);
 
   onSnapshot(typingRef, (snap) => {
@@ -341,8 +343,8 @@ function listenMessages(chatId) {
 
     if (!typingDiv) return;
 
-    if (data?.typing && data?.typingUser !== auth.currentUser.email) {
-      typingDiv.textContent = "✍️ المستخدم يكتب الآن...";
+    if (data?.typing && data?.typingUser !== auth.currentUser.uid) {
+      typingDiv.textContent = `✍️ ${data.typingUser.split("@")[0]} يكتب الآن...`;
     } else {
       typingDiv.textContent = "";
     }
@@ -351,10 +353,17 @@ function listenMessages(chatId) {
 // ================== HELPERS ==================
 function emailEl(){ return document.getElementById("email"); }
 function passEl(){ return document.getElementById("password"); }
+document.getElementById("msg").addEventListener("input", async (e) => {
 
-document.getElementById("msg").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") sendMessage();
+  if (!currentChatId) return;
+
+  await setDoc(doc(db, "chats", currentChatId), {
+    typing: e.target.value.length > 0,
+    typingUser: auth.currentUser.email
+  }, { merge: true });
+
 });
+
 </script>
 </body>
 </html>  
