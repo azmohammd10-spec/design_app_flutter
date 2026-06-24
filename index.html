@@ -193,21 +193,23 @@ onAuthStateChanged(auth, (user) => {
   const homeBox = document.getElementById("home");
 
   if (user) {
-  loginBox.style.display = "none";
-  homeBox.style.display = "block";
-  document.getElementById("userInfo").innerText = user.email;
+    loginBox.style.display = "none";
+    homeBox.style.display = "block";
+    document.getElementById("userInfo").innerText = user.email;
 
-  setDoc(doc(db, "users", user.uid), {
-    online: true,
-    lastSeen: serverTimestamp()
-  }, { merge: true });
+    setDoc(doc(db, "users", user.uid), {
+      online: true,
+      lastSeen: serverTimestamp()
+    }, { merge: true });
 
-  loadUsers(); // 🔥 هذا هو المفتاح
-} else {
-  loginBox.style.display = "block";
-  homeBox.style.display = "none";
-  window.usersLoaded = false;
-}
+    loadUsers();
+  } else {
+    loginBox.style.display = "block";
+    homeBox.style.display = "none";
+    window.usersLoaded = false;
+  }
+
+}); // 🔥 هذا القوس مهم جداً
 
 // ================== USERS ==================
 async function loadUsers() {
