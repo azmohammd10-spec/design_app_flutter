@@ -291,55 +291,56 @@ onAuthStateChanged(auth, (user) => {
 // ================== USERS ==================
 function loadUsers() {
 
-  const usersDiv = document.getElementById("usersList");
+  const usersList = document.getElementById("usersList");
+
+  if (!auth.currentUser) return;
 
   onSnapshot(collection(db, "users"), (snap) => {
 
-    usersDiv.innerHTML = "";
+    usersList.innerHTML = "";
 
-    snap.forEach(docu => {
+    snap.forEach(docSnap => {
 
-      if (!auth.currentUser) return;
-      if (docu.id === auth.currentUser.uid) return;
+      const data = docSnap.data();
 
-      const u = docu.data();
+      // لا تعرض نفسك
+      if (docSnap.id === auth.currentUser.uid) return;
 
-      const name = u.name || "User";
-      const status = u.online ? "🟢 متصل" : "⚪ غير متصل";
+      const name = data.name || "User";
+      const status = data.online ? "🟢 متصل" : "⚪ غير متصل";
 
-      const lastMessage = u.lastMessage || "لا توجد رسائل بعد";
-      
-      let time = "";
-      if (u.lastMessageTime?.seconds) {
-        const d = new Date(u.lastMessageTime.seconds * 1000);
-        time = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-      }
-
-      usersDiv.innerHTML += `
-        <div style="
-          margin:10px;
-          padding:10px;
-          background:#fff;
-          border-radius:10px;
-          text-align:right;
-        ">
-
-          <b>${name}</b><br>
-          <small>${status}</small><br>
-          <small style="color:gray">${lastMessage}</small><br>
-          <small style="color:#999;font-size:11px">${time}</small>
-
-          <button style="margin-top:5px;width:100%"
-            onclick="openPrivateChat('${docu.id}','${name}')">
-            مراسلة
-          </button>
-
-        </div>
+      const div = document.createElement("div");
+      div.style.cssText = `
+        background:#fff;
+        margin:10px;
+        padding:12px;
+        border-radius:12px;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
       `;
+
+      div.innerHTML = `
+        <div>
+          <b>${name}</b><br>
+          <small>${status}</small>
+        </div>
+
+        <button style="
+          background:#4CAF50;
+          color:white;
+          border:none;
+          padding:8px 12px;
+          border-radius:8px;
+          cursor:pointer;
+        " onclick="openPrivateChat('${docSnap.id}','${name}')">
+          مراسلة
+        </button>
+      `;
+
+      usersList.appendChild(div);
     });
-
   });
-
 }
 // ================== SEND MESSAGE ==================
 window.sendMessage = async function () {
