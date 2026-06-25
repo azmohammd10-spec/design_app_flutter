@@ -218,16 +218,8 @@ const db = getFirestore(app);
 setPersistence(auth, browserLocalPersistence);
 
 // ================== LOGIN ==================
-window.login = function () {
-  const email = emailEl().value.trim();
-  const password = passEl().value.trim();
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => alert("تم تسجيل الدخول"))
-    .catch(err => alert(err.message));
-};
-
 window.login = async function () {
+
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -243,15 +235,33 @@ window.login = async function () {
     alert("خطأ: " + err.message);
   }
 };
-    .then(async (user) => {
-      await setDoc(doc(db, "users", user.user.uid), {
-        email: user.user.email,
-        name: email.split("@")[0]
-      });
 
-      alert("تم إنشاء الحساب");
-    })
-    .catch(err => alert(err.message));
+
+// ================== REGISTER ==================
+window.register = async function () {
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if (!email || !password) {
+    alert("أدخل البريد وكلمة المرور");
+    return;
+  }
+
+  try {
+    const user = await createUserWithEmailAndPassword(auth, email, password);
+
+    await setDoc(doc(db, "users", user.user.uid), {
+      email: user.user.email,
+      name: email.split("@")[0],
+      online: true,
+      lastSeen: serverTimestamp()
+    });
+
+    alert("تم إنشاء الحساب بنجاح");
+  } catch (err) {
+    alert("خطأ: " + err.message);
+  }
 };
 
 window.logout = async function () {
