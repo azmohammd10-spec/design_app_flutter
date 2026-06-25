@@ -299,6 +299,41 @@ window.sendMessage = async function () {
   } catch (e) {
     alert(e.message);
   }
+window.sendMessage = async function () {
+
+  const input = document.getElementById("msg");
+  const text = input.value.trim();
+
+  if (!text) return;
+  if (!currentChatId) return alert("اختر مستخدم");
+
+  try {
+
+    await addDoc(
+      collection(db, "chats", currentChatId, "messages"),
+      {
+        text,
+        user: auth.currentUser.uid,
+        name: auth.currentUser.email.split("@")[0],
+        time: serverTimestamp()
+      }
+    );
+
+    await setDoc(
+      doc(db, "chats", currentChatId),
+      {
+        lastMessage: text,
+        lastMessageTime: serverTimestamp()
+      },
+      { merge: true }
+    );
+
+    input.value = "";
+    input.focus();
+
+  } catch (e) {
+    alert(e.message);
+  }
 };
 // ================== LISTEN MESSAGES ==================
 function listenMessages(chatId) {
