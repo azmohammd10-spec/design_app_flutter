@@ -440,42 +440,47 @@ function listenMessages(chatId) {
     unsubscribeMessages = null;
   }
 
-  const q = query(
-    collection(db, "chats", chatId, "messages"),
-    orderBy("time", "asc")
-  );
+ const q = query(
+  collection(db, "chats", chatId, "messages"),
+  orderBy("time")
+); 
 
   unsubscribeMessages = onSnapshot(q, (snap) => {
 
     const box = document.getElementById("messages");
+    if (!box) return;
+
     box.innerHTML = "";
 
-    snap.forEach(d => {
-      const m = d.data();
-      const me = m.user === auth.currentUser.uid;
+    snap.forEach(docSnap => {
 
-      const div = document.createElement("div");
-      div.style.display = "flex";
-      div.style.justifyContent = me ? "flex-end" : "flex-start";
-      div.style.margin = "5px";
+      const data = docSnap.data();
+      if (!data) return;
+
+      const me = data.user === auth.currentUser.uid;
+
+      const msg = document.createElement("div");
+      msg.style.display = "flex";
+      msg.style.justifyContent = me ? "flex-end" : "flex-start";
+      msg.style.margin = "6px 0";
 
       const bubble = document.createElement("div");
       bubble.style.maxWidth = "70%";
       bubble.style.padding = "10px";
       bubble.style.borderRadius = "12px";
-      bubble.style.fontSize = "14px";
       bubble.style.wordBreak = "break-word";
       bubble.style.background = me ? "#4CAF50" : "#eee";
       bubble.style.color = me ? "#fff" : "#000";
 
-      bubble.textContent = m.text || "";
+      bubble.textContent = data.text || "";
 
-      div.appendChild(bubble);
-      box.appendChild(div);
+      msg.appendChild(bubble);
+      box.appendChild(msg);
     });
 
     box.scrollTop = box.scrollHeight;
   });
+}
 
   // typing indicator
   const typingRef = doc(db, "chats", chatId);
