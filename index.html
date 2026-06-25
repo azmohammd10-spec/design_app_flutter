@@ -227,11 +227,22 @@ window.login = function () {
     .catch(err => alert(err.message));
 };
 
-window.register = function () {
-  const email = emailEl().value.trim();
-  const password = passEl().value.trim();
+window.login = async function () {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  createUserWithEmailAndPassword(auth, email, password)
+  if (!email || !password) {
+    alert("أدخل البريد وكلمة المرور");
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("تم تسجيل الدخول بنجاح");
+  } catch (err) {
+    alert("خطأ: " + err.message);
+  }
+};
     .then(async (user) => {
       await setDoc(doc(db, "users", user.user.uid), {
         email: user.user.email,
