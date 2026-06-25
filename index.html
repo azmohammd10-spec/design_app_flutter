@@ -245,23 +245,30 @@ function loadUsers() {
       const name = u.name || "User";
       const status = u.online ? "🟢 متصل" : "⚪ غير متصل";
 
+      const lastMessage = u.lastMessage || "لا توجد رسائل بعد";
+      
+      let time = "";
+      if (u.lastMessageTime?.seconds) {
+        const d = new Date(u.lastMessageTime.seconds * 1000);
+        time = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      }
+
       usersDiv.innerHTML += `
         <div style="
           margin:10px;
           padding:10px;
           background:#fff;
           border-radius:10px;
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
+          text-align:right;
         ">
 
-          <div>
-            <b>${name}</b><br>
-            <small>${status}</small>
-          </div>
+          <b>${name}</b><br>
+          <small>${status}</small><br>
+          <small style="color:gray">${lastMessage}</small><br>
+          <small style="color:#999;font-size:11px">${time}</small>
 
-          <button onclick="openPrivateChat('${docu.id}','${name}')">
+          <button style="margin-top:5px;width:100%"
+            onclick="openPrivateChat('${docu.id}','${name}')">
             مراسلة
           </button>
 
@@ -271,8 +278,7 @@ function loadUsers() {
 
   });
 
-}  
-
+}
 // ================== SEND MESSAGE ==================
 window.sendMessage = async function () {
 
@@ -300,6 +306,7 @@ window.sendMessage = async function () {
         lastMessage: text,
         lastMessageTime: serverTimestamp()
       },
+      
       { merge: true }
     );
 
