@@ -1,683 +1,73 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>Star Social</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f0f2f5;
-      text-align: center;
-      padding: 0;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAR</title>
 
-    /* HEADER */
-    #appHeader {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      background: #4CAF50;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 9999;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-    #appHeader b { font-size: 18px; }
-    #userInfoTop { font-size: 14px; opacity: 0.9; }
+<style>
+body {
+    margin: 0;
+    background: black;
+    overflow: hidden;
+    font-family: Arial;
+}
 
-    /* MAIN CONTENT */
-    #mainContent {
-      flex: 1;
-      padding-top: 66px;
-      padding-bottom: 66px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+.video {
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: start;
+    position: relative;
+}
 
-    /* LOGIN */
-    #login {
-      background: #fff;
-      padding: 30px 24px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 340px;
-      margin: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    }
-    #login h2 { margin-bottom: 16px; color: #333; }
-    #login input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 14px;
-      outline: none;
-      transition: 0.2s;
-    }
-    #login input:focus { border-color: #4CAF50; }
-    #login button {
-      width: 100%;
-      padding: 12px;
-      margin: 6px 0;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-    #login button:first-of-type { background: #4CAF50; color: #fff; }
-    #login button:first-of-type:hover { background: #43a047; }
-    #login button:last-of-type { background: #e0e0e0; color: #333; }
-    #login button:last-of-type:hover { background: #d0d0d0; }
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
-    /* HOME SCREEN */
-    #homeScreen {
-      display: none;
-      flex: 1;
-      overflow-y: auto;
-      padding: 0 12px 12px;
-    }
-    #homeScreen h3 {
-      text-align: right;
-      margin: 10px 4px 12px;
-      color: #333;
-      font-size: 18px;
-    }
-    #usersList {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .user-card {
-      background: #fff;
-      padding: 14px 16px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      cursor: pointer;
-      transition: 0.2s;
-      text-align: right;
-    }
-    .user-card:hover { transform: scale(1.01); background: #fafafa; }
-    .user-avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #4CAF50;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    .user-name { font-weight: bold; font-size: 15px; color: #222; }
-    .user-status { font-size: 12px; color: #888; margin-top: 2px; }
+.container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
 
-    /* CHAT BOX */
-    #chatBox {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-      background: #fff;
-      border-radius: 16px 16px 0 0;
-      overflow: hidden;
-      margin: 0 8px;
-      box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
-    }
-
-    #chatHeader {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
-    }
-    #chatAvatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: #4CAF50;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    #chatUserName { font-weight: bold; font-size: 16px; color: #222; }
-    #chatUserStatus { font-size: 12px; color: #888; margin-top: 2px; }
-    #closeChatBtn {
-      background: none;
-      border: none;
-      font-size: 22px;
-      cursor: pointer;
-      color: #888;
-      padding: 0 6px;
-    }
-    #closeChatBtn:hover { color: #333; }
-
-    #messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 12px 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      background: #fafafa;
-    }
-    .msg-row {
-      display: flex;
-      margin: 2px 0;
-    }
-    .msg-row.me { justify-content: flex-end; }
-    .msg-row.other { justify-content: flex-start; }
-    .bubble {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      word-break: break-word;
-      font-size: 14px;
-      line-height: 1.4;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    .bubble.me {
-      background: #4CAF50;
-      color: #fff;
-      border-bottom-right-radius: 4px;
-    }
-    .bubble.other {
-      background: #e9ecef;
-      color: #222;
-      border-bottom-left-radius: 4px;
-    }
-
-    #typing {
-      font-size: 13px;
-      color: #888;
-      padding: 4px 16px 8px;
-      text-align: right;
-      min-height: 28px;
-      font-style: italic;
-    }
-
-    #chatInputArea {
-      display: flex;
-      gap: 10px;
-      padding: 10px 16px;
-      background: #fff;
-      border-top: 1px solid #eee;
-      flex-shrink: 0;
-      align-items: center;
-    }
-    #msg {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1px solid #ddd;
-      border-radius: 24px;
-      font-size: 14px;
-      outline: none;
-      transition: 0.2s;
-      background: #f5f5f5;
-    }
-    #msg:focus { border-color: #4CAF50; background: #fff; }
-    #sendBtn {
-      background: #4CAF50;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 44px;
-      height: 44px;
-      font-size: 20px;
-      cursor: pointer;
-      transition: 0.2s;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #sendBtn:hover { background: #43a047; transform: scale(1.05); }
-
-    /* BOTTOM NAV */
-    #bottomNav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      background: #fff;
-      border-top: 1px solid #e0e0e0;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 9999;
-      padding: 0 8px;
-    }
-    #bottomNav button {
-      background: none;
-      border: none;
-      font-size: 24px;
-      padding: 8px 16px;
-      cursor: pointer;
-      color: #555;
-      border-radius: 12px;
-      transition: 0.2s;
-    }
-    #bottomNav button:hover { background: #f0f0f0; }
-    #bottomNav button.active { color: #4CAF50; }
-
-    /* RESPONSIVE */
-    @media (max-width: 480px) {
-      #chatBox { margin: 0 4px; border-radius: 12px 12px 0 0; }
-      .bubble { max-width: 85%; }
-    }
-  </style>
+.like {
+    position: absolute;
+    bottom: 100px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+</style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<div id="appHeader">
-  <b>⭐ Star Social</b>
-  <span id="userInfoTop"></span>
-</div>
+<div class="container">
 
-<!-- MAIN CONTENT -->
-<div id="mainContent">
-
-  <!-- LOGIN -->
-  <div id="login">
-    <h2>🔐 تسجيل الدخول</h2>
-    <input type="email" id="email" placeholder="البريد الإلكتروني" autocomplete="email">
-    <input type="password" id="password" placeholder="كلمة المرور" autocomplete="current-password">
-    <button onclick="login()">🚪 دخول</button>
-    <button onclick="register()">📝 إنشاء حساب</button>
-  </div>
-
-  <!-- HOME -->
-  <div id="homeScreen">
-    <h3>👥 المستخدمون</h3>
-    <div id="usersList"></div>
-  </div>
-
-  <!-- CHAT -->
-  <div id="chatBox">
-    <div id="chatHeader">
-      <button id="closeChatBtn" onclick="closeChat()">✕</button>
-      <div id="chatAvatar">U</div>
-      <div style="flex:1;text-align:right;">
-        <div id="chatUserName">المستخدم</div>
-        <div id="chatUserStatus">غير متصل</div>
-      </div>
+    <div class="video">
+        <video src="https://www.w3schools.com/html/mov_bbb.mp4" autoplay loop muted></video>
+        <div class="like" onclick="like(this)">❤️</div>
     </div>
 
-    <div id="messages"></div>
-    <div id="typing"></div>
-
-    <div id="chatInputArea">
-      <input id="msg" placeholder="اكتب رسالة..." autocomplete="off">
-      <button id="sendBtn" onclick="sendMessage()">➤</button>
+    <div class="video">
+        <video src="https://www.w3schools.com/html/movie.mp4" autoplay loop muted></video>
+        <div class="like" onclick="like(this)">❤️</div>
     </div>
-  </div>
 
 </div>
 
-<!-- BOTTOM NAV -->
-<div id="bottomNav">
-  <button onclick="showHome()" id="navHome" class="active">💬</button>
-  <button onclick="alert('👥 قريباً')">👥</button>
-  <button onclick="alert('⚙️ قريباً')">⚙️</button>
-</div>
-
-<script type="module">
-// ========== IMPORTS ==========
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  serverTimestamp,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
-  deleteField
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
-// ========== CONFIG ==========
-const firebaseConfig = {
-  apiKey: "AIzaSyCEuOcQIvg-chEXfwHM8JAxFeYGpaOIoP4",
-  authDomain: "star-social-bdfb2.firebaseapp.com",
-  projectId: "star-social-bdfb2",
-  storageBucket: "star-social-bdfb2.firebasestorage.app",
-  messagingSenderId: "256449419301",
-  appId: "1:256449419301:web:970b4905d6beb86c4087cc",
-  measurementId: "G-JYT3F33K7Y"
-};
-
-const app = initializeApp(firebaseConfig);
-getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
-setPersistence(auth, browserLocalPersistence);
-
-// ========== STATE ==========
-let currentChatId = null;
-let currentChatUserId = null;
-let currentChatUserName = '';
-let unsubscribeMessages = null;
-let unsubscribeTyping = null;
-
-// ========== DOM REFS ==========
-const loginBox = document.getElementById('login');
-const homeScreen = document.getElementById('homeScreen');
-const chatBox = document.getElementById('chatBox');
-const usersList = document.getElementById('usersList');
-const messagesEl = document.getElementById('messages');
-const typingEl = document.getElementById('typing');
-const msgInput = document.getElementById('msg');
-const chatUserName = document.getElementById('chatUserName');
-const chatUserStatus = document.getElementById('chatUserStatus');
-const chatAvatar = document.getElementById('chatAvatar');
-const userInfoTop = document.getElementById('userInfoTop');
-
-// ========== AUTH ==========
-window.login = async function () {
-  const email = document.getElementById('email').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  if (!email || !pass) return alert('أدخل البريد وكلمة المرور');
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) { alert('❌ ' + e.message); }
-};
-
-window.register = async function () {
-  const email = document.getElementById('email').value.trim();
-  const pass = document.getElementById('password').value.trim();
-  if (!email || !pass) return alert('أدخل البريد وكلمة المرور');
-  if (pass.length < 6) return alert('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await setDoc(doc(db, 'users', cred.user.uid), {
-      email: cred.user.email,
-      name: email.split('@')[0],
-      online: true,
-      lastSeen: serverTimestamp()
-    });
-    alert('✅ تم إنشاء الحساب بنجاح');
-  } catch (e) { alert('❌ ' + e.message); }
-};
-
-// ========== AUTH STATE ==========
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    loginBox.style.display = 'none';
-    homeScreen.style.display = 'block';
-    chatBox.style.display = 'none';
-    userInfoTop.textContent = user.email || user.uid;
-
-    // تحديث الحالة online
-    await setDoc(doc(db, 'users', user.uid), {
-      email: user.email,
-      name: user.email?.split('@')[0] || 'User',
-      online: true,
-      lastSeen: serverTimestamp()
-    }, { merge: true });
-
-    loadUsers();
-
-    // عند الإغلاق: تعيين offline
-    window.addEventListener('beforeunload', () => {
-      setDoc(doc(db, 'users', user.uid), { online: false }, { merge: true });
-    });
-
-  } else {
-    loginBox.style.display = 'block';
-    homeScreen.style.display = 'none';
-    chatBox.style.display = 'none';
-    userInfoTop.textContent = '';
-    usersList.innerHTML = '';
-    if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
-    if (unsubscribeTyping) { unsubscribeTyping(); unsubscribeTyping = null; }
-    currentChatId = null;
-  }
-});
-
-// ========== USERS LIST ==========
-function loadUsers() {
-  if (!auth.currentUser) return;
-  onSnapshot(collection(db, 'users'), (snap) => {
-    usersList.innerHTML = '';
-    snap.forEach(docSnap => {
-      const uid = docSnap.id;
-      if (uid === auth.currentUser.uid) return;
-      const data = docSnap.data();
-      const name = data?.name || 'مستخدم';
-      const online = data?.online || false;
-      const first = name.charAt(0).toUpperCase();
-
-      const card = document.createElement('div');
-      card.className = 'user-card';
-      card.innerHTML = `
-        <div class="user-avatar">${first}</div>
-        <div style="flex:1;text-align:right;">
-          <div class="user-name">${name}</div>
-          <div class="user-status">${online ? '🟢 متصل' : '⚪ غير متصل'}</div>
-        </div>
-      `;
-      card.addEventListener('click', () => openPrivateChat(uid, name));
-      usersList.appendChild(card);
-    });
-  });
-}
-
-// ========== OPEN CHAT ==========
-window.openPrivateChat = function (userId, userName) {
-  if (!auth.currentUser) return alert('سجل دخول أولاً');
-  if (userId === auth.currentUser.uid) return;
-
-  currentChatUserId = userId;
-  currentChatUserName = userName;
-
-  // معرف المحادثة (فرز الأيدي لتوحيد المعرف)
-  const id1 = auth.currentUser.uid;
-  const id2 = userId;
-  currentChatId = id1 < id2 ? id1 + '_' + id2 : id2 + '_' + id1;
-
-  // واجهة
-  homeScreen.style.display = 'none';
-  chatBox.style.display = 'flex';
-  document.getElementById('navHome').classList.remove('active');
-
-  // تنظيف
-  messagesEl.innerHTML = '';
-  typingEl.textContent = '';
-  msgInput.value = '';
-  msgInput.focus();
-
-  // تحديث الهيدر
-  chatUserName.textContent = userName;
-  chatAvatar.textContent = userName.charAt(0).toUpperCase();
-
-  // الاستماع لحالة المستخدم
-  onSnapshot(doc(db, 'users', userId), (snap) => {
-    const d = snap.data();
-    chatUserStatus.textContent = d?.online ? '🟢 متصل' : '⚪ غير متصل';
-  });
-
-  // الاستماع للرسائل
-  listenMessages(currentChatId);
-
-  // الاستماع للكتابة
-  listenTyping(currentChatId);
-};
-
-// ========== LISTEN MESSAGES ==========
-function listenMessages(chatId) {
-  if (unsubscribeMessages) {
-    unsubscribeMessages();
-    unsubscribeMessages = null;
-  }
-
-  const q = query(
-    collection(db, 'chats', chatId, 'messages'),
-    orderBy('time', 'asc')
-  );
-
-  unsubscribeMessages = onSnapshot(q, (snap) => {
-    messagesEl.innerHTML = '';
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      if (!data) return;
-      const isMe = data.user === auth.currentUser.uid;
-
-      const row = document.createElement('div');
-      row.className = `msg-row ${isMe ? 'me' : 'other'}`;
-
-      const bubble = document.createElement('div');
-      bubble.className = `bubble ${isMe ? 'me' : 'other'}`;
-      bubble.textContent = data.text || '';
-
-      row.appendChild(bubble);
-      messagesEl.appendChild(row);
-    });
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  });
-}
-
-// ========== TYPING ==========
-function listenTyping(chatId) {
-  if (unsubscribeTyping) {
-    unsubscribeTyping();
-    unsubscribeTyping = null;
-  }
-
-  const chatRef = doc(db, 'chats', chatId);
-  unsubscribeTyping = onSnapshot(chatRef, (snap) => {
-    const data = snap.data();
-    if (!data) {
-      typingEl.textContent = '';
-      return;
-    }
-    const typing = data.typing || false;
-    const typingUser = data.typingUser || '';
-    if (typing && typingUser !== auth.currentUser?.email) {
-      const name = typingUser.split('@')[0] || 'شخص';
-      typingEl.textContent = `✍️ ${name} يكتب...`;
+<script>
+function like(el){
+    if(el.innerHTML === "❤️"){
+        el.innerHTML = "💖";
     } else {
-      typingEl.textContent = '';
+        el.innerHTML = "❤️";
     }
-  });
 }
-
-// ========== SEND MESSAGE ==========
-window.sendMessage = async function () {
-  const text = msgInput.value.trim();
-  if (!text) return;
-  if (!currentChatId) return alert('اختر محادثة أولاً');
-  if (!auth.currentUser) return alert('سجل دخول');
-
-  try {
-    await addDoc(collection(db, 'chats', currentChatId, 'messages'), {
-      text,
-      user: auth.currentUser.uid,
-      name: auth.currentUser.email?.split('@')[0] || 'أنا',
-      time: serverTimestamp()
-    });
-
-    await setDoc(doc(db, 'chats', currentChatId), {
-      lastMessage: text,
-      lastMessageTime: serverTimestamp()
-    }, { merge: true });
-
-    // إيقاف مؤشر الكتابة بعد الإرسال
-    await setDoc(doc(db, 'chats', currentChatId), {
-      typing: false,
-      typingUser: deleteField()
-    }, { merge: true });
-
-    msgInput.value = '';
-    msgInput.focus();
-  } catch (e) {
-    alert('❌ ' + e.message);
-  }
-};
-
-// ========== TYPING INDICATOR ==========
-msgInput.addEventListener('input', async () => {
-  if (!currentChatId || !auth.currentUser) return;
-  const hasText = msgInput.value.trim().length > 0;
-  try {
-    await setDoc(doc(db, 'chats', currentChatId), {
-      typing: hasText,
-      typingUser: auth.currentUser.email || 'مستخدم'
-    }, { merge: true });
-  } catch (e) { /* ignore */ }
-});
-
-// ========== NAVIGATION ==========
-window.showHome = function () {
-  homeScreen.style.display = 'block';
-  chatBox.style.display = 'none';
-  document.getElementById('navHome').classList.add('active');
-
-  if (unsubscribeMessages) {
-    unsubscribeMessages();
-    unsubscribeMessages = null;
-  }
-  if (unsubscribeTyping) {
-    unsubscribeTyping();
-    unsubscribeTyping = null;
-  }
-  currentChatId = null;
-  typingEl.textContent = '';
-};
-
-window.closeChat = function () {
-  showHome();
-};
-
-// ========== ENTER KEY ==========
-msgInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-console.log('✅ Star Social ready!');
 </script>
+
 </body>
 </html>
