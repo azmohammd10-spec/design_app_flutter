@@ -1,19 +1,29 @@
-// =========================
-// STAR Upload Manager
-// =========================
+/// =========================
+/// STAR Upload Manager
+/// =========================
 
 import { uploadVideoFile } from "./services/storageService.js";
 import { uploadVideo } from "./services/videoService.js";
 
+// عناصر الصفحة
 const videoInput = document.getElementById("videoFile");
 const captionInput = document.getElementById("caption");
 const categoryInput = document.getElementById("category");
 const uploadBtn = document.getElementById("uploadBtn");
 
-// رفع الفيديو
-uploadBtn.addEventListener("click", async () => {
+// تأكد أن العناصر موجودة
+if (!uploadBtn || !videoInput) {
+    console.error("Upload elements not found in HTML");
+}
 
-    const file = videoInput.files[0];
+// رفع الفيديو
+uploadBtn?.addEventListener("click", async () => {
+
+    console.log("UPLOAD CLICKED");
+
+    const file = videoInput.files?.[0];
+
+    console.log("FILE:", file);
 
     if (!file) {
         alert("اختر فيديو أولاً");
@@ -25,28 +35,26 @@ uploadBtn.addEventListener("click", async () => {
 
     try {
 
-        // 1- رفع الفيديو إلى Firebase Storage
+        // رفع الفيديو إلى Firebase Storage
         const videoURL = await uploadVideoFile(file, (progress) => {
 
-    uploadBtn.textContent = `جاري الرفع ${progress}%`;
+            console.log("Progress:", progress);
 
-});
+            uploadBtn.textContent = `جاري الرفع ${progress}%`;
 
-        // 2- إنشاء سجل الفيديو في Firestore
+        });
+
+        // حفظ البيانات في Firestore
         await uploadVideo({
 
             url: videoURL,
-
             caption: captionInput.value.trim(),
-
             category: categoryInput.value,
-
             createdAt: Date.now(),
 
-            // بيانات الخوارزمية
+            // خوارزمية STAR
             stage: "TESTING",
             viewsTarget: 1500,
-
             score: 0,
 
             views: 0,
@@ -66,14 +74,14 @@ uploadBtn.addEventListener("click", async () => {
 
         alert("✅ تم رفع الفيديو بنجاح");
 
+        // إعادة ضبط الحقول
         videoInput.value = "";
         captionInput.value = "";
         categoryInput.selectedIndex = 0;
 
     } catch (error) {
 
-        console.error(error);
-
+        console.error("UPLOAD ERROR:", error);
         alert("حدث خطأ أثناء رفع الفيديو");
 
     }
