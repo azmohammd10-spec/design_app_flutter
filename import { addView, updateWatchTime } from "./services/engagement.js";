@@ -1,0 +1,25 @@
+let hasViewed = false;
+
+function trackWatch(video, videoId){
+
+    let watchTime = 0;
+
+    const interval = setInterval(() => {
+
+        if(video.paused){
+            clearInterval(interval);
+            return;
+        }
+
+        watchTime += 1;
+
+        if(watchTime === 1 && !hasViewed){
+            addView(videoId); // أول ثانية = مشاهدة
+            hasViewed = true;
+        }
+
+        updateWatchTime(videoId, 1);
+
+    }, 1000);
+
+}
