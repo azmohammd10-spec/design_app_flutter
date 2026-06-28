@@ -1,32 +1,30 @@
 import { getVideos } from "./services/videoService.js";
-import { calculateVideoScore } from "./algorithm/algorithm.js";
-import { updateFairness } from "./algorithm/fairness.js";
-import { boostTrendingVideos } from "./algorithm/trending.js";
 
 const feed = document.getElementById("feed");
 
+let currentVideoIndex = 0;
 let videos = [];
-let observers = [];
 
-async function loadFeed(){
+// تحميل الفيديوهات
+async function loadFeed() {
 
     videos = await getVideos();
 
-    // حساب الذكاء
-    videos = videos.map(v => {
-        const score = calculateVideoScore(v);
-        return updateFairness({...v, score}, score);
-    });
+    if (!videos || videos.length === 0) {
+        feed.innerHTML = `
+            <div style="color:#fff;text-align:center;margin-top:50%">
+                لا توجد فيديوهات بعد
+            </div>
+        `;
+        return;
+    }
 
-    videos = boostTrendingVideos(videos);
-
-    render(videos);
-
+    renderVideos(videos);
     setupAutoPlay();
-
 }
 
-function render(videos){
+// عرض الفيديوهات
+function renderVideos(videos) {
 
     feed.innerHTML = "";
 
@@ -39,26 +37,25 @@ function render(videos){
             <video 
                 src="${video.url}" 
                 muted 
+                loop 
                 playsinline
-                loop
             ></video>
 
             <div class="overlay">
-                ⭐ Score: ${video.score?.toFixed(1) || 0} <br>
-                🔥 Stage: ${video.stage} <br>
-                👀 Views: ${video.viewsTarget}
+                ⭐ ${video.caption || ""} <br>
+                👀 ${video.views || 0} مشاهدة <br>
+                🔥 ${video.stage || "TESTING"}
             </div>
         `;
 
         feed.appendChild(div);
     });
-
 }
 
-// تشغيل الفيديو عند ظهوره
-function setupAutoPlay(){
+// تشغيل الفيديو عند ظهوره (TikTok effect)
+function setupAutoPlay() {
 
-    const videos = document.querySelectorAll("video");
+    const allVideos = document.querySelectorAll("video");
 
     const observer = new IntersectionObserver((entries) => {
 
@@ -66,43 +63,19 @@ function setupAutoPlay(){
 
             const video = entry.target;
 
-            if(entry.isIntersecting){
-
+            if (entry.isIntersecting) {
                 video.play();
-
-                trackWatch(video);
-
             } else {
                 video.pause();
             }
 
         });
 
-    }, { threshold: 0.7 });
+    }, {
+        threshold: 0.7
+    });
 
-    videos.forEach(video => observer.observe(video));
-}
-
-
-// تتبع وقت المشاهدة (مهم للخوارزمية)
-function trackWatch(video){
-
-    let watchTime = 0;
-
-    const interval = setInterval(() => {
-
-        if(video.paused){
-            clearInterval(interval);
-            return;
-        }
-
-        watchTime += 1;
-
-        // هنا لاحقًا سنربطه بـ Firebase
-        video.dataset.watchTime = watchTime;
-
-    }, 1000);
-
+    allVideos.forEach(video => observer.observe(video));
 }
 
 loadFeed();
