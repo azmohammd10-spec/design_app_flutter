@@ -26,7 +26,11 @@ uploadBtn.addEventListener("click", async () => {
     try {
 
         // 1- رفع الفيديو إلى Firebase Storage
-        const videoURL = await uploadVideoFile(file);
+        const videoURL = await uploadVideoFile(file, (progress) => {
+
+    uploadBtn.textContent = `جاري الرفع ${progress}%`;
+
+});
 
         // 2- إنشاء سجل الفيديو في Firestore
         await uploadVideo({
