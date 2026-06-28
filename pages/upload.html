@@ -6,12 +6,27 @@
 <title>رفع فيديو - STAR</title>
 
 <style>
+
 body{
     background:#000;
     color:#fff;
     font-family:Arial;
     margin:0;
     padding:20px;
+}
+
+/* زر رجوع أو انتقال */
+.floating-btn{
+    position:fixed;
+    bottom:20px;
+    left:20px;
+    background:#FFD700;
+    color:#000;
+    padding:12px 18px;
+    border-radius:50px;
+    text-decoration:none;
+    font-weight:bold;
+    z-index:999;
 }
 
 .container{
@@ -34,23 +49,23 @@ button{
     font-weight:bold;
     cursor:pointer;
 }
+
 </style>
 
 </head>
+
 <body>
+
+<!-- زر الرجوع -->
+<a href="home.html" class="floating-btn">← رجوع</a>
 
 <div class="container">
 
 <h2>رفع فيديو جديد</h2>
 
-<input
-type="file"
-id="videoFile"
-accept="video/*">
+<input type="file" id="videoFile" accept="video/*">
 
-<textarea
-id="caption"
-placeholder="اكتب وصف الفيديو"></textarea>
+<textarea id="caption" placeholder="اكتب وصف الفيديو"></textarea>
 
 <select id="category">
 
@@ -62,11 +77,7 @@ placeholder="اكتب وصف الفيديو"></textarea>
 
 </select>
 
-<button id="uploadBtn">
-
-رفع الفيديو
-
-</button>
+<button id="uploadBtn">رفع الفيديو</button>
 
 </div>
 
