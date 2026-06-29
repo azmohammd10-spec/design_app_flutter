@@ -1,72 +1,68 @@
 // =========================
-// STAR Storage Service
+// STAR - Supabase Storage Service
 // =========================
 
-import { storage } from "../firebase.js";
-
-import {
-    ref,
-    uploadBytesResumable,
-    getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+const SUPABASE_URL = "https://nhrwbmbejscdkjlwsbtp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_WgOtBrrTfkMk1HWstBHlqw_HDxlmz_9";
+const BUCKET = "videos";
 
 
-// =========================
-// رفع فيديو مع متابعة نسبة الرفع
-// =========================
-export function uploadVideoFile(file, onProgress = null) {
+// رفع فيديو
+export async function uploadVideoFile(file, onProgress = null) {
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
 
-        // إنشاء اسم فريد
-        const fileName =
-            `${Date.now()}_${file.name.replace(/\s+/g, "_")}`;
-// مسار الحفظ
-const storageRef = ref(storage, `videos/${fileName}`);
+        try {
 
-console.log("Storage:", storage);
-console.log("Storage Ref:", storageRef);
+            const fileName = `${Date.now()}_${file.name}`;
 
-// بدء الرفع
-const uploadTask = uploadBytesResumable(storageRef, file);
-        
-        uploadTask.on(
+            const formData = new FormData();
+            formData.append("file", file);
 
-            "state_changed",
+            const xhr = new XMLHttpRequest();
 
-            (snapshot) => {
+            xhr.open(
+                "POST",
+                `${SUPABASE_URL}/storage/v1/object/${BUCKET}/${fileName}`
+            );
 
-                const progress = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
+            xhr.setRequestHeader("Authorization", `Bearer ${SUPABASE_KEY}`);
+            xhr.setRequestHeader("apikey", SUPABASE_KEY);
 
-                // إرسال نسبة الرفع للواجهة
-                if (typeof onProgress === "function") {
-                    onProgress(progress);
+            // progress
+            xhr.upload.onprogress = (event) => {
+                if (event.lengthComputable && onProgress) {
+                    const percent = Math.round(
+                        (event.loaded / event.total) * 100
+                    );
+                    onProgress(percent);
                 }
+            };
 
-            },
+            // success
+            xhr.onload = () => {
+                if (xhr.status === 200) {
 
-           (error) => {
+                    const videoURL =
+                        `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${fileName}`;
 
-    console.error("STORAGE ERROR:", error);
+                    resolve(videoURL);
 
-    alert(error.code + "\n" + error.message);
+                } else {
+                    reject(xhr.responseText);
+                }
+            };
 
-    reject(error);
+            // error
+            xhr.onerror = () => {
+                reject("Upload failed");
+            };
 
-}, 
+            xhr.send(file);
 
-            async () => {
-
-                const downloadURL =
-                    await getDownloadURL(uploadTask.snapshot.ref);
-
-                resolve(downloadURL);
-
-            }
-
-        );
+        } catch (err) {
+            reject(err);
+        }
 
     });
 
