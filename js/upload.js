@@ -56,12 +56,17 @@ window.addEventListener("DOMContentLoaded", () => {
             captionInput.value = "";
             categoryInput.selectedIndex = 0;
 
-        } catch (error) {
+       } catch (error) {
 
-            console.error("❌ ERROR:", error);
-            alert("فشل الرفع");
+    console.error("UPLOAD ERROR:", error);
 
-        }
+    alert(
+        error.message ||
+        JSON.stringify(error) ||
+        "حدث خطأ"
+    );
+
+} 
 
         uploadBtn.disabled = false;
         uploadBtn.textContent = "رفع الفيديو";
