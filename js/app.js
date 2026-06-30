@@ -81,12 +81,12 @@ function createVideoElement(video) {
             </div>
 
             <div class="action save-btn" onclick="toggleSave(this)">
-    <div class="circle">🔖</div>
+    <div class="circle">🔽</div>
     <small>حفظ</small>
 </div>
 
             <div class="action">
-                <div class="circle">↗️</div>
+                <div class="circle">♻️</div>
                 <small>مشاركة</small>
             </div>
 
