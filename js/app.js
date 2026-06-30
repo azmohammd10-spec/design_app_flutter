@@ -64,30 +64,27 @@ function createVideoElement(video) {
             🔥 ${video.stage || "TESTING"}
         </div>
 
-        <div class="side-actions">
-            <div class="action">
-                <div class="icon">👤</div>
-            </div>
+        Align(
+  alignment: Alignment.bottomLeft, // تغيير المحاذاة لليسار
+  child: Padding(
+    padding: const EdgeInsets.only(left: 15.0, bottom: 30.0), // إضافة مساحة من اليسار
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // زر صورة البروفايل (دائري)
+        CircleAvatar(radius: 25, backgroundImage: AssetImage('assets/profile.jpg')),
+        SizedBox(height: 20),
+        
+        // الأزرار
+        SocialButton(icon: Icons.favorite, count: "923"),
+        SocialButton(icon: Icons.comment, count: "75"),
+        SocialButton(icon: Icons.bookmark, count: "292"),
+        SocialButton(icon: Icons.share, count: "1093"),
+      ],
+    ),
+  ),
+)
 
-            <div class="action">
-                <div class="icon">❤</div>
-                <small>${video.likes_count || 0}</small>
-            </div>
-
-            <div class="action">
-                <div class="icon">💬</div>
-                <small>${video.comments_count || 0}</small>
-            </div>
-
-            <div class="action">
-                <div class="icon">🔖</div>
-            </div>
-
-            <div class="action">
-                <div class="icon">🔗</div>
-            </div>
-        </div>
-    `;
 
     return div;
 }
