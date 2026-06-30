@@ -8,14 +8,59 @@
 <style>
 .side-actions {
     position: absolute;
-    left: 10px;
-    bottom: 120px;
+    right: 12px;
+    bottom: 110px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+
+    z-index: 10;
 }
 
+/* كل زر */
 .action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     color: white;
-    text-align: center;
-    cursor: pointer;
+    font-size: 12px;
+}
+
+/* دائرة تيك توك */
+.circle {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.25);
+    backdrop-filter: blur(8px);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* صورة البروفايل */
+.profile img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+
+    border: 2px solid white;
+}
+
+/* الأرقام */
+.action small {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #fff;
 }
 
 .action .icon {
