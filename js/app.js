@@ -1,4 +1,7 @@
-import { getVideos } from "./services/videoService.js";
+import {
+    getVideos,
+    incrementViews
+} from "./services/videoService.js";
 
 const feed = document.getElementById("feed");
 
@@ -51,12 +54,14 @@ function renderVideos(videos) {
         div.className = "video";
 
         div.innerHTML = `
-            <video 
-                src="${videoUrl}"
-                muted 
-                loop 
-                playsinline
-            ></video>
+            
+                <video
+    src="${videoUrl}"
+    muted
+    loop
+    playsinline
+    data-id="${video.id}"
+></video>
 
             <!-- ⭐ معلومات الفيديو -->
             <div class="overlay">
@@ -102,8 +107,11 @@ function renderVideos(videos) {
     });
 }
 
-// تشغيل الفيديو عند الظهور
+
+// تشغيل الفيديو واحتساب المشاهدات
 function setupAutoPlay() {
+
+    const counted = new Set();
 
     const allVideos = document.querySelectorAll("video");
 
@@ -114,9 +122,33 @@ function setupAutoPlay() {
             const video = entry.target;
 
             if (entry.isIntersecting) {
+
                 video.play().catch(() => {});
+
+                const id = video.dataset.id;
+
+                if (!counted.has(id)) {
+
+                    counted.add(id);
+
+                    setTimeout(async () => {
+
+                        if (!video.paused) {
+
+                            await incrementViews(id);
+
+                            console.log("View +1:", id);
+
+                        }
+
+                    }, 3000);
+
+                }
+
             } else {
+
                 video.pause();
+
             }
 
         });
@@ -126,6 +158,5 @@ function setupAutoPlay() {
     });
 
     allVideos.forEach(video => observer.observe(video));
-}
 
-loadFeed();
+}
