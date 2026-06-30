@@ -167,7 +167,17 @@ function setupAutoPlay() {
 
     videosEl.forEach(video => observer.observe(video));
 }
+window.toggleSave = function(el) {
+    const icon = el.querySelector(".circle");
 
+    el.classList.toggle("saved");
+
+    if (el.classList.contains("saved")) {
+        icon.textContent = "📌";
+    } else {
+        icon.textContent = "🔖";
+    }
+};
 // =========================
 // تشغيل أولي
 // =========================
