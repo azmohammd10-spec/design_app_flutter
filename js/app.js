@@ -7,11 +7,11 @@ const feed = document.getElementById("feed");
 
 let videos = [];
 
+// =========================
 // تحميل الفيديوهات
+// =========================
 async function loadFeed() {
-
     try {
-
         videos = await getVideos();
 
         console.log("VIDEOS FROM DB:", videos);
@@ -29,7 +29,6 @@ async function loadFeed() {
         setupAutoPlay();
 
     } catch (error) {
-
         console.error("ERROR loading videos:", error);
 
         feed.innerHTML = `
@@ -40,123 +39,119 @@ async function loadFeed() {
     }
 }
 
-// عرض الفيديوهات
-function renderVideos(videos) {
+// =========================
+// إنشاء كرت فيديو واحد
+// =========================
+function createVideoElement(video) {
+    const videoUrl = video.url || video.videoUrl || video.fileUrl;
 
-    const feed = document.getElementById("feed");
-    feed.innerHTML = "";
+    const div = document.createElement("div");
+    div.className = "video";
 
-    videos.forEach(video => {
+    div.innerHTML = `
+        <video
+            src="${videoUrl}"
+            muted
+            loop
+            playsinline
+            data-id="${video.id}"
+        ></video>
 
-        const videoUrl = video.url || video.videoUrl || video.fileUrl;
+        <div class="overlay">
+            ⭐ ${video.caption || "بدون وصف"} <br>
+            👁 ${video.views || 0} مشاهدة <br>
+            🔥 ${video.stage || "TESTING"}
+        </div>
 
-        const div = document.createElement("div");
-        div.className = "video";
-
-        div.innerHTML = `
-            
-                <video
-    src="${videoUrl}"
-    muted
-    loop
-    playsinline
-    data-id="${video.id}"
-></video>
-
-            <!-- ⭐ معلومات الفيديو -->
-            <div class="overlay">
-                ⭐ ${video.caption || "بدون وصف"} <br>
-                👁${video.views || 0} مشاهدة <br>
-                🔥 ${video.stage || "TESTING"}
+        <div class="side-actions">
+            <div class="action">
+                <div class="icon">👤</div>
             </div>
 
-            <!-- ❤️ أزرار جانبية (TikTok Style) -->
-            <div class="side-actions">
-
-                <!-- بروفايل -->
-                <div class="action">
-                    <div class="icon">👤</div>
-                </div>
-
-                <!-- لايك -->
-                <div class="action">
-                    <div class="icon">❤</div>
-                    <small>${video.likes_count || 0}</small>
-                </div>
-
-                <!-- تعليق -->
-                <div class="action">
-                    <div class="icon">💬</div>
-                    <small>${video.comments_count || 0}</small>
-                </div>
-
-                <!-- حفظ -->
-                <div class="action">
-                    <div class="icon">🔖</div>
-                </div>
-
-                <!-- مشاركة -->
-                <div class="action">
-                    <div class="icon">🔗</div>
-                </div>
-
+            <div class="action">
+                <div class="icon">❤</div>
+                <small>${video.likes_count || 0}</small>
             </div>
-        `;
 
-        feed.appendChild(div);
-    });
+            <div class="action">
+                <div class="icon">💬</div>
+                <small>${video.comments_count || 0}</small>
+            </div>
+
+            <div class="action">
+                <div class="icon">🔖</div>
+            </div>
+
+            <div class="action">
+                <div class="icon">🔗</div>
+            </div>
+        </div>
+    `;
+
+    return div;
 }
 
+// =========================
+// عرض الفيديوهات
+// =========================
+function renderVideos(videos) {
+    feed.innerHTML = "";
 
-// تشغيل الفيديو واحتساب المشاهدات
+    const fragment = document.createDocumentFragment();
+
+    videos.forEach(video => {
+        fragment.appendChild(createVideoElement(video));
+    });
+
+    feed.appendChild(fragment);
+}
+
+// =========================
+// تشغيل الفيديو + المشاهدات
+// =========================
 function setupAutoPlay() {
 
     const counted = new Set();
-
-    const allVideos = document.querySelectorAll("video");
+    const videosEl = document.querySelectorAll("video");
 
     const observer = new IntersectionObserver((entries) => {
 
         entries.forEach(entry => {
-
             const video = entry.target;
+            const id = video.dataset.id;
 
             if (entry.isIntersecting) {
 
+                // 🔥 أوقف باقي الفيديوهات (مثل TikTok)
+                document.querySelectorAll("video").forEach(v => {
+                    if (v !== video) v.pause();
+                });
+
                 video.play().catch(() => {});
 
-                const id = video.dataset.id;
-
                 if (!counted.has(id)) {
-
                     counted.add(id);
 
                     setTimeout(async () => {
-
                         if (!video.paused) {
-
-                            await incrementViews(id);
-
-                            console.log("View +1:", id);
-
+                            try {
+                                await incrementViews(id);
+                                console.log("View +1:", id);
+                            } catch (err) {
+                                console.error("View error:", err);
+                            }
                         }
-
                     }, 3000);
-
                 }
 
             } else {
-
                 video.pause();
-
             }
-
         });
 
     }, {
         threshold: 0.7
     });
 
-    allVideos.forEach(video => observer.observe(video));
-
+    videosEl.forEach(video => observer.observe(video));
 }
