@@ -40,6 +40,7 @@ async function loadFeed() {
 // عرض الفيديوهات
 function renderVideos(videos) {
 
+    const feed = document.getElementById("feed");
     feed.innerHTML = "";
 
     videos.forEach(video => {
@@ -55,13 +56,45 @@ function renderVideos(videos) {
                 muted 
                 loop 
                 playsinline
-                controls
             ></video>
 
+            <!-- ⭐ معلومات الفيديو -->
             <div class="overlay">
                 ⭐ ${video.caption || "بدون وصف"} <br>
-                👀 ${video.views || 0} مشاهدة <br>
+                👁${video.views || 0} مشاهدة <br>
                 🔥 ${video.stage || "TESTING"}
+            </div>
+
+            <!-- ❤️ أزرار جانبية (TikTok Style) -->
+            <div class="side-actions">
+
+                <!-- بروفايل -->
+                <div class="action">
+                    <div class="icon">👤</div>
+                </div>
+
+                <!-- لايك -->
+                <div class="action">
+                    <div class="icon">❤</div>
+                    <small>${video.likes_count || 0}</small>
+                </div>
+
+                <!-- تعليق -->
+                <div class="action">
+                    <div class="icon">💬</div>
+                    <small>${video.comments_count || 0}</small>
+                </div>
+
+                <!-- حفظ -->
+                <div class="action">
+                    <div class="icon">🔖</div>
+                </div>
+
+                <!-- مشاركة -->
+                <div class="action">
+                    <div class="icon">🔗</div>
+                </div>
+
             </div>
         `;
 
