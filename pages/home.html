@@ -143,35 +143,74 @@ video{
     bottom: 20px;
     width: 72px;
     height: 72px;
-    
-    /* تصميم الخلفية والحدود */
+
+    /* تصميم الخلفية والحدود (لتطابق الصورة بدقة) */
     background: #111;
-    border: 4px solid transparent;
-    border-radius: 18px;
-    
-    /* خدعة لجعل التدرج يظهر على الحواف فقط */
+    border: 4px solid transparent; /* سماكة الحد لجعل التدرج مرئياً بوضوح */
+    border-radius: 18px; /* زوايا ناعمة ومستديرة */
+
+    /* خدعة لجعل التدرج يظهر على الحواف فقط مع الحفاظ على الزوايا */
     background-image: linear-gradient(#111, #111), linear-gradient(90deg, #fe2c55, #25f4ee);
     background-origin: border-box;
     background-clip: padding-box, border-box;
-    
+
+    /* الخصائص الأخرى لتوزيع العناصر */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 99999;
     transform: translateX(-50%);
-    transition: 0.2s ease;
-    
+    transition: 0.3s ease; /* انتقال أكثر سلاسة للحركة */
+
     /* الظل الاحترافي */
-    box-shadow: 
+    box-shadow:
         0 8px 20px rgba(0,0,0,0.5),
         0 0 15px rgba(254, 44, 85, 0.3),
         0 0 15px rgba(37, 244, 238, 0.3);
 }
 
+/* تأثير عند مرور الفأرة (Hover) لجعل الزر "يعمل" */
+.upload-btn:hover {
+    transform: translateX(-50%) translateY(-5px); /* يرتفع قليلاً عند التحويم */
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.6), /* ظل أعمق وأكثر انتشاراً */
+        0 0 20px rgba(254, 44, 85, 0.5),
+        0 0 20px rgba(37, 244, 238, 0.5);
+}
+
+/* تأثير عند الضغط (Active) */
 .upload-btn:active {
     transform: translateX(-50%) scale(0.92);
 }
+
+/* علامة + */
+.upload-btn .plus {
+    font-size: 34px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* تأثير نبض خفيف */
+.upload-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: linear-gradient(45deg, #fe2c55, #25f4ee); /* تطابق تدرج الألوان */
+    opacity: 0.25;
+    filter: blur(10px);
+    z-index: -1;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.25; }
+    50% { transform: scale(1.2); opacity: 0.1; }
+    100% { transform: scale(1); opacity: 0.25; }
+}
+
 
 /* عند الضغط */
 .upload-btn:active{
