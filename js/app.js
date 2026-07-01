@@ -155,46 +155,6 @@ window.toggleSave = function(el) {
 };
 
 
-   const btn = document.querySelector(".tiktok-plus-btn");
-
-btn.addEventListener("click", function () {
-
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "video/*";
-
-    input.onchange = async function () {
-        const file = input.files[0];
-        if (!file) return;
-
-        // 🟡 UI حالة تحميل
-        btn.style.opacity = "0.6";
-        btn.style.pointerEvents = "none";
-
-        // (اختياري) نص داخل الزر
-        const oldHTML = btn.innerHTML;
-        btn.innerHTML = "⏳";
-
-        try {
-            await uploadVideo(file, (progress) => {
-                console.log("Upload:", progress + "%");
-            });
-
-            console.log("Upload done");
-
-            await loadFeed();
-
-        } catch (err) {
-            console.error(err);
-
-        } finally {
-            // 🔵 رجّع الزر طبيعي
-            btn.style.opacity = "1";
-            btn.style.pointerEvents = "auto";
-            btn.innerHTML = oldHTML;
-        }
-    };
-
     input.click();
 }); 
 // =========================
