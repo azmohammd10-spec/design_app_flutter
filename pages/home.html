@@ -140,12 +140,12 @@ video{
 .upload-btn{
     position: fixed;
     left: 50%;
-    bottom: 18px;
+    bottom: 20px;
 
-    width: 74px;
-    height: 74px;
+    width: 72px;
+    height: 72px;
 
-    border-radius: 50%;
+    border-radius: 18px; /* مربع ناعم */
 
     display: flex;
     align-items: center;
@@ -155,18 +155,58 @@ video{
 
     z-index: 99999;
 
-    /* تدرج لوني أقوى */
-    background: linear-gradient(135deg, #ff0050, #ffcc00);
+    background: #111;
+
+    /* حدود ملونة جانبية */
+    border: 2px solid transparent;
+
+    border-image: linear-gradient(45deg, #ff2bd6, #00e5ff) 1;
 
     /* ظل احترافي */
     box-shadow:
-        0 10px 25px rgba(0,0,0,0.45),
-        0 0 20px rgba(255,0,80,0.35);
+        0 10px 25px rgba(0,0,0,0.5),
+        0 0 15px rgba(255,43,214,0.4),
+        0 0 15px rgba(0,229,255,0.4);
 
     transform: translateX(-50%);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: 0.2s ease;
 }
 
+/* عند الضغط */
+.upload-btn:active{
+    transform: translateX(-50%) scale(0.92);
+    box-shadow:
+        0 6px 15px rgba(0,0,0,0.4),
+        0 0 20px rgba(255,43,214,0.6),
+        0 0 20px rgba(0,229,255,0.6);
+}
+
+/* علامة + */
+.upload-btn .plus{
+    font-size: 34px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* تأثير نبض خفيف */
+.upload-btn::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    background: linear-gradient(45deg, #ff2bd6, #00e5ff);
+    opacity: 0.25;
+    filter: blur(10px);
+    z-index: -1;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.25; }
+    50% { transform: scale(1.2); opacity: 0.1; }
+    100% { transform: scale(1); opacity: 0.25; }
+}
 /* عند الضغط */
 .upload-btn:active{
     transform: translateX(-50%) scale(0.9);
