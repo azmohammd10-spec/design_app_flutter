@@ -9,39 +9,6 @@ let videos = [];
 let observer = null;
 
 // =========================
-// تحميل الفيديوهات
-// =========================
-async function uploadVideo(file, onProgress) {
-    const fileName = Date.now() + "-" + file.name;
-
-    const { data, error } = await supabase.storage
-        .from("videos")
-        .upload(fileName, file, {
-            cacheControl: "3600",
-            upsert: false
-        });
-
-    if (error) throw error;
-
-    if (onProgress) onProgress(100);
-
-    return data;
-}
-        renderVideos(videos);
-        setupAutoPlay();
-
-    } catch (error) {
-        console.error("ERROR loading videos:", error);
-
-        feed.innerHTML = `
-            <div style="color:red;text-align:center;margin-top:50%">
-                خطأ في تحميل الفيديوهات
-            </div>
-        `;
-    }
-}
-
-// =========================
 // إنشاء كرت فيديو واحد
 // =========================
 function createVideoElement(video) {
