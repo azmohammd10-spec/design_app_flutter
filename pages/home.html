@@ -141,9 +141,7 @@ video{
     position: fixed !important;
 
     left: 50% !important;
-    transform: translateX(-50%) !important;
-
-    bottom: 20px;
+    bottom: 20px !important;
 
     width: 70px;
     height: 70px;
@@ -158,9 +156,16 @@ video{
 
     text-decoration: none;
 
+    z-index: 99999;
+
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 
-    z-index: 9999;
+    transform: translateX(-50%);
+}
+
+/* ضغط الزر */
+.upload-btn:active{
+    transform: translateX(-50%) scale(0.92);
 }
 /* علامة + */
 .upload-btn .plus{
