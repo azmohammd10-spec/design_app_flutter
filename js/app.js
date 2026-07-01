@@ -180,7 +180,11 @@ window.toggleSave = function(el) {
         icon.textContent = "★";
     }
 };
-document.querySelector(".tiktok-plus-btn").addEventListener("click", function () {
+
+
+   const btn = document.querySelector(".tiktok-plus-btn");
+
+btn.addEventListener("click", function () {
 
     const input = document.createElement("input");
     input.type = "file";
@@ -190,23 +194,36 @@ document.querySelector(".tiktok-plus-btn").addEventListener("click", function ()
         const file = input.files[0];
         if (!file) return;
 
-        console.log("Video selected:", file);
+        // 🟡 UI حالة تحميل
+        btn.style.opacity = "0.6";
+        btn.style.pointerEvents = "none";
 
-        // 🔥 هنا تربط نظام الرفع عندك
+        // (اختياري) نص داخل الزر
+        const oldHTML = btn.innerHTML;
+        btn.innerHTML = "⏳";
+
         try {
-            await uploadVideo(file); // إذا عندك دالة رفع
+            await uploadVideo(file, (progress) => {
+                console.log("Upload:", progress + "%");
+            });
+
             console.log("Upload done");
-            
-            // إعادة تحميل الفيديوهات بعد الرفع
-            loadFeed();
+
+            await loadFeed();
 
         } catch (err) {
-            console.error("Upload error:", err);
+            console.error(err);
+
+        } finally {
+            // 🔵 رجّع الزر طبيعي
+            btn.style.opacity = "1";
+            btn.style.pointerEvents = "auto";
+            btn.innerHTML = oldHTML;
         }
     };
 
     input.click();
-});
+}); 
 // =========================
 // تشغيل أولي
 // =========================
