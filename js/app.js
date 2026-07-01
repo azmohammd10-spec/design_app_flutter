@@ -177,7 +177,7 @@ window.toggleSave = function(el) {
     if (el.classList.contains("saved")) {
         icon.textContent = "★";
     } else {
-        icon.textContent = "✦";
+        icon.textContent = "★";
     }
 };
 // =========================
