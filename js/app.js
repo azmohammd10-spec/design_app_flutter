@@ -11,21 +11,22 @@ let observer = null;
 // =========================
 // تحميل الفيديوهات
 // =========================
-async function loadFeed() {
-    try {
-        videos = await getVideos();
+async function uploadVideo(file, onProgress) {
+    const fileName = Date.now() + "-" + file.name;
 
-        console.log("VIDEOS FROM DB:", videos);
+    const { data, error } = await supabase.storage
+        .from("videos")
+        .upload(fileName, file, {
+            cacheControl: "3600",
+            upsert: false
+        });
 
-        if (!Array.isArray(videos) || videos.length === 0) {
-            feed.innerHTML = `
-                <div style="color:#fff;text-align:center;margin-top:50%">
-                    لا توجد فيديوهات بعد
-                </div>
-            `;
-            return;
-        }
+    if (error) throw error;
 
+    if (onProgress) onProgress(100);
+
+    return data;
+}
         renderVideos(videos);
         setupAutoPlay();
 
@@ -102,17 +103,22 @@ function createVideoElement(video) {
 // عرض الفيديوهات
 // =========================
 function renderVideos(videos) {
+
     feed.innerHTML = "";
+
+    // 🔥 ترتيب حسب الخوارزمية
+    const sorted = videos.sort((a, b) => {
+        return (b.score || 0) - (a.score || 0);
+    });
 
     const fragment = document.createDocumentFragment();
 
-    videos.forEach(video => {
+    sorted.forEach(video => {
         fragment.appendChild(createVideoElement(video));
     });
 
     feed.appendChild(fragment);
 }
-
 // =========================
 // تشغيل الفيديو + المشاهدات
 // =========================
