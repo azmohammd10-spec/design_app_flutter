@@ -1,6 +1,6 @@
 import { uploadVideoFile } from "./services/storageService.js";
 import { uploadVideo } from "./services/videoService.js";
-
+alert("upload.js loaded");
 window.addEventListener("DOMContentLoaded", () => {
 
     const videoInput = document.getElementById("videoFile");
