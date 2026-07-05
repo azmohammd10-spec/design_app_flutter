@@ -1,1 +1,38 @@
-
+[
+  {
+    "id": "social",
+    "name": "سوشيال ميديا",
+    "icon": "users",
+    "color": "#ff4d6d"
+  },
+  {
+    "id": "youtube",
+    "name": "يوتيوب",
+    "icon": "youtube",
+    "color": "#ff0000"
+  },
+  {
+    "id": "branding",
+    "name": "هوية بصرية",
+    "icon": "pen-tool",
+    "color": "#6c5ce7"
+  },
+  {
+    "id": "business",
+    "name": "أعمال",
+    "icon": "briefcase",
+    "color": "#00b894"
+  },
+  {
+    "id": "print",
+    "name": "طباعة",
+    "icon": "printer",
+    "color": "#fdcb6e"
+  },
+  {
+    "id": "custom",
+    "name": "مقاسات مخصصة",
+    "icon": "sliders",
+    "color": "#636e72"
+  }
+]
