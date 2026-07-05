@@ -1,1 +1,72 @@
-
+[
+  {
+    "id": "instagram_post",
+    "name": "منشور إنستغرام",
+    "width": 1080,
+    "height": 1080,
+    "category": "social"
+  },
+  {
+    "id": "instagram_story",
+    "name": "قصة إنستغرام",
+    "width": 1080,
+    "height": 1920,
+    "category": "social"
+  },
+  {
+    "id": "facebook_post",
+    "name": "منشور فيسبوك",
+    "width": 1200,
+    "height": 630,
+    "category": "social"
+  },
+  {
+    "id": "youtube_thumbnail",
+    "name": "صورة مصغرة يوتيوب",
+    "width": 1280,
+    "height": 720,
+    "category": "youtube"
+  },
+  {
+    "id": "youtube_banner",
+    "name": "غلاف يوتيوب",
+    "width": 2560,
+    "height": 1440,
+    "category": "youtube"
+  },
+  {
+    "id": "logo",
+    "name": "شعار",
+    "width": 1000,
+    "height": 1000,
+    "category": "branding"
+  },
+  {
+    "id": "business_card",
+    "name": "بطاقة عمل",
+    "width": 1050,
+    "height": 600,
+    "category": "business"
+  },
+  {
+    "id": "poster",
+    "name": "ملصق",
+    "width": 2480,
+    "height": 3508,
+    "category": "print"
+  },
+  {
+    "id": "flyer",
+    "name": "منشور دعائي",
+    "width": 1240,
+    "height": 1754,
+    "category": "print"
+  },
+  {
+    "id": "custom",
+    "name": "مقاس مخصص",
+    "width": 0,
+    "height": 0,
+    "category": "custom"
+  }
+]
