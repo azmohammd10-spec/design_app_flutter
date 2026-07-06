@@ -1,7 +1,7 @@
 // =========================
 // Create UI
 // =========================
-
+import { createDesign } from "../modules/design/designService.js";
 const grid = document.getElementById("designTypesGrid");
 
 // تحميل أنواع التصاميم
@@ -42,12 +42,13 @@ function renderTypes(types) {
 
         card.addEventListener("click", () => {
 
-            // سنربطها لاحقًا بالمحرر
-            console.log("Selected:", type);
+    // إنشاء التصميم
+    createDesign(type);
 
-            window.location.href = "editor.html";
+    // فتح المحرر
+    window.location.href = "editor.html";
 
-        });
+});
 
         grid.appendChild(card);
 
