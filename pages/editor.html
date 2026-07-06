@@ -6,72 +6,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>STAR Design Editor</title>
+<title>إنشاء تصميم جديد</title>
 
 <link rel="stylesheet" href="../styles/reset.css">
 <link rel="stylesheet" href="../styles/layout.css">
-<link rel="stylesheet" href="../styles/editor.css">
+<link rel="stylesheet" href="../styles/create.css">
 <link rel="stylesheet" href="../styles/components.css">
 
 </head>
 
 <body>
 
-<header class="editor-header">
+<header class="create-header">
 
-<div class="logo">⭐ STAR</div>
+<h1>⭐ STAR Design</h1>
 
-<div class="header-actions">
-
-<button>↶</button>
-
-<button>↷</button>
-
-<button>💾</button>
-
-<button>⬇️</button>
-
-</div>
+<p>اختر نوع التصميم الذي تريد إنشاءه</p>
 
 </header>
 
-<div class="editor-workspace">
+<main class="design-types" id="designTypesGrid">
 
-<aside class="toolbar">
-
-<button>📝<span>نص</span></button>
-
-<button>🖼️<span>صورة</span></button>
-
-<button>⬜<span>شكل</span></button>
-
-<button>🎨<span>لون</span></button>
-
-<button>📚<span>طبقات</span></button>
-
-</aside>
-
-<main class="canvas-area">
-
-<div id="designCanvas"></div>
+<!-- سيتم تحميل الأنواع من designTypes.json -->
 
 </main>
 
-<aside class="properties">
-
-<h3>الخصائص</h3>
-
-<div id="propertiesPanel">
-
-اختر عنصراً للتعديل
-
-</div>
-
-</aside>
-
-</div>
-
-<script type="module" src="../js/editor/editorController.js"></script>
+<script type="module" src="../js/ui/createUI.js"></script>
 
 </body>
 
