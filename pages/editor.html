@@ -1,1 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STAR Design Editor</title>
+
+<link rel="stylesheet" href="../styles/reset.css">
+<link rel="stylesheet" href="../styles/layout.css">
+<link rel="stylesheet" href="../styles/editor.css">
+<link rel="stylesheet" href="../styles/components.css">
+
+</head>
+
+<body>
+
+<header class="editor-header">
+
+<div class="logo">⭐ STAR</div>
+
+<div class="header-actions">
+
+<button>↶</button>
+
+<button>↷</button>
+
+<button>💾</button>
+
+<button>⬇️</button>
+
+</div>
+
+</header>
+
+<div class="editor-workspace">
+
+<aside class="toolbar">
+
+<button>📝<span>نص</span></button>
+
+<button>🖼️<span>صورة</span></button>
+
+<button>⬜<span>شكل</span></button>
+
+<button>🎨<span>لون</span></button>
+
+<button>📚<span>طبقات</span></button>
+
+</aside>
+
+<main class="canvas-area">
+
+<div id="designCanvas"></div>
+
+</main>
+
+<aside class="properties">
+
+<h3>الخصائص</h3>
+
+<div id="propertiesPanel">
+
+اختر عنصراً للتعديل
+
+</div>
+
+</aside>
+
+</div>
+
+<script type="module" src="../js/editor/editorController.js"></script>
+
+</body>
+
+</html>
