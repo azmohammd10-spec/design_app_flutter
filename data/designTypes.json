@@ -1,38 +1,72 @@
 [
   {
-    "id": "social",
-    "name": "سوشيال ميديا",
-    "icon": "users",
-    "color": "#ff4d6d"
+    "id": "instagram_post",
+    "name": "منشور إنستغرام",
+    "width": 1080,
+    "height": 1080,
+    "category": "social"
   },
   {
-    "id": "youtube",
-    "name": "يوتيوب",
-    "icon": "youtube",
-    "color": "#ff0000"
+    "id": "instagram_story",
+    "name": "قصة إنستغرام",
+    "width": 1080,
+    "height": 1920,
+    "category": "social"
   },
   {
-    "id": "branding",
-    "name": "هوية بصرية",
-    "icon": "pen-tool",
-    "color": "#6c5ce7"
+    "id": "facebook_post",
+    "name": "منشور فيسبوك",
+    "width": 1200,
+    "height": 630,
+    "category": "social"
   },
   {
-    "id": "business",
-    "name": "أعمال",
-    "icon": "briefcase",
-    "color": "#00b894"
+    "id": "youtube_thumbnail",
+    "name": "صورة مصغرة يوتيوب",
+    "width": 1280,
+    "height": 720,
+    "category": "youtube"
   },
   {
-    "id": "print",
-    "name": "طباعة",
-    "icon": "printer",
-    "color": "#fdcb6e"
+    "id": "youtube_banner",
+    "name": "غلاف يوتيوب",
+    "width": 2560,
+    "height": 1440,
+    "category": "youtube"
+  },
+  {
+    "id": "logo",
+    "name": "شعار",
+    "width": 1000,
+    "height": 1000,
+    "category": "branding"
+  },
+  {
+    "id": "business_card",
+    "name": "بطاقة عمل",
+    "width": 1050,
+    "height": 600,
+    "category": "business"
+  },
+  {
+    "id": "poster",
+    "name": "ملصق",
+    "width": 2480,
+    "height": 3508,
+    "category": "print"
+  },
+  {
+    "id": "flyer",
+    "name": "منشور دعائي",
+    "width": 1240,
+    "height": 1754,
+    "category": "print"
   },
   {
     "id": "custom",
-    "name": "مخصص",
-    "icon": "sliders",
-    "color": "#636e72"
+    "name": "مقاس مخصص",
+    "width": 0,
+    "height": 0,
+    "category": "custom"
   }
 ]
