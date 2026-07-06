@@ -1,111 +1,203 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+/* =========================
+   STAR Design Editor
+========================= */
 
-<head>
+body{
+    margin:0;
+    padding:0;
+    background:#f3f4f6;
+    font-family:Arial,sans-serif;
+    overflow:hidden;
+}
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>STAR Design Editor</title>
-
-<link rel="stylesheet" href="../styles/reset.css">
-<link rel="stylesheet" href="../styles/layout.css">
-<link rel="stylesheet" href="../styles/editor.css">
-<link rel="stylesheet" href="../styles/components.css">
-
-</head>
-
-<body>
-
-<!-- =========================
+/* =========================
 Header
-========================= -->
+========================= */
 
-<header class="editor-header">
+.editor-header{
 
-<div class="logo">
-⭐ STAR
-</div>
+    height:65px;
 
-<div class="header-actions">
+    background:#ffffff;
 
-<button id="undoBtn">↶</button>
+    display:flex;
 
-<button id="redoBtn">↷</button>
+    align-items:center;
 
-<button id="saveBtn">💾</button>
+    justify-content:space-between;
 
-<button id="exportBtn">⬇️</button>
+    padding:0 20px;
 
-</div>
+    box-shadow:0 2px 10px rgba(0,0,0,.08);
 
-</header>
+}
 
-<!-- =========================
+.logo{
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    color:#6d28d9;
+
+}
+
+.header-actions{
+
+    display:flex;
+
+    gap:10px;
+
+}
+
+.header-actions button{
+
+    width:42px;
+
+    height:42px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:white;
+
+    cursor:pointer;
+
+    font-size:18px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+/* =========================
 Workspace
-========================= -->
+========================= */
 
-<div class="editor-workspace">
+.editor-workspace{
 
-<!-- أدوات -->
+    display:flex;
 
-<aside class="toolbar">
+    height:calc(100vh - 65px);
 
-<button id="textTool">
-📝
-<span>نص</span>
-</button>
+}
 
-<button id="imageTool">
-🖼️
-<span>صورة</span>
-</button>
+/* =========================
+Toolbar
+========================= */
 
-<button id="shapeTool">
-⬜
-<span>شكل</span>
-</button>
+.toolbar{
 
-<button id="colorTool">
-🎨
-<span>لون</span>
-</button>
+    width:90px;
 
-<button id="layerTool">
-📚
-<span>طبقات</span>
-</button>
+    background:white;
 
-</aside>
+    display:flex;
 
-<!-- مساحة التصميم -->
+    flex-direction:column;
 
-<main class="canvas-area">
+    align-items:center;
 
-<div id="designCanvas">
+    gap:15px;
 
-</div>
+    padding-top:20px;
 
-</main>
+    box-shadow:2px 0 8px rgba(0,0,0,.05);
 
-<!-- لوحة الخصائص -->
+}
 
-<aside class="properties">
+.toolbar button{
 
-<h3>الخصائص</h3>
+    width:70px;
 
-<div id="propertiesPanel">
+    height:70px;
 
-اختر عنصراً للتعديل
+    border:none;
 
-</div>
+    border-radius:14px;
 
-</aside>
+    background:#f7f7f7;
 
-</div>
+    cursor:pointer;
 
-<script type="module" src="../js/editor/editorController.js"></script>
+    display:flex;
 
-</body>
+    flex-direction:column;
 
-</html>
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:20px;
+
+}
+
+.toolbar button span{
+
+    margin-top:5px;
+
+    font-size:12px;
+
+}
+
+/* =========================
+Canvas
+========================= */
+
+.canvas-area{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#ececec;
+
+}
+
+#designCanvas{
+
+    width:800px;
+
+    height:600px;
+
+    background:white;
+
+    border-radius:12px;
+
+    box-shadow:0 5px 25px rgba(0,0,0,.15);
+
+}
+
+/* =========================
+Properties
+========================= */
+
+.properties{
+
+    width:260px;
+
+    background:white;
+
+    padding:20px;
+
+    box-shadow:-2px 0 8px rgba(0,0,0,.05);
+
+}
+
+.properties h3{
+
+    margin-top:0;
+
+}
+
+#propertiesPanel{
+
+    margin-top:20px;
+
+    color:#666;
+
+}
