@@ -8,57 +8,57 @@ let currentDesign = null;
 export function createDesign(type) {
 
     currentDesign = {
+
         id: crypto.randomUUID(),
+
         type: type.id,
+
+        name: type.name,
+
         width: type.width,
+
         height: type.height,
+
         category: type.category,
+
         elements: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now()
+
+        createdAt: Date.now()
+
     };
+
+    // حفظ التصميم مؤقتًا
+    localStorage.setItem(
+        "currentDesign",
+        JSON.stringify(currentDesign)
+    );
 
     return currentDesign;
 
 }
 
-// الحصول على التصميم الحالي
+// جلب التصميم الحالي
 export function getCurrentDesign() {
 
+    if (currentDesign) return currentDesign;
+
+    const saved = localStorage.getItem("currentDesign");
+
+    if (saved) {
+
+        currentDesign = JSON.parse(saved);
+
+    }
+
     return currentDesign;
 
 }
 
-// تحديث التصميم
-export function updateDesign(data) {
+// حذف التصميم الحالي
+export function clearCurrentDesign() {
 
-    if (!currentDesign) return;
+    currentDesign = null;
 
-    currentDesign = {
-        ...currentDesign,
-        ...data,
-        updatedAt: Date.now()
-    };
-
-}
-
-// إضافة عنصر
-export function addElement(element) {
-
-    if (!currentDesign) return;
-
-    currentDesign.elements.push(element);
-
-}
-
-// حذف عنصر
-export function removeElement(id) {
-
-    if (!currentDesign) return;
-
-    currentDesign.elements =
-        currentDesign.elements.filter(
-            element => element.id !== id
-        );
+    localStorage.removeItem("currentDesign");
 
 }
