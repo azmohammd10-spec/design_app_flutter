@@ -24,6 +24,41 @@ window.addEventListener("DOMContentLoaded", () => {
     if (canvasElement) {
 
         initEditor(canvasElement);
+     const imageTool = document.getElementById("imageTool");
+const imageInput = document.getElementById("imageInput");
+
+if (imageTool && imageInput) {
+
+    imageTool.addEventListener("click", () => {
+        imageInput.click();
+    });
+
+    imageInput.addEventListener("change", (e) => {
+
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+
+            const imageElement = {
+                id: crypto.randomUUID(),
+                type: "image",
+                src: reader.result,
+                x: 100,
+                y: 100,
+                width: 300,
+                height: 300
+            };
+
+            addElement(imageElement);
+            renderElement(imageElement);
+        };
+
+        reader.readAsDataURL(file);
+    });
+}   
 
     } else {
 
@@ -32,9 +67,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
 });
-const imageTool = document.getElementById("imageTool");
 
-const imageInput = document.getElementById("imageInput");
 // =========================
 // تهيئة المحرر
 // =========================
@@ -577,72 +610,6 @@ if(shapeTool){
         const shape = createRectangle();
 
         renderElement(shape);
-
-    });
-
-}
-// =========================
-// Image Tool
-// =========================
-
-if(imageTool){
-
-    imageTool.addEventListener("click",()=>{
-
-        imageInput.click();
-
-    });
-
-}
-
-
-if(imageInput){
-
-    imageInput.addEventListener("change",(e)=>{
-
-
-        const file = e.target.files[0];
-
-
-        if(!file) return;
-
-
-        const reader = new FileReader();
-
-
-        reader.onload = ()=>{
-
-
-            const imageElement = {
-
-                id: crypto.randomUUID(),
-
-                type:"image",
-
-                src: reader.result,
-
-                x:100,
-
-                y:100,
-
-                width:300,
-
-                height:300
-
-            };
-
-
-            addElement(imageElement);
-
-
-            renderElement(imageElement);
-
-
-        };
-
-
-        reader.readAsDataURL(file);
-
 
     });
 
