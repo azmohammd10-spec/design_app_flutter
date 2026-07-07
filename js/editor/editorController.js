@@ -93,7 +93,41 @@ export function addText(text) {
 // رسم عنصر على الكانفاس
 // =========================
 function renderElement(element) {
+// رسم الصور
 
+if(element.type === "image"){
+
+    const img = document.createElement("img");
+
+    img.src = element.src;
+
+    img.style.position = "absolute";
+
+    img.style.left = element.x + "px";
+
+    img.style.top = element.y + "px";
+
+    img.style.width = element.width + "px";
+
+    img.style.height = element.height + "px";
+
+    img.style.objectFit = "cover";
+
+    img.style.cursor = "pointer";
+
+
+    img.addEventListener("click",()=>{
+
+        selectElement(element);
+
+    });
+
+
+    canvas.appendChild(img);
+
+    return;
+
+}
     const el = document.createElement("div");
 
     el.style.position = "absolute";
