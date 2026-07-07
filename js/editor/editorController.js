@@ -96,21 +96,6 @@ function renderElement(element) {
     el.style.color = element.color;
 
     el.style.cursor = "pointer";
-
-    el.innerText = element.content;
-
-
-    // تحديد العنصر
-    el.addEventListener("click", () => {
-
-        selectElement(element);
-
-    });
-
-
-    canvas.appendChild(el);
-
-}
 // =========================
 // سحب العنصر
 // =========================
@@ -166,6 +151,20 @@ document.addEventListener("mouseup", () => {
     }
 
 });
+    el.innerText = element.content;
+
+
+    // تحديد العنصر
+    el.addEventListener("click", () => {
+
+        selectElement(element);
+
+    });
+
+
+    canvas.appendChild(el);
+
+}
 
 // =========================
 // تحديد العنصر
