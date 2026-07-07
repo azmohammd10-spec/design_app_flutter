@@ -2,8 +2,11 @@
 // Editor Controller
 // =========================
 
-import { getCurrentDesign } from "../modules/design/designService.js";
-
+import {
+    getCurrentDesign,
+    updateDesign,
+    addElement
+} from "../modules/design/designService.js";
 // عناصر الصفحة (سنربطها لاحقًا في editor.html)
 let canvas = null;
 
