@@ -7,6 +7,10 @@ import {
     updateDesign,
     addElement
 } from "../modules/design/designService.js";
+import {
+    createRectangle,
+    createCircle
+} from "./tools/shapeTool.js";
 // عناصر الصفحة (سنربطها لاحقًا في editor.html)
 let canvas = null;
 // تشغيل المحرر تلقائياً بعد تحميل الصفحة
@@ -297,6 +301,24 @@ if (textTool) {
     textTool.addEventListener("click", () => {
 
         createText();
+
+    });
+
+}
+// =========================
+// Shape Tool Buttons
+// =========================
+
+const shapeTool = document.getElementById("shapeTool");
+
+
+if(shapeTool){
+
+    shapeTool.addEventListener("click", ()=>{
+
+        const shape = createRectangle();
+
+        renderElement(shape);
 
     });
 
