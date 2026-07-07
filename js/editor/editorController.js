@@ -146,33 +146,11 @@ img.addEventListener("mousedown",(e)=>{
 
 });
 
-document.addEventListener("mouseup",(e)=>{
-
-    if(dragging){
-
-
-    const rect = canvas.getBoundingClientRect();
-
-
-    element.x = e.clientX - rect.left - startX;
-
-    element.y = e.clientY - rect.top - startY;
-
-
-    img.style.left = element.x + "px";
-
-    img.style.top = element.y + "px";
-
-
-});
-
-
 document.addEventListener("mouseup",()=>{
-e.preventDefault();
+
     if(dragging){
 
         dragging = false;
-
 
         updateDesign({
 
@@ -183,6 +161,8 @@ e.preventDefault();
     }
 
 });
+
+
 
     img.addEventListener("click",()=>{
 
