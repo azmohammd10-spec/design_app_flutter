@@ -6,33 +6,70 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>إنشاء تصميم جديد</title>
+<title>STAR Design Editor</title>
 
 <link rel="stylesheet" href="../styles/reset.css">
 <link rel="stylesheet" href="../styles/layout.css">
-<link rel="stylesheet" href="../styles/create.css">
+<link rel="stylesheet" href="../styles/editor.css">
 <link rel="stylesheet" href="../styles/components.css">
 
 </head>
 
 <body>
 
-<header class="create-header">
+<header class="editor-header">
 
-<h1>⭐ STAR Design</h1>
+<div class="logo">⭐ STAR</div>
 
-<p>اختر نوع التصميم الذي تريد إنشاءه</p>
+<div class="header-actions">
+
+<button id="undoBtn">↶</button>
+
+<button id="redoBtn">↷</button>
+
+<button id="saveBtn">💾</button>
+
+<button id="exportBtn">⬇️</button>
+
+</div>
 
 </header>
 
-<main class="design-types" id="designTypesGrid">
+<div class="editor-workspace">
 
-<!-- سيتم تحميل الأنواع من designTypes.json -->
+<aside class="toolbar">
+
+<button id="textTool">📝<span>نص</span></button>
+
+<button id="imageTool">🖼️<span>صورة</span></button>
+
+<button id="shapeTool">⬜<span>شكل</span></button>
+
+<button id="colorTool">🎨<span>لون</span></button>
+
+<button id="layerTool">📚<span>طبقات</span></button>
+
+</aside>
+
+<main class="canvas-area">
+
+<div id="designCanvas"></div>
 
 </main>
 
-<script type="module" src="../js/ui/createUI.js"></script>
+<aside class="properties">
+
+<h3>الخصائص</h3>
+
+<div id="propertiesPanel">
+اختر عنصراً للتعديل
+</div>
+
+</aside>
+
+</div>
+
+<script type="module" src="../js/editor/editorController.js"></script>
 
 </body>
-
 </html>
