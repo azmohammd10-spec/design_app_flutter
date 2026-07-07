@@ -1,7 +1,6 @@
 // =========================
 // Editor Controller
 // =========================
-
 import {
     getCurrentDesign,
     updateDesign,
@@ -9,9 +8,12 @@ import {
     sendToBack,
     bringToFront
 } from "../modules/design/designService.js";
+
+import {
     createRectangle,
     createCircle
 } from "./tools/shapeTool.js";
+
 // عناصر الصفحة (سنربطها لاحقًا في editor.html)
 let canvas = null;
 // تشغيل المحرر تلقائياً بعد تحميل الصفحة
@@ -144,9 +146,9 @@ img.addEventListener("mousedown",(e)=>{
 
 });
 
-document.addEventListener("mousemove",(e)=>{
+document.addEventListener("mouseup",(e)=>{
 
-    if(!dragging) return;
+    if(dragging){
 
 
     const rect = canvas.getBoundingClientRect();
