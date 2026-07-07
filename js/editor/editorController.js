@@ -274,6 +274,9 @@ if(element.type === "shape"){
 // =========================
 // تحديد العنصر
 // =========================
+// =========================
+// تحديد العنصر
+// =========================
 function selectElement(element) {
 
     const panel = document.getElementById("propertiesPanel");
@@ -370,6 +373,122 @@ function selectElement(element) {
         return;
 
     }
+
+
+    // =========================
+    // خصائص النص
+    // =========================
+    if (element.type === "text") {
+
+        panel.innerHTML = `
+
+            <h4>خصائص النص</h4>
+
+            <label>
+                النص
+            </label>
+
+            <input
+                id="textContentInput"
+                value="${element.content}"
+            >
+
+
+            <label>
+                حجم الخط
+            </label>
+
+            <input
+                id="fontSizeInput"
+                type="number"
+                value="${element.fontSize}"
+            >
+
+
+            <label>
+                اللون
+            </label>
+
+            <input
+                id="colorInput"
+                type="color"
+                value="${element.color}"
+            >
+
+        `;
+
+
+        document
+        .getElementById("textContentInput")
+        .addEventListener("input",(e)=>{
+
+            element.content = e.target.value;
+
+            renderCanvas(getCurrentDesign());
+
+        });
+
+
+        document
+        .getElementById("fontSizeInput")
+        .addEventListener("input",(e)=>{
+
+            element.fontSize = Number(e.target.value);
+
+            renderCanvas(getCurrentDesign());
+
+        });
+
+
+        document
+        .getElementById("colorInput")
+        .addEventListener("input",(e)=>{
+
+            element.color = e.target.value;
+
+            renderCanvas(getCurrentDesign());
+
+        });
+
+
+    }
+
+
+    // =========================
+    // خصائص الشكل
+    // =========================
+    if (element.type === "shape") {
+
+        panel.innerHTML = `
+
+            <h4>خصائص الشكل</h4>
+
+            <label>
+                اللون
+            </label>
+
+            <input
+                id="shapeColor"
+                type="color"
+                value="${element.background}"
+            >
+
+        `;
+
+
+        document
+        .getElementById("shapeColor")
+        .addEventListener("input",(e)=>{
+
+            element.background = e.target.value;
+
+            renderCanvas(getCurrentDesign());
+
+        });
+
+    }
+
+}
 
 
 
