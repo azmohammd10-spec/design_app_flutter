@@ -98,3 +98,47 @@ export function clearCurrentDesign() {
     localStorage.removeItem("currentDesign");
 
 }
+// =========================
+// نظام الطبقات
+// =========================
+
+export function sendToBack(id) {
+
+    if (!currentDesign) return;
+
+    const index = currentDesign.elements.findIndex(
+        el => el.id === id
+    );
+
+    if(index === -1) return;
+
+    const element = currentDesign.elements.splice(index,1)[0];
+
+    currentDesign.elements.unshift(element);
+
+    updateDesign({
+        elements: currentDesign.elements
+    });
+
+}
+
+
+export function bringToFront(id) {
+
+    if (!currentDesign) return;
+
+    const index = currentDesign.elements.findIndex(
+        el => el.id === id
+    );
+
+    if(index === -1) return;
+
+    const element = currentDesign.elements.splice(index,1)[0];
+
+    currentDesign.elements.push(element);
+
+    updateDesign({
+        elements: currentDesign.elements
+    });
+
+}
