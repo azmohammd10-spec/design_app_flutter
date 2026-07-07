@@ -101,7 +101,6 @@ export function clearCurrentDesign() {
 // =========================
 // نظام الطبقات
 // =========================
-
 export function sendToBack(id) {
 
     if (!currentDesign) return;
@@ -110,18 +109,20 @@ export function sendToBack(id) {
         el => el.id === id
     );
 
-    if(index === -1) return;
+    if (index === -1) return;
 
-    const element = currentDesign.elements.splice(index,1)[0];
+    const element = currentDesign.elements.splice(index, 1)[0];
 
-    currentDesign.elements.unshift(element);
+    currentDesign.elements = [
+        element,
+        ...currentDesign.elements
+    ];
 
     updateDesign({
-        elements: currentDesign.elements
+        elements: [...currentDesign.elements]
     });
 
 }
-
 
 export function bringToFront(id) {
 
@@ -131,14 +132,17 @@ export function bringToFront(id) {
         el => el.id === id
     );
 
-    if(index === -1) return;
+    if (index === -1) return;
 
-    const element = currentDesign.elements.splice(index,1)[0];
+    const element = currentDesign.elements.splice(index, 1)[0];
 
-    currentDesign.elements.push(element);
+    currentDesign.elements = [
+        ...currentDesign.elements,
+        element
+    ];
 
     updateDesign({
-        elements: currentDesign.elements
+        elements: [...currentDesign.elements]
     });
 
 }
