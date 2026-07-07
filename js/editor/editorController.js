@@ -95,9 +95,46 @@ function renderElement(element) {
     el.style.fontSize = element.fontSize + "px";
     el.style.color = element.color;
 
+    el.style.cursor = "pointer";
+
     el.innerText = element.content;
 
+
+    // تحديد العنصر
+    el.addEventListener("click", () => {
+
+        selectElement(element);
+
+    });
+
+
     canvas.appendChild(el);
+
+}
+
+
+// =========================
+// تحديد العنصر
+// =========================
+
+function selectElement(element) {
+
+    const panel = document.getElementById("propertiesPanel");
+
+    if (!panel) return;
+
+
+    panel.innerHTML = `
+
+        <h4>النص</h4>
+
+        <p>${element.content}</p>
+
+        <p>الحجم: ${element.fontSize}px</p>
+
+        <p>اللون: ${element.color}</p>
+
+    `;
 
 }
 // =========================
