@@ -100,3 +100,46 @@ function renderElement(element) {
     canvas.appendChild(el);
 
 }
+// =========================
+// Text Tool
+// =========================
+
+export function createText() {
+
+    const textElement = {
+
+        id: crypto.randomUUID(),
+
+        type: "text",
+
+        content: "نص جديد",
+
+        x: 100,
+
+        y: 100,
+
+        fontSize: 32,
+
+        color: "#000000"
+
+    };
+
+
+    addElement(textElement);
+
+    renderElement(textElement);
+
+}
+// زر إضافة النص
+
+const textTool = document.getElementById("textTool");
+
+if (textTool) {
+
+    textTool.addEventListener("click", () => {
+
+        createText();
+
+    });
+
+}
