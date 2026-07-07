@@ -122,6 +122,7 @@ if(element.type === "image"){
     img.style.objectFit = "cover";
 
     img.style.cursor = "pointer";
+img.style.touchAction = "none";
     
 // =========================
 // سحب الصورة
@@ -136,10 +137,7 @@ let startY = 0;
 img.addEventListener("mousedown", startDrag);
 img.addEventListener("touchstart", startDrag);
 
-
 function startDrag(e){
-
-    e.preventDefault();
 
     dragging = true;
 
@@ -149,6 +147,7 @@ function startDrag(e){
     startY = point.clientY - img.offsetTop;
 
 }
+
 
 document.addEventListener("mousemove", moveDrag);
 document.addEventListener("touchmove", moveDrag);
