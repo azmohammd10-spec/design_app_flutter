@@ -8,8 +8,7 @@ import {
 } from "../modules/design/designService.js";
 
 import {
-    createRectangle,
-    createCircle
+    createRectangle
 } from "./tools/shapeTool.js";
 
 // عناصر الصفحة (سنربطها لاحقًا في editor.html)
@@ -24,47 +23,14 @@ window.addEventListener("DOMContentLoaded", () => {
         initEditor(canvasElement);
      const imageTool = document.getElementById("imageTool");
 const imageInput = document.getElementById("imageInput");
+} else {
 
-if (imageTool && imageInput) {
+    console.error("❌ designCanvas not found");
 
-    imageTool.addEventListener("click", () => {
-        imageInput.click();
-    });
-
-    imageInput.addEventListener("change", (e) => {
-
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.onload = () => {
-
-            const imageElement = {
-                id: crypto.randomUUID(),
-                type: "image",
-                src: reader.result,
-                x: 100,
-                y: 100,
-                width: 300,
-                height: 300
-            };
-
-            addElement(imageElement);
-            renderElement(imageElement);
-        };
-
-        reader.readAsDataURL(file);
-    });
-}   
-
-    } else {
-
-        console.error("❌ designCanvas not found");
-
-    }
+}
 
 });
+        
 
 // =========================
 // تهيئة المحرر
@@ -133,28 +99,61 @@ export function addText(text) {
 // =========================
 function renderElement(element) {
 // رسم الصور
+if (element.type === "image") {
 
-if(element.type === "image"){
+    panel.innerHTML = `
 
-    const img = document.createElement("img");
+        <h4>خصائص الصورة</h4>
 
-    img.src = element.src;
+        <label>العرض</label>
 
-    img.style.position = "absolute";
+        <input
+            id="imageWidth"
+            type="number"
+            value="${element.width}"
+        >
 
-    img.style.left = element.x + "px";
+        <label>الارتفاع</label>
 
-    img.style.top = element.y + "px";
+        <input
+            id="imageHeight"
+            type="number"
+            value="${element.height}"
+        >
 
-    img.style.width = element.width + "px";
+    `;
 
-    img.style.height = element.height + "px";
+    document
+    .getElementById("imageWidth")
+    .addEventListener("input", (e) => {
 
-    img.style.objectFit = "cover";
+        element.width = Number(e.target.value);
 
-    img.style.cursor = "pointer";
-img.style.touchAction = "none";
-    
+        updateDesign({
+            elements: getCurrentDesign().elements
+        });
+
+        renderCanvas(getCurrentDesign());
+
+    });
+
+    document
+    .getElementById("imageHeight")
+    .addEventListener("input", (e) => {
+
+        element.height = Number(e.target.value);
+
+        updateDesign({
+            elements: getCurrentDesign().elements
+        });
+
+        renderCanvas(getCurrentDesign());
+
+    });
+
+    return;
+
+}
 // =========================
 // سحب الصورة
 // =========================
