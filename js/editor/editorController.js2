@@ -52,4 +52,75 @@ export function initEditor(canvasId, panelId) {
     console.log("✅ المحرر جاهز!");
 }
 
+function bindButtons() {
+    const textBtn = document.getElementById("textTool");
+    if (textBtn) {
+        textBtn.addEventListener("click", () => {
+            const el = createText("نص جديد");
+            renderCanvas(canvasElement);
+            selectedElement = el;
+            showProperties(el, panelElement);
+        });
+    }
 
+    const rectBtn = document.getElementById("rectTool");
+    if (rectBtn) {
+        rectBtn.addEventListener("click", () => {
+            const el = createRectangle({ x: 150, y: 150 });
+            renderCanvas(canvasElement);
+            selectedElement = el;
+            showProperties(el, panelElement);
+        });
+    }
+
+    const circleBtn = document.getElementById("circleTool");
+    if (circleBtn) {
+        circleBtn.addEventListener("click", () => {
+            const el = createCircle({ x: 200, y: 200 });
+            renderCanvas(canvasElement);
+            selectedElement = el;
+            showProperties(el, panelElement);
+        });
+    }
+
+    const imageBtn = document.getElementById("imageTool");
+    if (imageBtn) {
+        imageBtn.addEventListener("click", () => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*";
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const el = createImage(ev.target.result, { x: 100, y: 100, width: 300, height: 200 });
+                        renderCanvas(canvasElement);
+                        selectedElement = el;
+                        showProperties(el, panelElement);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        });
+    }
+
+    const deleteBtn = document.getElementById("deleteElementBtn");
+    if (deleteBtn) {
+        deleteBtn.addEventListener("click", () => {
+            if (selectedElement) {
+                deleteElement(selectedElement.id);
+                selectedElement = null;
+                renderCanvas(canvasElement);
+                panelElement.innerHTML = "<p>🗑️ تم حذف العنصر</p>";
+            } else {
+                alert("⚠️ اختر عنصراً أولاً");
+            }
+        });
+    }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    initEditor("designCanvas", "propertiesPanel");
+});
