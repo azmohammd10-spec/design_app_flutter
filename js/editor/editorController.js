@@ -1,36 +1,41 @@
 // ========================================
-// editorController.js - لإصدار editor.html
+// editorController-test.js - اختبار الأزرار
 // ========================================
 
-import { 
-    getCurrentDesign, 
-    updateDesign, 
-    deleteElement,
-    createDesign 
-} from "../modules/design/designService.js";
-import { renderCanvas } from "./renderer.js";
-import { showProperties } from "./propertiesPanel.js";
-import { createText } from "../modules/tools/textTool.js";
-import { createRectangle, createCircle } from "../modules/tools/shapeTool.js";
-import { createImage } from "../modules/tools/imageTool.js";
+console.log("🚀 تم تحميل ملف الاختبار");
 
-let canvasElement;
-let panelElement;
-let selectedElement = null;
+// استيراد designService فقط
+import { getCurrentDesign, createDesign } from "../modules/design/designService.js";
 
-// ========================================
-// التهيئة الرئيسية
-// ========================================
-export function initEditor(canvasId, panelId) {
-    canvasElement = document.getElementById(canvasId);
-    panelElement = document.getElementById(panelId);
+// عند تحميل الصفحة
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("✅ DOM جاهز");
 
-    if (!canvasElement || !panelElement) {
-        console.error("❌ canvas أو panel غير موجودين");
+    // 1. التأكد من وجود canvas
+    const canvas = document.getElementById("designCanvas");
+    if (canvas) {
+        canvas.style.width = "800px";
+        canvas.style.height = "600px";
+        canvas.style.background = "#ffffff";
+        canvas.style.border = "2px solid #ddd";
+        canvas.style.margin = "0 auto";
+        canvas.style.position = "relative";
+        console.log("✅ canvas موجود");
+    } else {
+        console.error("❌ canvas غير موجود");
         return;
     }
 
-    // التأكد من وجود تصميم
+    // 2. التأكد من وجود لوحة الخصائص
+    const panel = document.getElementById("propertiesPanel");
+    if (panel) {
+        panel.innerHTML = "<p>✨ اختر عنصراً لعرض خصائصه</p>";
+        console.log("✅ panel موجود");
+    } else {
+        console.error("❌ panel غير موجود");
+    }
+
+    // 3. التأكد من وجود تصميم
     let design = getCurrentDesign();
     if (!design) {
         console.log("🆕 إنشاء تصميم افتراضي");
@@ -46,174 +51,115 @@ export function initEditor(canvasId, panelId) {
         localStorage.setItem("currentDesign", JSON.stringify(defaultDesign));
         design = getCurrentDesign();
     }
-
     console.log("✅ التصميم الحالي:", design);
-    renderCanvas(canvasElement);
 
-    // استماع لحدث اختيار عنصر
-    document.addEventListener("elementSelected", (e) => {
-        selectedElement = e.detail;
-        showProperties(selectedElement, panelElement);
-    });
-
-    // إلغاء التحديد عند النقر على canvas الفارغ
-    canvasElement.addEventListener("click", (e) => {
-        if (e.target === canvasElement) {
-            selectedElement = null;
-            panelElement.innerHTML = "<p>✨ اختر عنصراً لعرض خصائصه</p>";
-        }
-    });
-
+    // ========================================
     // ربط الأزرار
-    bindButtons();
+    // ========================================
 
-    console.log("✅ المحرر جاهز!");
-}
-
-// ========================================
-// ربط الأزرار (حسب editor.html)
-// ========================================
-function bindButtons() {
-    // ----- 1. زر النص -----
+    // زر النص
     const textBtn = document.getElementById("textTool");
     if (textBtn) {
-        textBtn.addEventListener("click", () => {
-            const el = createText("نص جديد");
-            renderCanvas(canvasElement);
-            selectedElement = el;
-            showProperties(el, panelElement);
+        textBtn.addEventListener("click", function() {
+            alert("✅ زر النص يعمل!");
+            // نضيف نصاً بسيطاً في canvas للتأكد
+            const textDiv = document.createElement("div");
+            textDiv.textContent = "نص جديد";
+            textDiv.style.position = "absolute";
+            textDiv.style.left = "100px";
+            textDiv.style.top = "100px";
+            textDiv.style.fontSize = "24px";
+            textDiv.style.color = "#000";
+            textDiv.style.background = "#f0f0f0";
+            textDiv.style.padding = "8px";
+            textDiv.style.border = "1px solid #ccc";
+            textDiv.style.cursor = "pointer";
+            canvas.appendChild(textDiv);
+            console.log("✅ تم إضافة نص تجريبي");
         });
+        console.log("✅ زر النص مرتبط");
+    } else {
+        console.error("❌ زر النص غير موجود");
     }
 
-    // ----- 2. زر الصورة (يستخدم input المخفي) -----
+    // زر الصورة
     const imageBtn = document.getElementById("imageTool");
     const imageInput = document.getElementById("imageInput");
     if (imageBtn && imageInput) {
-        imageBtn.addEventListener("click", () => {
+        imageBtn.addEventListener("click", function() {
             imageInput.click();
         });
-        imageInput.addEventListener("change", (e) => {
+        imageInput.addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (file) {
+                alert("✅ تم اختيار صورة: " + file.name);
                 const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const el = createImage(ev.target.result, {
-                        x: 100,
-                        y: 100,
-                        width: 300,
-                        height: 200
-                    });
-                    renderCanvas(canvasElement);
-                    selectedElement = el;
-                    showProperties(el, panelElement);
+                reader.onload = function(ev) {
+                    const img = document.createElement("img");
+                    img.src = ev.target.result;
+                    img.style.position = "absolute";
+                    img.style.left = "200px";
+                    img.style.top = "200px";
+                    img.style.width = "200px";
+                    img.style.height = "150px";
+                    img.style.objectFit = "cover";
+                    img.style.border = "2px solid #ccc";
+                    canvas.appendChild(img);
+                    console.log("✅ تم إضافة صورة تجريبية");
                 };
                 reader.readAsDataURL(file);
             }
-            // إعادة تعيين input ليسمح برفع نفس الملف مرة أخرى
             imageInput.value = "";
         });
+        console.log("✅ زر الصورة مرتبط");
+    } else {
+        console.error("❌ زر الصورة أو input غير موجود");
     }
 
-    // ----- 3. زر الشكل (ينشئ مستطيلاً افتراضياً) -----
+    // زر الشكل
     const shapeBtn = document.getElementById("shapeTool");
     if (shapeBtn) {
-        shapeBtn.addEventListener("click", () => {
-            // يمكنك تغيير هذا لإنشاء دائرة أو مربع حسب اختيار المستخدم
-            const el = createRectangle({ x: 150, y: 150, width: 150, height: 100 });
-            renderCanvas(canvasElement);
-            selectedElement = el;
-            showProperties(el, panelElement);
+        shapeBtn.addEventListener("click", function() {
+            alert("✅ زر الشكل يعمل!");
+            const shapeDiv = document.createElement("div");
+            shapeDiv.style.position = "absolute";
+            shapeDiv.style.left = "300px";
+            shapeDiv.style.top = "300px";
+            shapeDiv.style.width = "120px";
+            shapeDiv.style.height = "80px";
+            shapeDiv.style.background = "#4CAF50";
+            shapeDiv.style.border = "2px solid #333";
+            canvas.appendChild(shapeDiv);
+            console.log("✅ تم إضافة شكل تجريبي");
         });
+        console.log("✅ زر الشكل مرتبط");
+    } else {
+        console.error("❌ زر الشكل غير موجود");
     }
 
-    // ----- 4. زر الحذف (غير موجود في editor.html، لكن نضيفه احتياطياً) -----
-    // يمكنك إضافة زر حذف في editor.html لاحقاً
-    const deleteBtn = document.getElementById("deleteElementBtn");
-    if (deleteBtn) {
-        deleteBtn.addEventListener("click", () => {
-            if (selectedElement) {
-                deleteElement(selectedElement.id);
-                selectedElement = null;
-                renderCanvas(canvasElement);
-                panelElement.innerHTML = "<p>🗑️ تم حذف العنصر</p>";
-            } else {
-                alert("⚠️ اختر عنصراً أولاً");
-            }
-        });
-    }
-
-    // ----- 5. زر الحفظ (يحفظ في localStorage) -----
-    const saveBtn = document.getElementById("saveBtn");
-    if (saveBtn) {
-        saveBtn.addEventListener("click", () => {
-            const design = getCurrentDesign();
-            localStorage.setItem("savedDesign", JSON.stringify(design));
-            alert("✅ تم حفظ التصميم!");
-        });
-    }
-
-    // ----- 6. زر التصدير (تنبيه فقط حالياً) -----
-    const exportBtn = document.getElementById("exportBtn");
-    if (exportBtn) {
-        exportBtn.addEventListener("click", () => {
-            alert("📥 سيتم إضافة خاصية التصدير لاحقاً");
-        });
-    }
-
-    // ----- 7. زر التراجع (تنبيه فقط) -----
-    const undoBtn = document.getElementById("undoBtn");
-    if (undoBtn) {
-        undoBtn.addEventListener("click", () => {
-            alert("↶ سيتم إضافة خاصية التراجع لاحقاً");
-        });
-    }
-
-    // ----- 8. زر الإعادة (تنبيه فقط) -----
-    const redoBtn = document.getElementById("redoBtn");
-    if (redoBtn) {
-        redoBtn.addEventListener("click", () => {
-            alert("↷ سيتم إضافة خاصية الإعادة لاحقاً");
-        });
-    }
-
-    // ----- 9. زر اللون (يفتح منتقي الألوان للعنصر المحدد) -----
+    // زر اللون
     const colorBtn = document.getElementById("colorTool");
     if (colorBtn) {
-        colorBtn.addEventListener("click", () => {
-            if (selectedElement) {
-                const colorPicker = document.createElement("input");
-                colorPicker.type = "color";
-                colorPicker.value = selectedElement.color || selectedElement.background || "#000000";
-                colorPicker.addEventListener("input", (e) => {
-                    const newColor = e.target.value;
-                    if (selectedElement.type === "text") {
-                        selectedElement.color = newColor;
-                    } else if (selectedElement.type === "shape") {
-                        selectedElement.background = newColor;
-                    }
-                    updateDesign({ elements: getCurrentDesign().elements });
-                    renderCanvas(canvasElement);
-                    showProperties(selectedElement, panelElement);
-                });
-                colorPicker.click();
-            } else {
-                alert("⚠️ اختر عنصراً أولاً");
-            }
+        colorBtn.addEventListener("click", function() {
+            alert("✅ زر اللون يعمل!");
         });
+        console.log("✅ زر اللون مرتبط");
+    } else {
+        console.error("❌ زر اللون غير موجود");
     }
 
-    // ----- 10. زر الطبقات (تنبيه فقط) -----
-    const layerBtn = document.getElementById("layerTool");
-    if (layerBtn) {
-        layerBtn.addEventListener("click", () => {
-            alert("📚 سيتم إضافة لوحة الطبقات لاحقاً");
+    // زر الحفظ
+    const saveBtn = document.getElementById("saveBtn");
+    if (saveBtn) {
+        saveBtn.addEventListener("click", function() {
+            alert("✅ تم حفظ التصميم (محلياً)");
+            const design = getCurrentDesign();
+            localStorage.setItem("savedDesign", JSON.stringify(design));
         });
+        console.log("✅ زر الحفظ مرتبط");
+    } else {
+        console.error("❌ زر الحفظ غير موجود");
     }
-}
 
-// ========================================
-// بدء التشغيل التلقائي
-// ========================================
-window.addEventListener("DOMContentLoaded", () => {
-    initEditor("designCanvas", "propertiesPanel");
+    console.log("✅ جميع الأزرار جاهزة للاختبار!");
 });
