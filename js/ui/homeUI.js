@@ -125,5 +125,14 @@ if (createBtn) {
     });
 
 }
+// تهيئة المحرر إذا كانت العناصر موجودة
+import { initEditor } from "../editor/editorController.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+    const canvas = document.getElementById("designCanvas");
+    if (canvas) {
+        initEditor("designCanvas", "propertiesPanel");
+    }
+});
 // تشغيل الصفحة
 initHome();
