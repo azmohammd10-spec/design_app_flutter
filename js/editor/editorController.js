@@ -21,13 +21,12 @@ window.addEventListener("DOMContentLoaded", () => {
     if (canvasElement) {
 
         initEditor(canvasElement);
-     const imageTool = document.getElementById("imageTool");
-const imageInput = document.getElementById("imageInput");
-} else {
 
-    console.error("❌ designCanvas not found");
+    } else {
 
-}
+        console.error("❌ designCanvas not found");
+
+    }
 
 });
         
@@ -101,27 +100,27 @@ function renderElement(element) {
 // رسم الصور
 if (element.type === "image") {
 
-    panel.innerHTML = `
+    const img = document.createElement("img");
 
-        <h4>خصائص الصورة</h4>
+    img.src = element.src;
 
-        <label>العرض</label>
+    img.style.position = "absolute";
+    img.style.left = element.x + "px";
+    img.style.top = element.y + "px";
+    img.style.width = element.width + "px";
+    img.style.height = element.height + "px";
+    img.style.objectFit = "cover";
+    img.style.cursor = "pointer";
+    img.style.touchAction = "none";
 
-        <input
-            id="imageWidth"
-            type="number"
-            value="${element.width}"
-        >
+    img.addEventListener("click", () => {
+        selectElement(element);
+    });
 
-        <label>الارتفاع</label>
+    canvas.appendChild(img);
 
-        <input
-            id="imageHeight"
-            type="number"
-            value="${element.height}"
-        >
-
-    `;
+    return;
+}
 
     document
     .getElementById("imageWidth")
