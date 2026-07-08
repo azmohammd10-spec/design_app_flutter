@@ -1,0 +1,55 @@
+// js/editor/editorController.js
+import { getCurrentDesign, updateDesign, deleteElement } from "../modules/design/designService.js";
+import { renderCanvas } from "./renderer.js";
+import { showProperties } from "./propertiesPanel.js";
+import { createText } from "../modules/tools/textTool.js";
+import { createRectangle, createCircle } from "../modules/tools/shapeTool.js";
+import { createImage } from "../modules/tools/imageTool.js";
+
+let canvasElement, panelElement, selectedElement = null;
+
+export function initEditor(canvasId, panelId) {
+    canvasElement = document.getElementById(canvasId);
+    panelElement = document.getElementById(panelId);
+    
+    if (!canvasElement || !panelElement) {
+        console.error("❌ لم يتم العثور على canvas أو panel");
+        return;
+    }
+
+    let design = getCurrentDesign();
+    if (!design) {
+        console.log("🆕 إنشاء تصميم افتراضي");
+        const defaultDesign = {
+            id: "default",
+            name: "تصميم جديد",
+            width: 800,
+            height: 600,
+            category: "general",
+            elements: [],
+            createdAt: Date.now()
+        };
+        localStorage.setItem("currentDesign", JSON.stringify(defaultDesign));
+        design = getCurrentDesign();
+    }
+
+    console.log("✅ التصميم الحالي:", design);
+    renderCanvas(canvasElement);
+
+    document.addEventListener("elementSelected", (e) => {
+        selectedElement = e.detail;
+        showProperties(selectedElement, panelElement);
+    });
+
+    canvasElement.addEventListener("click", (e) => {
+        if (e.target === canvasElement) {
+            selectedElement = null;
+            panelElement.innerHTML = "<p>✨ اختر عنصراً لعرض خصائصه</p>";
+        }
+    });
+
+    bindButtons();
+    console.log("✅ المحرر جاهز!");
+}
+
+
